@@ -119,13 +119,55 @@ export default function HomePage() {
         className="relative overflow-hidden pt-28 pb-12 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28"
         id="hero"
       >
+        {/* Background accents */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="absolute -top-48 -left-48 h-[600px] w-[600px] rounded-full bg-brand/[0.03] blur-[160px]" />
+          <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-brand/[0.02] blur-[140px]" />
+        </div>
+
         <Container>
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
-            <div className="text-center lg:text-left">
+          <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-16 items-center">
+            {/* Left: Copy + Form */}
+            <div>
               <StaggerGroup>
                 <StaggerItem>
-                  <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mb-6">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="relative inline-flex h-2.5 w-2.5">
+                      <span className="absolute inset-0 rounded-full bg-brand animate-ping opacity-30" />
+                      <span className="relative inline-block h-2.5 w-2.5 rounded-full bg-brand" />
+                    </span>
+                    <span className="text-sm font-semibold uppercase tracking-[0.15em] text-brand">
+                      Evidence-Based SEO Audit
+                    </span>
+                  </div>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-tight text-text-primary leading-[1.02]">
+                    <span className="block">The Evidence-Backed</span>
+                    <span className="block mt-2">
+                      <span className="text-brand">Verdict</span> on Your SEO
+                    </span>
+                  </h1>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <p className="mt-5 text-[17px] sm:text-[18px] text-text-secondary leading-relaxed max-w-lg">
+                    A comprehensive forensic audit of your website&apos;s technical health,
+                    performance, and search readiness. Every finding is verified from the actual
+                    page response.
+                  </p>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <div className="mt-8 max-w-lg">
+                    <AuditForm />
+                  </div>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <div className="mt-5 flex flex-wrap items-center gap-5 text-base text-text-tertiary">
+                    <span className="flex items-center gap-1.5">
                       <svg
                         width="14"
                         height="14"
@@ -138,9 +180,9 @@ export default function HomePage() {
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         <path d="M9 12l2 2 4-4" />
                       </svg>
-                      Evidence-Based
+                      No signup
                     </span>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                    <span className="flex items-center gap-1.5">
                       <svg
                         width="14"
                         height="14"
@@ -153,9 +195,9 @@ export default function HomePage() {
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
                       </svg>
-                      14 Categories
+                      14 categories
                     </span>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                    <span className="flex items-center gap-1.5">
                       <svg
                         width="14"
                         height="14"
@@ -165,69 +207,43 @@ export default function HomePage() {
                         strokeWidth="2"
                         aria-hidden="true"
                       >
-                        <path d="M12 2L2 12l10 10 10-10L12 2z" />
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                       </svg>
-                      Free Forever
+                      ~10s audit
                     </span>
                   </div>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-tight text-text-primary leading-[1.05]">
-                    <span className="block">The Evidence-Backed</span>
-                    <span className="block mt-2">
-                      <span className="text-brand">Verdict</span> on Your SEO
-                    </span>
-                  </h1>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <p className="mt-5 text-[clamp(1rem,2vw,1.125rem)] text-text-secondary leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    A comprehensive forensic audit of your website&apos;s technical health,
-                    performance, and search readiness. Every finding is verified from the actual
-                    page response.
-                  </p>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <div className="mt-8 max-w-lg mx-auto lg:mx-0">
-                    <AuditForm />
-                  </div>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <p className="mt-4 text-sm text-text-tertiary">
-                    Free &middot; No signup &middot; Actionable results &middot; ~10s audit
-                  </p>
                 </StaggerItem>
               </StaggerGroup>
             </div>
 
-            <ScaleIn delay={0.4}>
-              <div className="lg:scale-110 origin-left relative">
+            {/* Right: Example Report Preview */}
+            <ScaleIn delay={0.3}>
+              <div className="relative">
                 <div
-                  className="absolute -inset-4 rounded-3xl bg-brand/[0.03] blur-2xl"
+                  className="absolute -inset-6 rounded-3xl bg-brand/[0.02] blur-3xl"
                   aria-hidden="true"
                 />
-                <div className="relative rounded-2xl border border-zinc-700/50 bg-gradient-to-b from-bg-card to-bg-elevated overflow-hidden shadow-2xl shadow-black/40">
-                  <div className="border-b border-zinc-800 bg-bg-elevated/80 px-5 py-3 sm:px-6 sm:py-3.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex gap-1.5">
-                          <span className="h-3 w-3 rounded-full bg-critical/60" />
-                          <span className="h-3 w-3 rounded-full bg-warning/60" />
-                          <span className="h-3 w-3 rounded-full bg-success/60" />
-                        </div>
-                        <span className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
-                          Briefing Preview
-                        </span>
+                <div className="relative rounded-2xl border border-zinc-700/50 bg-gradient-to-b from-bg-card/90 to-bg-elevated/60 overflow-hidden shadow-2xl shadow-black/40">
+                  {/* Preview header */}
+                  <div className="border-b border-zinc-800 bg-bg-elevated/80 px-5 py-3.5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-critical/60" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
                       </div>
-                      <span className="rounded-lg bg-brand-muted px-2.5 py-1 text-[13px] font-bold uppercase tracking-wider text-brand border border-brand/20">
-                        Demo data
+                      <span className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                        Audit Report Preview
                       </span>
                     </div>
+                    <span className="rounded-lg bg-brand-muted px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand border border-brand/20">
+                      Example
+                    </span>
                   </div>
+
+                  {/* Preview body */}
                   <div className="space-y-5 p-5 sm:p-6">
+                    {/* Verdict banner */}
                     <div className="rounded-xl border border-brand/20 bg-gradient-to-br from-brand/[0.06] to-transparent px-5 py-4">
                       <div className="flex items-center gap-2.5 mb-2">
                         <svg
@@ -244,15 +260,16 @@ export default function HomePage() {
                           Executive Verdict
                         </p>
                       </div>
-                      <p className="text-[15px] text-text-secondary leading-relaxed">
+                      <p className="text-base text-text-secondary leading-relaxed">
                         Your site has moderate SEO health with strong performance but critical
                         accessibility gaps requiring attention.
                       </p>
                     </div>
 
+                    {/* Score row */}
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                        <p className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
                           SEO Health Score
                         </p>
                         <p className="text-4xl sm:text-5xl font-bold text-brand tabular-nums tracking-tight">
@@ -260,7 +277,7 @@ export default function HomePage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                        <p className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
                           Status
                         </p>
                         <p className="text-sm text-text-secondary">
@@ -269,6 +286,7 @@ export default function HomePage() {
                       </div>
                     </div>
 
+                    {/* Mini score grid */}
                     <div className="grid grid-cols-3 gap-3">
                       <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
                         <p className="text-[13px] text-text-tertiary uppercase tracking-wider">
@@ -290,26 +308,27 @@ export default function HomePage() {
                       </div>
                     </div>
 
+                    {/* Findings */}
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div className="rounded-xl border border-l-4 border-l-critical border-zinc-800 bg-bg-card/60 p-4">
-                        <span className="rounded-md bg-critical/15 px-2 py-0.5 text-[13px] font-semibold uppercase text-critical">
+                        <span className="rounded-md bg-critical/15 px-2.5 py-1 text-[13px] font-semibold uppercase text-critical">
                           Critical
                         </span>
                         <p className="mt-2 text-sm font-semibold text-text-primary">
                           Missing meta description
                         </p>
-                        <p className="mt-1 text-xs text-text-tertiary">
+                        <p className="mt-1 text-[13px] text-text-tertiary">
                           Impact: Poor SERP visibility &middot; Effort: Low
                         </p>
                       </div>
                       <div className="rounded-xl border border-l-4 border-l-success border-zinc-800 bg-bg-card/60 p-4">
-                        <span className="rounded-md bg-success/15 px-2 py-0.5 text-[13px] font-semibold uppercase text-success">
+                        <span className="rounded-md bg-success/15 px-2.5 py-1 text-[13px] font-semibold uppercase text-success">
                           Quick Win
                         </span>
                         <p className="mt-2 text-sm font-semibold text-text-primary">
                           Image alt text missing
                         </p>
-                        <p className="mt-1 text-xs text-text-tertiary">
+                        <p className="mt-1 text-[13px] text-text-tertiary">
                           Impact: Accessibility &middot; Effort: Low
                         </p>
                       </div>
