@@ -10,42 +10,6 @@ import { motion } from "motion/react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-const categoriesList = [
-  "On-page SEO — titles, meta, headings, content",
-  "Technical SEO — canonical, robots, sitemaps, redirects",
-  "Performance — PageSpeed, Core Web Vitals, opportunities",
-  "Accessibility — alt text, ARIA, contrast, landmarks",
-  "Security & Trust — HTTPS, certificates, safe browsing",
-  "AEO & GEO — answer engine and generative engine readiness",
-];
-
-const timelineStages = [
-  {
-    step: "1",
-    title: "Fetch & Verify",
-    desc: "Your URL is fetched server-side through our secure proxy. DNS, TLS, and response integrity are verified before any analysis begins.",
-    duration: "~2s",
-  },
-  {
-    step: "2",
-    title: "Extract Signals",
-    desc: "The page is parsed across 14 dimensions: metadata, content, headings, links, images, forms, social tags, and structured data.",
-    duration: "~4s",
-  },
-  {
-    step: "3",
-    title: "Run Evidence Checks",
-    desc: "Hundreds of deterministic rules evaluate each signal against best-practice criteria. Every finding is traceable to real page data.",
-    duration: "~3s",
-  },
-  {
-    step: "4",
-    title: "Score & Prioritize",
-    desc: "Category scores are calculated from pass/fail ratios with weighted caps. Results are organized by impact and effort.",
-    duration: "~1s",
-  },
-];
-
 const priorityCards = [
   {
     badge: "Critical",
@@ -195,7 +159,7 @@ export default function HomePage() {
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
                       </svg>
-                      14 categories
+                      10 audit categories
                     </span>
                     <span className="flex items-center gap-1.5">
                       <svg
@@ -209,7 +173,7 @@ export default function HomePage() {
                       >
                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                       </svg>
-                      ~10s audit
+                      Results typically arrive in seconds
                     </span>
                   </div>
                 </StaggerItem>
@@ -344,66 +308,129 @@ export default function HomePage() {
       {/* ── SECTION 1b: CATEGORY TICKER ── */}
       <CategoryTicker />
 
-      {/* ── SECTION 2: LIVE PRODUCT BRIEFING ── */}
-      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="briefing">
+      {/* ── SECTION 2: UNIFIED SEO SIGNAL MAP ── */}
+      <section
+        className="border-t border-zinc-800/60 py-20 sm:py-28 overflow-hidden"
+        id="signal-map"
+      >
         <Container>
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-5 lg:gap-16 items-center">
-            <div className="lg:col-span-3">
-              <Reveal>
-                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                  What you get
-                </span>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <SectionHeading>Every report is a complete diagnostic briefing</SectionHeading>
-              </Reveal>
-              <Reveal delay={0.15}>
-                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                  From technical infrastructure to emerging search readiness — every check is
-                  deterministic, evidence-based, and fully transparent. No black boxes, no AI
-                  hallucinations, just real data from your actual page response.
-                </p>
-              </Reveal>
-              <Reveal delay={0.2}>
-                <ul className="mt-8 space-y-4">
-                  {categoriesList.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-3.5 text-[15px] text-text-secondary"
-                    >
+          <div className="text-center max-w-3xl mx-auto">
+            <Reveal>
+              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                360° diagnosis
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <SectionHeading>Every signal, one unified verdict</SectionHeading>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                Multiple website signals combine into one verified audit report. Each category is
+                checked against real page data — not guesswork.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="relative mt-16">
+            {/* Desktop connector bar */}
+            <div
+              className="hidden lg:block absolute top-1/2 left-0 right-[380px] h-px bg-gradient-to-r from-zinc-800 via-brand/10 to-transparent -translate-y-1/2"
+              aria-hidden="true"
+            />
+
+            <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-16 items-start">
+              {/* Signal groups */}
+              <StaggerGroup>
+                {[
+                  { name: "Metadata", desc: "Titles, descriptions, social tags", dot: "bg-brand" },
+                  { name: "Headings", desc: "Structure and hierarchy", dot: "bg-success" },
+                  { name: "Content", desc: "Quality, relevance, and structure", dot: "bg-brand" },
+                  { name: "Links", desc: "Internal and external integrity", dot: "bg-success" },
+                  {
+                    name: "Images",
+                    desc: "Alt text, formats, and optimization",
+                    dot: "bg-blue-400",
+                  },
+                  {
+                    name: "Structured Data",
+                    desc: "Schema, JSON-LD, validation",
+                    dot: "bg-blue-400",
+                  },
+                  { name: "Social", desc: "Open Graph, Twitter Cards, meta", dot: "bg-brand" },
+                  { name: "Accessibility", desc: "ARIA, contrast, landmarks", dot: "bg-warning" },
+                  { name: "URL", desc: "Canonical, redirects, sitemaps", dot: "bg-critical" },
+                  { name: "Forms", desc: "Labels, actions, security", dot: "bg-success" },
+                ].map((s) => (
+                  <StaggerItem key={s.name}>
+                    <div className="flex items-start gap-3.5 py-2">
+                      <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${s.dot}`} />
+                      <div className="min-w-0">
+                        <p className="text-[15px] font-semibold text-text-primary">{s.name}</p>
+                        <p className="mt-0.5 text-[15px] text-text-tertiary">{s.desc}</p>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerGroup>
+
+              {/* Central verdict panel */}
+              <ScaleIn delay={0.3}>
+                <div className="relative">
+                  <div
+                    className="absolute -inset-6 rounded-3xl bg-brand/[0.02] blur-3xl"
+                    aria-hidden="true"
+                  />
+                  <div className="relative rounded-2xl border border-brand/20 bg-gradient-to-b from-bg-card to-bg-elevated p-7 shadow-2xl shadow-brand/5">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-muted border border-brand/20">
                       <svg
-                        width="18"
-                        height="18"
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className="text-brand"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                    </div>
+                    <p className="mt-5 text-xl font-bold text-brand text-center">Verified Audit</p>
+                    <p className="mt-1 text-[15px] text-text-tertiary text-center">
+                      10 audit categories
+                    </p>
+                    <div className="mt-6 space-y-3">
+                      <div className="flex items-center justify-between text-[15px]">
+                        <span className="text-text-tertiary">Checks executed</span>
+                        <span className="text-text-primary font-semibold tabular-nums">85+</span>
+                      </div>
+                      <div className="h-px bg-zinc-800" />
+                      <div className="flex items-center justify-between text-[15px]">
+                        <span className="text-text-tertiary">Categories</span>
+                        <span className="text-text-primary font-semibold tabular-nums">10</span>
+                      </div>
+                      <div className="h-px bg-zinc-800" />
+                      <div className="flex items-center justify-between text-[15px]">
+                        <span className="text-text-tertiary">Analysis</span>
+                        <span className="text-text-primary font-semibold tabular-nums">Live</span>
+                      </div>
+                    </div>
+                    <div className="mt-6 flex items-center justify-center gap-2 text-[14px] text-text-tertiary">
+                      <svg
+                        width="14"
+                        height="14"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
-                        className="mt-0.5 shrink-0 text-brand"
+                        className="text-success"
                         aria-hidden="true"
                       >
-                        <path d="M20 6L9 17l-5-5" />
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <path d="M22 4L12 14.01l-3-3" />
                       </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            </div>
-            <div className="lg:col-span-2">
-              <ScaleIn delay={0.3}>
-                <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-bg-card to-bg-elevated p-8 text-center shadow-xl">
-                  <p className="text-7xl sm:text-8xl font-bold text-brand tabular-nums tracking-tight">
-                    85+
-                  </p>
-                  <p className="mt-2 text-base text-text-secondary">Evidence-based checks</p>
-                  <div className="mt-6 grid grid-cols-2 gap-4 text-left">
-                    <div className="rounded-xl bg-bg-card border border-zinc-800/60 p-4">
-                      <p className="text-2xl font-bold text-success tabular-nums">14</p>
-                      <p className="text-xs text-text-tertiary mt-1">Categories</p>
-                    </div>
-                    <div className="rounded-xl bg-bg-card border border-zinc-800/60 p-4">
-                      <p className="text-2xl font-bold text-warning tabular-nums">5</p>
-                      <p className="text-xs text-text-tertiary mt-1">Score caps</p>
+                      Core SEO checks are deterministic
                     </div>
                   </div>
                 </div>
@@ -483,8 +510,11 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── SECTION 4: DIAGNOSIS TIMELINE ── */}
-      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="timeline">
+      {/* ── SECTION 4: AUDIT LIFECYCLE ── */}
+      <section
+        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
+        id="lifecycle"
+      >
         <Container>
           <div className="text-center max-w-3xl mx-auto">
             <Reveal>
@@ -497,48 +527,173 @@ export default function HomePage() {
             </Reveal>
             <Reveal delay={0.15}>
               <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                From URL submission to complete report in under 10 seconds.
+                From URL submission to complete report — every stage is deterministic and
+                transparent.
               </p>
             </Reveal>
           </div>
 
-          <div className="hidden sm:grid sm:grid-cols-4 sm:gap-0 sm:relative mt-14">
-            <div className="absolute left-0 right-0 top-10 h-0.5 bg-gradient-to-r from-zinc-800 via-brand/30 to-zinc-800" />
-            {timelineStages.map((item, i) => (
-              <Reveal
-                key={item.step}
-                delay={i * 0.12}
-                className="relative flex flex-col items-center text-center px-4"
-              >
-                <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-muted to-brand/[0.05] text-2xl font-bold text-brand border border-brand/20 shadow-lg shadow-brand/5">
-                  {item.step}
-                </div>
-                <div className="mt-2 text-xs font-medium text-brand/60 uppercase tracking-wider">
-                  {item.duration}
-                </div>
-                <h3 className="mt-3 text-lg font-semibold text-text-primary">{item.title}</h3>
-                <p className="mt-2 text-sm text-text-secondary leading-relaxed">{item.desc}</p>
-              </Reveal>
-            ))}
+          {/* Desktop: connected lifecycle (3 × 2 grid with connectors) */}
+          <div className="hidden lg:block mt-16">
+            {/* Top row */}
+            <div className="grid grid-cols-3 gap-8">
+              {[
+                {
+                  step: "01",
+                  title: "Secure & Validate",
+                  desc: "URL verified through our secure proxy. DNS, TLS, and response integrity checked before analysis begins.",
+                },
+                {
+                  step: "02",
+                  title: "Fetch & Extract",
+                  desc: "Page fetched server-side and parsed across 11+ SEO dimensions simultaneously.",
+                },
+                {
+                  step: "03",
+                  title: "Run Deterministic Checks",
+                  desc: "Hundreds of evidence-based rules evaluate each signal against best-practice criteria.",
+                },
+              ].map((stage, i) => (
+                <Reveal key={stage.step} delay={i * 0.1}>
+                  <div className="relative flex flex-col items-center text-center px-2">
+                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-base font-bold text-black shadow-lg shadow-brand/20">
+                      {stage.step}
+                    </div>
+                    <div
+                      className="mt-1 h-6 w-0.5 bg-gradient-to-b from-brand/40 to-zinc-800"
+                      aria-hidden="true"
+                    />
+                    <h3 className="mt-2 text-base font-semibold text-text-primary">
+                      {stage.title}
+                    </h3>
+                    <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
+                      {stage.desc}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+
+            {/* Downward connector */}
+            <div className="flex justify-center py-5" aria-hidden="true">
+              <div className="flex flex-col items-center gap-1">
+                <div className="h-8 w-0.5 bg-gradient-to-b from-zinc-800 to-zinc-800" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-zinc-600"
+                >
+                  <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Bottom row */}
+            <div className="grid grid-cols-3 gap-8">
+              {[
+                {
+                  step: "04",
+                  title: "Calculate Scores",
+                  desc: "Category scores from pass/fail ratios with weighted caps per dimension.",
+                },
+                {
+                  step: "05",
+                  title: "Request Performance Data",
+                  desc: "Optional PageSpeed diagnostics requested to enrich your performance intelligence.",
+                },
+                {
+                  step: "06",
+                  title: "Assemble Report",
+                  desc: "All findings, scores, and priorities compiled into a single actionable report.",
+                },
+              ].map((stage, i) => (
+                <Reveal key={stage.step} delay={(i + 3) * 0.1}>
+                  <div className="relative flex flex-col items-center text-center px-2">
+                    <motion.div
+                      className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-base font-bold text-black shadow-lg shadow-brand/20"
+                      initial={{ scale: 0.8 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
+                    >
+                      {stage.step}
+                    </motion.div>
+                    <h3 className="mt-4 text-base font-semibold text-text-primary">
+                      {stage.title}
+                    </h3>
+                    <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
+                      {stage.desc}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
 
-          <div className="sm:hidden mt-10 space-y-8">
-            {timelineStages.map((item, i) => (
-              <Reveal key={item.step} delay={i * 0.1}>
-                <div className="flex gap-5 items-start">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-muted text-xl font-bold text-brand border border-brand/20">
-                    {item.step}
-                  </div>
-                  <div className="min-w-0 pt-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold text-text-primary">{item.title}</h3>
-                      <span className="text-xs text-brand/60">~{item.duration}</span>
+          {/* Mobile: vertical timeline */}
+          <div className="lg:hidden mt-12">
+            <div className="relative">
+              <div className="absolute left-[23px] top-0 bottom-0 w-0.5 bg-zinc-800" />
+              <motion.div
+                className="absolute left-[23px] top-0 w-0.5 bg-gradient-to-b from-brand to-brand/40"
+                initial={{ height: "0%" }}
+                whileInView={{ height: "100%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: EASE_OUT_EXPO }}
+              />
+              <div className="space-y-10">
+                {[
+                  {
+                    step: "01",
+                    title: "Secure & Validate",
+                    desc: "URL verified through our secure proxy. DNS, TLS, and response integrity checked before analysis begins.",
+                  },
+                  {
+                    step: "02",
+                    title: "Fetch & Extract",
+                    desc: "Page fetched server-side and parsed across 11+ SEO dimensions simultaneously.",
+                  },
+                  {
+                    step: "03",
+                    title: "Run Deterministic Checks",
+                    desc: "Hundreds of evidence-based rules evaluate each signal against best-practice criteria.",
+                  },
+                  {
+                    step: "04",
+                    title: "Calculate Scores",
+                    desc: "Category scores calculated from pass/fail ratios with weighted caps per dimension.",
+                  },
+                  {
+                    step: "05",
+                    title: "Request Performance Data",
+                    desc: "Optional PageSpeed diagnostics requested to enrich your performance intelligence.",
+                  },
+                  {
+                    step: "06",
+                    title: "Assemble Report",
+                    desc: "All findings, scores, and priorities compiled into a single actionable audit report.",
+                  },
+                ].map((stage, i) => (
+                  <Reveal key={stage.step} delay={i * 0.08}>
+                    <div className="relative flex gap-5">
+                      <div className="relative z-10 flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-black shadow-lg shadow-brand/20">
+                        {stage.step}
+                      </div>
+                      <div className="min-w-0 pt-2">
+                        <h3 className="text-base font-semibold text-text-primary">{stage.title}</h3>
+                        <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
+                          {stage.desc}
+                        </p>
+                      </div>
                     </div>
-                    <p className="mt-1.5 text-sm text-text-secondary">{item.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+                  </Reveal>
+                ))}
+              </div>
+            </div>
           </div>
         </Container>
       </section>
