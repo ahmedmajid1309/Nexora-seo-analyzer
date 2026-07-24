@@ -28,60 +28,58 @@ export function CinematicBackground() {
 
   if (intensity === "minimal") return null;
 
-  const orbSize = intensity === "full" ? "h-[500px] w-[500px]" : "h-[300px] w-[300px]";
-  const blur = intensity === "full" ? "blur-[120px]" : "blur-[80px]";
-  const opacity = intensity === "full" ? "bg-brand/5" : "bg-brand/3";
+  const isFull = intensity === "full";
 
-  if (reduced || !hydrated) {
-    return (
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-        <div className={`absolute -left-32 -top-32 ${orbSize} rounded-full ${opacity} ${blur}`} />
-        <div
-          className={`absolute -right-32 bottom-1/3 ${orbSize} rounded-full bg-brand/3 ${blur}`}
-        />
-        {intensity === "full" && (
-          <>
-            <div className="absolute left-1/3 top-1/4 h-[600px] w-[600px] rounded-full bg-white/[0.02] blur-[150px]" />
-            <div
-              className="absolute inset-0 opacity-[0.015]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-                backgroundSize: "60px 60px",
-              }}
-            />
-          </>
-        )}
-      </div>
-    );
-  }
+  const staticRender = (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+      <div className="absolute -left-48 -top-48 h-[600px] w-[600px] rounded-full bg-brand/[0.04] blur-[150px]" />
+      <div className="absolute -right-48 top-1/3 h-[500px] w-[500px] rounded-full bg-brand/[0.03] blur-[120px]" />
+      {isFull && (
+        <>
+          <div className="absolute left-1/4 top-1/5 h-[700px] w-[700px] rounded-full bg-white/[0.015] blur-[180px]" />
+          <div
+            className="absolute inset-0 opacity-[0.012]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+              backgroundSize: "80px 80px",
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+
+  if (reduced || !hydrated) return staticRender;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       <motion.div
-        className={`absolute -left-32 -top-32 ${orbSize} rounded-full ${opacity} ${blur}`}
-        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className={`absolute -right-32 bottom-1/3 ${orbSize} rounded-full bg-brand/3 ${blur}`}
-        animate={{ x: [0, -30, 0], y: [0, 20, 0] }}
+        className="absolute -left-48 -top-48 h-[600px] w-[600px] rounded-full bg-brand/[0.04] blur-[150px]"
+        animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
       />
-      {intensity === "full" && (
+      <motion.div
+        className="absolute -right-48 top-1/3 h-[500px] w-[500px] rounded-full bg-brand/[0.03] blur-[120px]"
+        animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
+        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {isFull && (
         <>
           <motion.div
-            className="absolute left-1/3 top-1/4 h-[600px] w-[600px] rounded-full bg-white/[0.02] blur-[150px]"
-            animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute left-1/4 top-1/5 h-[700px] w-[700px] rounded-full bg-white/[0.015] blur-[180px]"
+            animate={{ x: [0, -50, 0], y: [0, 40, 0] }}
+            transition={{ duration: 35, repeat: Infinity, ease: "easeInOut" }}
           />
-          <div
-            className="absolute inset-0 opacity-[0.015]"
+          <motion.div
+            className="absolute inset-0 opacity-[0.012]"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-              backgroundSize: "60px 60px",
+                "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+              backgroundSize: "80px 80px",
             }}
+            animate={{ opacity: [0.008, 0.018, 0.008] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
         </>
       )}

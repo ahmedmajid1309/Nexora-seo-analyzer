@@ -4,82 +4,84 @@ import { AuditForm } from "@/components/landing/AuditForm";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Card } from "@/components/ui/Card";
-import { Reveal } from "@/components/ui/AnimatedPrimitives";
+import { Reveal, StaggerGroup, StaggerItem, ScaleIn } from "@/components/ui/AnimatedPrimitives";
 import { CategoryTicker } from "@/components/landing/CategoryTicker";
 import { motion } from "motion/react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-const differenceItems = [
-  {
-    icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-    title: "Evidence-based",
-    desc: "Every finding is verified from the actual page response. No fabricated data, no hallucinations, no guesswork.",
-  },
-  {
-    icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
-    title: "Deterministic scoring",
-    desc: "The same page always gets the same score. Your score is calculated from real checks, not black-box algorithms.",
-  },
-  {
-    icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-    title: "No signup required",
-    desc: "Enter a URL and get a full report instantly. No account creation, no email required, no paywalls.",
-  },
-  {
-    icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-    title: "Actionable remediation",
-    desc: "Each finding includes ordered remediation steps, responsible role, effort estimate, and impact explanation.",
-  },
+const categoriesList = [
+  "On-page SEO — titles, meta, headings, content",
+  "Technical SEO — canonical, robots, sitemaps, redirects",
+  "Performance — PageSpeed, Core Web Vitals, opportunities",
+  "Accessibility — alt text, ARIA, contrast, landmarks",
+  "Security & Trust — HTTPS, certificates, safe browsing",
+  "AEO & GEO — answer engine and generative engine readiness",
 ];
 
-const howItWorks = [
+const timelineStages = [
   {
     step: "1",
-    title: "Enter a URL",
-    desc: "Type or paste any public website address. Optionally add a target keyword for context.",
+    title: "Fetch & Verify",
+    desc: "Your URL is fetched server-side through our secure proxy. DNS, TLS, and response integrity are verified before any analysis begins.",
+    duration: "~2s",
   },
   {
     step: "2",
-    title: "Deterministic analysis",
-    desc: "Our engine fetches the page, extracts all SEO signals, and runs hundreds of evidence-based checks.",
+    title: "Extract Signals",
+    desc: "The page is parsed across 14 dimensions: metadata, content, headings, links, images, forms, social tags, and structured data.",
+    duration: "~4s",
   },
   {
     step: "3",
-    title: "Review your report",
-    desc: "Get a scored report with clear remediation steps, prioritized by impact and effort.",
+    title: "Run Evidence Checks",
+    desc: "Hundreds of deterministic rules evaluate each signal against best-practice criteria. Every finding is traceable to real page data.",
+    duration: "~3s",
+  },
+  {
+    step: "4",
+    title: "Score & Prioritize",
+    desc: "Category scores are calculated from pass/fail ratios with weighted caps. Results are organized by impact and effort.",
+    duration: "~1s",
   },
 ];
 
-const recommendations = [
+const priorityCards = [
   {
-    badge: "Quick Win",
-    badgeClass: "bg-success/10 text-success",
-    effort: "Low",
-    title: "Add meta descriptions to all pages",
-    desc: "Improves SERP click-through rate",
+    badge: "Critical",
+    badgeClass: "bg-critical/15 text-critical border-l-critical",
+    title: "HTTPS not enforced",
+    desc: "Security and trust issue affecting user confidence and search ranking.",
+    effort: "High",
   },
   {
     badge: "High Impact",
-    badgeClass: "bg-warning/10 text-warning",
+    badgeClass: "bg-warning/15 text-warning border-l-warning",
+    title: "Missing heading hierarchy",
+    desc: "Improves content structure, readability, and SEO signal distribution.",
     effort: "Medium",
-    title: "Fix missing heading hierarchy",
-    desc: "Improves content structure and readability",
-  },
-  {
-    badge: "Critical",
-    badgeClass: "bg-critical/10 text-critical",
-    effort: "High",
-    title: "HTTPS not enforced",
-    desc: "Security and trust issue",
   },
   {
     badge: "Quick Win",
-    badgeClass: "bg-success/10 text-success",
+    badgeClass: "bg-success/15 text-success border-l-success",
+    title: "Add meta descriptions",
+    desc: "Improves SERP click-through rate with minimal development effort.",
     effort: "Low",
-    title: "Image alt text missing",
-    desc: "Improves accessibility and image search visibility",
   },
+  {
+    badge: "Quick Win",
+    badgeClass: "bg-success/15 text-success border-l-success",
+    title: "Image alt text missing",
+    desc: "Improves accessibility and image search visibility for all users.",
+    effort: "Low",
+  },
+];
+
+const metricsData = [
+  { label: "Performance", value: 92, color: "text-success", barColor: "bg-success" },
+  { label: "SEO Health", value: 78, color: "text-brand", barColor: "bg-brand" },
+  { label: "Accessibility", value: 65, color: "text-warning", barColor: "bg-warning" },
+  { label: "Security", value: 42, color: "text-critical", barColor: "bg-critical" },
 ];
 
 const faqs = [
@@ -93,7 +95,7 @@ const faqs = [
   },
   {
     q: "How accurate are the scores?",
-    a: "Scores are calculated from deterministic checks against the actual page content and response. We do not fabricate data or predict rankings. Confidence is reported alongside each score.",
+    a: "Scores are calculated from deterministic checks against the actual page content and response. We do not fabricate data or predict rankings.",
   },
   {
     q: "What does AEO and GEO readiness mean?",
@@ -105,288 +107,254 @@ const faqs = [
   },
   {
     q: "How is my URL handled?",
-    a: "Your URL is fetched server-side, checked against multiple security filters, and the page content is analysed for SEO signals. Raw HTML is never exposed in the report.",
+    a: "Your URL is fetched server-side, checked against multiple security filters, and the page content is analysed for SEO signals.",
   },
 ];
-
-function ChevronDown() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}
-
-function DiamondIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 2L2 12l10 10 10-10L12 2z" />
-    </svg>
-  );
-}
-
-function ShieldCheckIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.35-4.35" />
-    </svg>
-  );
-}
 
 export default function HomePage() {
   return (
     <>
-      {/* ── HERO ── */}
+      {/* ── SECTION 1: HERO ── */}
       <section
-        className="relative overflow-hidden pt-20 pb-10 sm:pt-28 sm:pb-16 lg:pt-36 lg:pb-20"
+        className="relative overflow-hidden pt-28 pb-12 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28"
         id="hero"
       >
         <Container>
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
             <div className="text-center lg:text-left">
-              {/* Trust badges — reduced from 4 to 3 */}
-              <motion.div
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1, ease: EASE_OUT_EXPO }}
-                className="flex flex-wrap justify-center lg:justify-start gap-2 mb-5"
-              >
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-bg-card/60 px-3 py-1 text-[11px] font-medium text-text-tertiary">
-                  <ShieldCheckIcon />
-                  Evidence-Based
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-bg-card/60 px-3 py-1 text-[11px] font-medium text-text-tertiary">
-                  <SearchIcon />
-                  14 Categories
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-bg-card/60 px-3 py-1 text-[11px] font-medium text-text-tertiary">
-                  <DiamondIcon />
-                  Free Forever
-                </span>
-              </motion.div>
-
-              <h1 className="text-[clamp(2rem,5.5vw,4.5rem)] font-bold tracking-tight text-text-primary leading-[1.05]">
-                <motion.span
-                  initial={{ opacity: 1, y: 0 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2, ease: EASE_OUT_EXPO }}
-                  className="block"
-                >
-                  The Evidence-Backed
-                </motion.span>
-                <motion.span
-                  initial={{ opacity: 1, y: 0 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.35, ease: EASE_OUT_EXPO }}
-                  className="block mt-1"
-                >
-                  <span className="text-brand">Verdict</span> on Your SEO
-                </motion.span>
-              </h1>
-
-              <motion.p
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: EASE_OUT_EXPO }}
-                className="mt-4 text-base sm:text-lg text-text-secondary leading-relaxed max-w-lg mx-auto lg:mx-0"
-              >
-                A comprehensive forensic audit of your website&apos;s technical health, performance,
-                and search readiness. Every finding is verified from the actual page response.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6, ease: EASE_OUT_EXPO }}
-                className="mt-8"
-              >
-                <AuditForm />
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 1 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.8, ease: EASE_OUT_EXPO }}
-                className="mt-3 text-sm text-text-tertiary"
-              >
-                Free &middot; No signup &middot; Actionable results
-              </motion.p>
-            </div>
-
-            {/* Sample Report — enlarged ~20% */}
-            <motion.div
-              initial={{ opacity: 1, x: 0 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.5, ease: EASE_OUT_EXPO }}
-              className="lg:scale-110 origin-left"
-            >
-              <div className="rounded-xl border border-zinc-800 bg-gradient-to-b from-bg-card to-bg-elevated overflow-hidden shadow-xl shadow-black/30">
-                <div className="border-b border-zinc-800 bg-bg-elevated/80 px-4 py-2.5 sm:px-5 sm:py-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="flex gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-critical/60" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
-                      </div>
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
-                        Briefing Preview
-                      </span>
-                    </div>
-                    <span className="rounded bg-brand-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand">
-                      Demo data
+              <StaggerGroup>
+                <StaggerItem>
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mb-6">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                      Evidence-Based
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        aria-hidden="true"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                      </svg>
+                      14 Categories
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/50 bg-bg-elevated/80 px-4 py-1.5 text-xs sm:text-sm font-medium text-text-tertiary shadow-sm">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 2L2 12l10 10 10-10L12 2z" />
+                      </svg>
+                      Free Forever
                     </span>
                   </div>
-                </div>
-                <div className="space-y-4 p-4 sm:p-5">
-                  <div className="rounded-lg border border-brand/20 bg-brand/5 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <DiamondIcon />
-                      <p className="text-xs font-semibold text-brand uppercase tracking-wider">
-                        Executive Verdict
-                      </p>
-                    </div>
-                    <p className="mt-1 text-sm text-text-secondary">
-                      Your site has moderate SEO health with strong performance but critical
-                      accessibility gaps requiring attention.
-                    </p>
-                  </div>
+                </StaggerItem>
 
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
-                        SEO Health Score
-                      </p>
-                      <p className="text-3xl sm:text-4xl font-bold text-brand tabular-nums">78</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
-                        Status
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        18 passed &middot; 4 warnings &middot; 2 failed
-                      </p>
-                    </div>
-                  </div>
+                <StaggerItem>
+                  <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-tight text-text-primary leading-[1.05]">
+                    <span className="block">The Evidence-Backed</span>
+                    <span className="block mt-2">
+                      <span className="text-brand">Verdict</span> on Your SEO
+                    </span>
+                  </h1>
+                </StaggerItem>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="rounded-lg border border-zinc-800 bg-bg-card/60 p-3">
-                      <p className="text-[10px] text-text-tertiary uppercase tracking-wider">
-                        Performance
-                      </p>
-                      <p className="text-xl font-bold text-success tabular-nums">92</p>
-                    </div>
-                    <div className="rounded-lg border border-zinc-800 bg-bg-card/60 p-3">
-                      <p className="text-[10px] text-text-tertiary uppercase tracking-wider">
-                        Accessibility
-                      </p>
-                      <p className="text-xl font-bold text-warning tabular-nums">65</p>
-                    </div>
-                    <div className="rounded-lg border border-zinc-800 bg-bg-card/60 p-3">
-                      <p className="text-[10px] text-text-tertiary uppercase tracking-wider">
-                        Security
-                      </p>
-                      <p className="text-xl font-bold text-critical tabular-nums">42</p>
-                    </div>
-                  </div>
+                <StaggerItem>
+                  <p className="mt-5 text-[clamp(1rem,2vw,1.125rem)] text-text-secondary leading-relaxed max-w-lg mx-auto lg:mx-0">
+                    A comprehensive forensic audit of your website&apos;s technical health,
+                    performance, and search readiness. Every finding is verified from the actual
+                    page response.
+                  </p>
+                </StaggerItem>
 
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <div className="rounded-lg border border-l-4 border-l-critical border-zinc-800 bg-bg-card/60 p-3">
-                      <span className="rounded bg-critical/15 px-1.5 py-0.5 text-[10px] font-medium uppercase text-critical">
-                        Critical
+                <StaggerItem>
+                  <div className="mt-8 max-w-lg mx-auto lg:mx-0">
+                    <AuditForm />
+                  </div>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <p className="mt-4 text-sm text-text-tertiary/70">
+                    Free &middot; No signup &middot; Actionable results &middot; ~10s audit
+                  </p>
+                </StaggerItem>
+              </StaggerGroup>
+            </div>
+
+            <ScaleIn delay={0.4}>
+              <div className="lg:scale-110 origin-left relative">
+                <div
+                  className="absolute -inset-4 rounded-3xl bg-brand/[0.03] blur-2xl"
+                  aria-hidden="true"
+                />
+                <div className="relative rounded-2xl border border-zinc-700/50 bg-gradient-to-b from-bg-card to-bg-elevated overflow-hidden shadow-2xl shadow-black/40">
+                  <div className="border-b border-zinc-800 bg-bg-elevated/80 px-5 py-3 sm:px-6 sm:py-3.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex gap-1.5">
+                          <span className="h-3 w-3 rounded-full bg-critical/60" />
+                          <span className="h-3 w-3 rounded-full bg-warning/60" />
+                          <span className="h-3 w-3 rounded-full bg-success/60" />
+                        </div>
+                        <span className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
+                          Briefing Preview
+                        </span>
+                      </div>
+                      <span className="rounded-lg bg-brand-muted px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-brand border border-brand/20">
+                        Demo data
                       </span>
-                      <p className="mt-1.5 text-sm font-medium text-text-primary">
-                        Missing meta description
-                      </p>
-                      <p className="mt-0.5 text-xs text-text-tertiary">
-                        Impact: Poor SERP visibility &middot; Effort: Low
+                    </div>
+                  </div>
+                  <div className="space-y-5 p-5 sm:p-6">
+                    <div className="rounded-xl border border-brand/20 bg-gradient-to-br from-brand/[0.06] to-transparent px-5 py-4">
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="text-brand"
+                          aria-hidden="true"
+                        >
+                          <path d="M12 2L2 12l10 10 10-10L12 2z" />
+                        </svg>
+                        <p className="text-sm font-semibold text-brand uppercase tracking-wider">
+                          Executive Verdict
+                        </p>
+                      </div>
+                      <p className="text-[15px] text-text-secondary leading-relaxed">
+                        Your site has moderate SEO health with strong performance but critical
+                        accessibility gaps requiring attention.
                       </p>
                     </div>
-                    <div className="rounded-lg border border-l-4 border-l-success border-zinc-800 bg-bg-card/60 p-3">
-                      <span className="rounded bg-success/15 px-1.5 py-0.5 text-[10px] font-medium uppercase text-success">
-                        Quick Win
-                      </span>
-                      <p className="mt-1.5 text-sm font-medium text-text-primary">
-                        Image alt text missing
-                      </p>
-                      <p className="mt-0.5 text-xs text-text-tertiary">
-                        Impact: Accessibility &middot; Effort: Low
-                      </p>
+
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                          SEO Health Score
+                        </p>
+                        <p className="text-4xl sm:text-5xl font-bold text-brand tabular-nums tracking-tight">
+                          78
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                          Status
+                        </p>
+                        <p className="text-sm text-text-secondary">
+                          18 passed &middot; 4 warnings &middot; 2 failed
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
+                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                          Performance
+                        </p>
+                        <p className="text-2xl font-bold text-success tabular-nums">92</p>
+                      </div>
+                      <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
+                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                          Accessibility
+                        </p>
+                        <p className="text-2xl font-bold text-warning tabular-nums">65</p>
+                      </div>
+                      <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
+                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                          Security
+                        </p>
+                        <p className="text-2xl font-bold text-critical tabular-nums">42</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div className="rounded-xl border border-l-4 border-l-critical border-zinc-800 bg-bg-card/60 p-4">
+                        <span className="rounded-md bg-critical/15 px-2 py-0.5 text-[11px] font-semibold uppercase text-critical">
+                          Critical
+                        </span>
+                        <p className="mt-2 text-sm font-semibold text-text-primary">
+                          Missing meta description
+                        </p>
+                        <p className="mt-1 text-xs text-text-tertiary">
+                          Impact: Poor SERP visibility &middot; Effort: Low
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-l-4 border-l-success border-zinc-800 bg-bg-card/60 p-4">
+                        <span className="rounded-md bg-success/15 px-2 py-0.5 text-[11px] font-semibold uppercase text-success">
+                          Quick Win
+                        </span>
+                        <p className="mt-2 text-sm font-semibold text-text-primary">
+                          Image alt text missing
+                        </p>
+                        <p className="mt-1 text-xs text-text-tertiary">
+                          Impact: Accessibility &middot; Effort: Low
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </ScaleIn>
           </div>
         </Container>
       </section>
 
-      {/* ── Category Ticker ── */}
+      {/* ── SECTION 1b: CATEGORY TICKER ── */}
       <CategoryTicker />
 
-      {/* ── Asymmetric evidence section ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-20" id="features">
+      {/* ── SECTION 2: LIVE PRODUCT BRIEFING ── */}
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="briefing">
         <Container>
-          <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-5 lg:gap-12 items-center">
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-5 lg:gap-16 items-center">
             <div className="lg:col-span-3">
               <Reveal>
-                <SectionHeading>14 categories. Hundreds of checks.</SectionHeading>
+                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  What you get
+                </span>
               </Reveal>
               <Reveal delay={0.1}>
-                <p className="mt-4 text-text-secondary leading-relaxed">
+                <SectionHeading>Every report is a complete diagnostic briefing</SectionHeading>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
                   From technical infrastructure to emerging search readiness — every check is
                   deterministic, evidence-based, and fully transparent. No black boxes, no AI
                   hallucinations, just real data from your actual page response.
                 </p>
               </Reveal>
               <Reveal delay={0.2}>
-                <ul className="mt-6 space-y-3">
-                  {[
-                    "On-page SEO — titles, meta, headings, content",
-                    "Technical SEO — canonical, robots, sitemaps, redirects",
-                    "Performance — PageSpeed, Core Web Vitals, opportunities",
-                    "Accessibility — alt text, ARIA, contrast, landmarks",
-                    "Security & Trust — HTTPS, certificates, safe browsing",
-                    "AEO & GEO — answer engine and generative engine readiness",
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm text-text-secondary">
+                <ul className="mt-8 space-y-4">
+                  {categoriesList.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-3.5 text-[15px] text-text-secondary"
+                    >
                       <svg
-                        width="16"
-                        height="16"
+                        width="18"
+                        height="18"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -403,163 +371,92 @@ export default function HomePage() {
               </Reveal>
             </div>
             <div className="lg:col-span-2">
-              <Reveal delay={0.3}>
-                <div className="rounded-xl border border-zinc-800 bg-bg-card p-6 text-center">
-                  <p className="text-5xl font-bold text-brand tabular-nums">85+</p>
-                  <p className="mt-1 text-sm text-text-secondary">Evidence-based checks</p>
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-left">
-                    <div>
-                      <p className="text-lg font-bold text-success tabular-nums">14</p>
-                      <p className="text-xs text-text-tertiary">Categories</p>
+              <ScaleIn delay={0.3}>
+                <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-bg-card to-bg-elevated p-8 text-center shadow-xl">
+                  <p className="text-7xl sm:text-8xl font-bold text-brand tabular-nums tracking-tight">
+                    85+
+                  </p>
+                  <p className="mt-2 text-base text-text-secondary">Evidence-based checks</p>
+                  <div className="mt-6 grid grid-cols-2 gap-4 text-left">
+                    <div className="rounded-xl bg-bg-card border border-zinc-800/60 p-4">
+                      <p className="text-2xl font-bold text-success tabular-nums">14</p>
+                      <p className="text-xs text-text-tertiary mt-1">Categories</p>
                     </div>
-                    <div>
-                      <p className="text-lg font-bold text-warning tabular-nums">5</p>
-                      <p className="text-xs text-text-tertiary">Score caps</p>
+                    <div className="rounded-xl bg-bg-card border border-zinc-800/60 p-4">
+                      <p className="text-2xl font-bold text-warning tabular-nums">5</p>
+                      <p className="text-xs text-text-tertiary mt-1">Score caps</p>
                     </div>
                   </div>
                 </div>
-              </Reveal>
+              </ScaleIn>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* ── Full-width report demonstration ── */}
-      <section className="border-t border-zinc-800 bg-bg-card/50 py-16 sm:py-20" id="demo">
+      {/* ── SECTION 3: EVIDENCE ENGINE ── */}
+      <section
+        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
+        id="evidence"
+      >
         <Container>
-          <Reveal>
-            <SectionHeading className="text-center">What you get in every report</SectionHeading>
-          </Reveal>
-          <Reveal delay={0.1} className="mx-auto mt-8 max-w-5xl">
-            <Card className="overflow-hidden p-0 shadow-xl shadow-black/20">
-              <div className="border-b border-zinc-800 bg-bg-elevated px-5 py-3 sm:px-6">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-critical/60" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
+          <div className="text-center max-w-3xl mx-auto">
+            <Reveal>
+              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                How it works
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <SectionHeading>The evidence engine behind every audit</SectionHeading>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                Every report is built from real page data, verified through our deterministic
+                analysis pipeline. No guesswork, no AI hallucinations.
+              </p>
+            </Reveal>
+          </div>
+          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                icon: "M21 21l-5.2-5.2",
+                title: "Fetch",
+                desc: "Server-side proxy fetch with security validation",
+              },
+              {
+                icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+                title: "Extract",
+                desc: "Parse across 14 SEO dimensions simultaneously",
+              },
+              {
+                icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+                title: "Verify",
+                desc: "Run hundreds of deterministic checks against real data",
+              },
+              {
+                icon: "M13 10V3L4 14h7v7l9-11h-7z",
+                title: "Score",
+                desc: "Weighted scoring with transparent methodology",
+              },
+            ].map((item, i) => (
+              <Reveal key={item.title} delay={0.1 * i}>
+                <Card hover className="text-center h-full">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      className="text-brand"
+                      aria-hidden="true"
+                    >
+                      <path d={item.icon} />
+                    </svg>
                   </div>
-                  <span className="ml-2 text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
-                    Sample &mdash; Example Report
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-5 p-5 sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
-                      SEO Health Score
-                    </p>
-                    <p className="text-4xl font-bold text-brand tabular-nums">78</p>
-                  </div>
-                  <div className="sm:text-right">
-                    <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
-                      Status
-                    </p>
-                    <p className="text-sm text-text-secondary">
-                      18 checks passed, 4 warnings, 2 failed
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <div className="rounded-lg border border-zinc-800 bg-bg-card p-4">
-                    <p className="text-xs text-text-tertiary uppercase tracking-wider">
-                      Performance
-                    </p>
-                    <p className="text-2xl font-bold text-success tabular-nums">92</p>
-                    <p className="mt-0.5 text-[10px] text-text-tertiary">Excellent</p>
-                  </div>
-                  <div className="rounded-lg border border-zinc-800 bg-bg-card p-4">
-                    <p className="text-xs text-text-tertiary uppercase tracking-wider">
-                      Accessibility
-                    </p>
-                    <p className="text-2xl font-bold text-warning tabular-nums">65</p>
-                    <p className="mt-0.5 text-[10px] text-text-tertiary">Needs Work</p>
-                  </div>
-                  <div className="rounded-lg border border-zinc-800 bg-bg-card p-4">
-                    <p className="text-xs text-text-tertiary uppercase tracking-wider">Security</p>
-                    <p className="text-2xl font-bold text-critical tabular-nums">42</p>
-                    <p className="mt-0.5 text-[10px] text-text-tertiary">Poor</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </Reveal>
-        </Container>
-      </section>
-
-      {/* ── Timeline / Step sequence ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-20" id="how-it-works">
-        <Container>
-          <Reveal>
-            <SectionHeading className="text-center">How the audit works</SectionHeading>
-          </Reveal>
-          <div className="mx-auto mt-8 max-w-4xl">
-            <div className="hidden sm:grid sm:grid-cols-3 sm:gap-0 sm:relative">
-              <div className="absolute left-0 right-0 top-8 h-0.5 bg-zinc-800" />
-              {howItWorks.map((item, i) => (
-                <Reveal
-                  key={item.step}
-                  delay={i * 0.15}
-                  className="relative flex flex-col items-center text-center px-4"
-                >
-                  <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-brand-muted text-xl font-bold text-brand border-2 border-brand-muted">
-                    {item.step}
-                  </div>
-                  <h3 className="mt-5 font-semibold text-text-primary">{item.title}</h3>
+                  <h3 className="mt-5 text-lg font-semibold text-text-primary">{item.title}</h3>
                   <p className="mt-2 text-sm text-text-secondary">{item.desc}</p>
-                </Reveal>
-              ))}
-            </div>
-            <div className="sm:hidden space-y-6">
-              {howItWorks.map((item, i) => (
-                <Reveal key={item.step} delay={i * 0.15}>
-                  <div className="flex gap-4 items-start">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-muted text-base font-bold text-brand">
-                      {item.step}
-                    </div>
-                    <div className="min-w-0 pt-1">
-                      <h3 className="font-semibold text-text-primary">{item.title}</h3>
-                      <p className="mt-1 text-sm text-text-secondary">{item.desc}</p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Why different (asymmetric grid) ── */}
-      <section className="border-t border-zinc-800 bg-bg-card/50 py-16 sm:py-20" id="why">
-        <Container>
-          <Reveal>
-            <SectionHeading className="text-center">Why this audit is different</SectionHeading>
-          </Reveal>
-          <div className="mx-auto mt-8 grid max-w-5xl gap-4 sm:grid-cols-2">
-            {differenceItems.map((item, i) => (
-              <Reveal key={item.title} delay={i * 0.08}>
-                <Card className="h-full" hover>
-                  <div className="flex gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-muted">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        className="text-brand"
-                        aria-hidden="true"
-                      >
-                        <path d={item.icon} />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-text-primary">{item.title}</h3>
-                      <p className="mt-1.5 text-sm text-text-secondary">{item.desc}</p>
-                    </div>
-                  </div>
                 </Card>
               </Reveal>
             ))}
@@ -567,31 +464,97 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── Split methodology + recommendations board ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-20" id="methodology">
+      {/* ── SECTION 4: DIAGNOSIS TIMELINE ── */}
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="timeline">
         <Container>
-          <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="text-center max-w-3xl mx-auto">
+            <Reveal>
+              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                The process
+              </span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <SectionHeading>How your audit comes together</SectionHeading>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                From URL submission to complete report in under 10 seconds.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="hidden sm:grid sm:grid-cols-4 sm:gap-0 sm:relative mt-14">
+            <div className="absolute left-0 right-0 top-10 h-0.5 bg-gradient-to-r from-zinc-800 via-brand/30 to-zinc-800" />
+            {timelineStages.map((item, i) => (
+              <Reveal
+                key={item.step}
+                delay={i * 0.12}
+                className="relative flex flex-col items-center text-center px-4"
+              >
+                <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-muted to-brand/[0.05] text-2xl font-bold text-brand border border-brand/20 shadow-lg shadow-brand/5">
+                  {item.step}
+                </div>
+                <div className="mt-2 text-xs font-medium text-brand/60 uppercase tracking-wider">
+                  {item.duration}
+                </div>
+                <h3 className="mt-3 text-lg font-semibold text-text-primary">{item.title}</h3>
+                <p className="mt-2 text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+              </Reveal>
+            ))}
+          </div>
+
+          <div className="sm:hidden mt-10 space-y-8">
+            {timelineStages.map((item, i) => (
+              <Reveal key={item.step} delay={i * 0.1}>
+                <div className="flex gap-5 items-start">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-muted text-xl font-bold text-brand border border-brand/20">
+                    {item.step}
+                  </div>
+                  <div className="min-w-0 pt-1">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-semibold text-text-primary">{item.title}</h3>
+                      <span className="text-xs text-brand/60">~{item.duration}</span>
+                    </div>
+                    <p className="mt-1.5 text-sm text-text-secondary">{item.desc}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── SECTION 5: PRIORITY PATHWAY ── */}
+      <section
+        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
+        id="priorities"
+      >
+        <Container>
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <Reveal>
-                <SectionHeading>Accuracy &amp; methodology</SectionHeading>
+                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Priority pathway
+                </span>
               </Reveal>
               <Reveal delay={0.1}>
-                <p className="mt-4 text-text-secondary leading-relaxed">
-                  Our audits use deterministic, open checks that verify each finding from the actual
-                  page content or response. We never fabricate data, hallucinate issues, or predict
-                  search rankings. Every result includes a transparency note explaining how the
-                  score was calculated.
+                <SectionHeading>From critical issues to quick wins</SectionHeading>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                  Every finding is categorized by severity and effort, so you know exactly where to
+                  start and what will have the most impact.
                 </p>
               </Reveal>
               <Reveal delay={0.2}>
                 <a
                   href="/methodology"
-                  className="mt-4 inline-flex items-center gap-1.5 text-brand hover:text-brand-hover underline font-medium"
+                  className="mt-6 inline-flex items-center gap-2 text-brand hover:text-brand-hover font-medium transition-colors"
                 >
                   Read full methodology
                   <svg
-                    width="14"
-                    height="14"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -603,90 +566,167 @@ export default function HomePage() {
                 </a>
               </Reveal>
             </div>
-            <div>
-              <Reveal delay={0.15}>
-                <SectionHeading>Prioritized recommendations</SectionHeading>
-              </Reveal>
-              <div className="mt-4 space-y-2">
-                {recommendations.map((r) => (
-                  <Reveal key={r.title} delay={0.1}>
-                    <Card hover>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[10px] font-medium uppercase ${r.badgeClass}`}
-                        >
-                          {r.badge}
-                        </span>
-                        <span className="text-xs text-text-tertiary">Effort: {r.effort}</span>
-                      </div>
-                      <p className="mt-1.5 text-sm font-medium text-text-primary">{r.title}</p>
-                      <p className="mt-0.5 text-xs text-text-secondary">{r.desc}</p>
-                    </Card>
-                  </Reveal>
-                ))}
-              </div>
+            <div className="space-y-3">
+              {priorityCards.map((r, i) => (
+                <Reveal key={r.title} delay={0.1 * i}>
+                  <div
+                    className="rounded-2xl border border-zinc-800/80 bg-gradient-to-r from-bg-card to-bg-elevated p-5 border-l-4 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg"
+                    style={{ borderLeftColor: "inherit" }}
+                  >
+                    <div
+                      className={`${r.badgeClass} inline-flex rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase`}
+                    >
+                      {r.badge}
+                    </div>
+                    <div className="mt-3 flex items-start justify-between gap-3">
+                      <p className="text-base font-semibold text-text-primary">{r.title}</p>
+                      <span className="shrink-0 text-xs text-text-tertiary">
+                        Effort: {r.effort}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-text-secondary">{r.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
             </div>
           </div>
         </Container>
       </section>
 
-      {/* ── AEO/GEO ── */}
-      <section className="border-t border-zinc-800 bg-bg-card/50 py-16 sm:py-20" id="aeo-geo">
+      {/* ── SECTION 6: PERFORMANCE INTELLIGENCE ── */}
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="performance">
         <Container>
-          <Reveal>
-            <SectionHeading className="text-center">
-              AEO &amp; GEO readiness explained
-            </SectionHeading>
-          </Reveal>
-          <div className="mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-2">
-            <Reveal delay={0.1}>
-              <Card className="h-full" hover>
-                <h3 className="font-semibold text-text-primary">
-                  <span className="text-brand mr-2">A</span>AEO Readiness
-                </h3>
-                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                  Answer Engine Optimization assesses how well your content answers direct
-                  questions. Pages with clear, structured answers are more likely to appear in voice
-                  search results and AI-generated summaries.
-                </p>
-              </Card>
+          <div className="text-center max-w-3xl mx-auto">
+            <Reveal>
+              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                Metrics that matter
+              </span>
             </Reveal>
-            <Reveal delay={0.2}>
-              <Card className="h-full" hover>
-                <h3 className="font-semibold text-text-primary">
-                  <span className="text-brand mr-2">G</span>GEO Readiness
-                </h3>
-                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                  Generative Engine Optimization evaluates how well your page is structured for
-                  AI-powered search platforms. This includes semantic HTML, clear entity signals,
-                  and consistent schema markup.
-                </p>
-              </Card>
+            <Reveal delay={0.1}>
+              <SectionHeading>Performance intelligence at a glance</SectionHeading>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                Category scores with confidence indicators, powered by real PageSpeed data and
+                deterministic rule checks.
+              </p>
             </Reveal>
           </div>
-          <Reveal delay={0.3}>
-            <p className="mx-auto mt-6 max-w-xl text-center text-sm text-text-tertiary">
-              Both scores are informational and not ranking predictors. They help you prepare for
-              emerging search paradigms.
-            </p>
-          </Reveal>
+          <div className="mx-auto mt-14 max-w-4xl grid gap-5 sm:grid-cols-2">
+            {metricsData.map((m, i) => (
+              <Reveal key={m.label} delay={0.1 * i}>
+                <Card hover>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm font-medium text-text-tertiary uppercase tracking-wider">
+                      {m.label}
+                    </p>
+                    <p className={`text-3xl font-bold tabular-nums ${m.color}`}>{m.value}</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                    <motion.div
+                      className={`h-full rounded-full ${m.barColor}`}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${m.value}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, delay: 0.3 + i * 0.1, ease: EASE_OUT_EXPO }}
+                    />
+                  </div>
+                  <p className="mt-2 text-xs text-text-tertiary">
+                    {m.value >= 90
+                      ? "Excellent"
+                      : m.value >= 70
+                        ? "Good"
+                        : m.value >= 50
+                          ? "Needs Work"
+                          : "Poor"}
+                  </p>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
         </Container>
       </section>
 
-      {/* ── Calmer privacy section ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-20" id="privacy">
+      {/* ── SECTION 7: AEO/GEO READINESS ── */}
+      <section
+        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
+        id="aeo-geo"
+      >
         <Container>
-          <div className="mx-auto max-w-3xl">
-            <Reveal>
-              <SectionHeading className="text-center">Privacy &amp; security</SectionHeading>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="mt-4 text-text-secondary leading-relaxed text-center">
-                Your audit data stays private. We never store, share, or sell the URLs you submit.
-                Results are delivered directly to your browser with no server-side persistence.
+          <div className="mx-auto max-w-5xl">
+            <div className="text-center max-w-3xl mx-auto">
+              <Reveal>
+                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Future-ready
+                </span>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <SectionHeading>Preparing for the next era of search</SectionHeading>
+              </Reveal>
+            </div>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2">
+              <ScaleIn delay={0.1}>
+                <Card hover className="h-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
+                      <span className="text-2xl font-bold text-brand">A</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-text-primary">AEO Readiness</h3>
+                  </div>
+                  <p className="text-[15px] text-text-secondary leading-relaxed">
+                    Answer Engine Optimization assesses how well your content answers direct
+                    questions. Pages with clear, structured answers are more likely to appear in
+                    voice search results and AI-generated summaries.
+                  </p>
+                </Card>
+              </ScaleIn>
+              <ScaleIn delay={0.2}>
+                <Card hover className="h-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
+                      <span className="text-2xl font-bold text-brand">G</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-text-primary">GEO Readiness</h3>
+                  </div>
+                  <p className="text-[15px] text-text-secondary leading-relaxed">
+                    Generative Engine Optimization evaluates how well your page is structured for
+                    AI-powered search platforms. This includes semantic HTML, clear entity signals,
+                    and consistent schema markup.
+                  </p>
+                </Card>
+              </ScaleIn>
+            </div>
+            <Reveal delay={0.3}>
+              <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-text-tertiary">
+                Both scores are informational and not ranking predictors. They help you prepare for
+                emerging search paradigms.
               </p>
             </Reveal>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          </div>
+        </Container>
+      </section>
+
+      {/* ── SECTION 8: PRIVACY & SECURITY ── */}
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="privacy">
+        <Container>
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center max-w-3xl mx-auto">
+              <Reveal>
+                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Trust
+                </span>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <SectionHeading>Privacy &amp; security built in</SectionHeading>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                  Your audit data stays private. We never store, share, or sell the URLs you submit.
+                  Results are delivered directly to your browser with no server-side persistence.
+                </p>
+              </Reveal>
+            </div>
+            <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-3">
               {[
                 {
                   title: "No storage",
@@ -701,19 +741,33 @@ export default function HomePage() {
                   desc: "Every score includes a methodology note explaining how it was calculated.",
                 },
               ].map((item) => (
-                <Reveal key={item.title} delay={0.1}>
-                  <div className="rounded-lg border border-zinc-800 bg-bg-card p-4 text-center">
-                    <p className="text-sm font-medium text-text-primary">{item.title}</p>
-                    <p className="mt-1 text-xs text-text-tertiary">{item.desc}</p>
-                  </div>
-                </Reveal>
+                <StaggerItem key={item.title}>
+                  <Card className="h-full text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-brand-muted border border-brand/10 mb-4">
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className="text-brand"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                    </div>
+                    <p className="text-base font-semibold text-text-primary">{item.title}</p>
+                    <p className="mt-2 text-sm text-text-secondary">{item.desc}</p>
+                  </Card>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerGroup>
             <Reveal delay={0.2}>
-              <p className="mt-6 text-center">
+              <p className="mt-8 text-center">
                 <a
                   href="/privacy"
-                  className="text-brand hover:text-brand-hover underline font-medium"
+                  className="text-brand hover:text-brand-hover font-medium transition-colors"
                 >
                   Read privacy policy
                 </a>
@@ -723,15 +777,18 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── Stronger branded closing CTA ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-24" id="about">
+      {/* ── SECTION 9: NEXORA EXPERT SUPPORT ── */}
+      <section
+        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
+        id="about"
+      >
         <Container>
-          <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <Reveal>
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-muted mb-6">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-muted to-brand/[0.05] border border-brand/20 mb-8 shadow-lg shadow-brand/5">
                 <svg
-                  width="28"
-                  height="28"
+                  width="36"
+                  height="36"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className="text-brand"
@@ -740,76 +797,110 @@ export default function HomePage() {
                   <path d="M12 2L2 12l10 10 10-10L12 2z" />
                 </svg>
               </div>
-              <SectionHeading>Built by Nexora Creation</SectionHeading>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="mt-4 text-text-secondary leading-relaxed">
+              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                Built by Nexora Creation
+              </span>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <SectionHeading>Expert support when you need it</SectionHeading>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 We build premium digital products. This free SEO tool is our way of demonstrating
                 what careful engineering and thoughtful design can achieve.
               </p>
             </Reveal>
-            <Reveal delay={0.2}>
-              <a
-                href="https://nexora.de"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3 text-sm font-medium text-black hover:bg-brand-hover transition-colors"
-              >
-                Visit Nexora Creation
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  aria-hidden="true"
+            <Reveal delay={0.25}>
+              <div className="mt-10 flex flex-wrap justify-center gap-4">
+                <a
+                  href="https://nexora.de"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 rounded-2xl bg-brand px-8 py-4 text-base font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-xl shadow-brand/25"
                 >
-                  <path d="M7 17l9.2-9.2M17 17V7H7" />
-                </svg>
-              </a>
+                  Visit Nexora Creation
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 17l9.2-9.2M17 17V7H7" />
+                  </svg>
+                </a>
+                <a
+                  href="/methodology"
+                  className="inline-flex items-center gap-2.5 rounded-2xl border border-zinc-700 bg-transparent px-8 py-4 text-base font-medium text-text-primary hover:bg-bg-tertiary transition-all duration-200"
+                >
+                  View Methodology
+                </a>
+              </div>
             </Reveal>
           </div>
         </Container>
       </section>
 
       {/* ── FAQ ── */}
-      <section className="border-t border-zinc-800 bg-bg-card/50 py-16 sm:py-20" id="faq">
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="faq">
         <Container>
-          <Reveal>
-            <SectionHeading className="text-center">Frequently asked questions</SectionHeading>
-          </Reveal>
-          <div className="mx-auto mt-8 max-w-3xl space-y-2">
-            {faqs.map((faq, i) => (
-              <Reveal key={faq.q} delay={i * 0.05}>
-                <details className="group rounded-lg border border-zinc-800 bg-bg-card transition-colors open:border-zinc-600 hover:border-zinc-700">
-                  <summary className="flex cursor-pointer items-center justify-between px-4 py-3.5 text-sm font-medium text-text-primary">
-                    {faq.q}
-                    <span className="ml-2 shrink-0 text-text-tertiary transition-transform duration-200 group-open:rotate-180">
-                      <ChevronDown />
-                    </span>
-                  </summary>
-                  <div className="border-t border-zinc-800 px-4 pb-3.5 pt-2.5">
-                    <p className="text-sm text-text-secondary leading-relaxed">{faq.a}</p>
-                  </div>
-                </details>
+          <div className="mx-auto max-w-3xl">
+            <div className="text-center mb-12">
+              <Reveal>
+                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Questions?
+                </span>
               </Reveal>
-            ))}
+              <Reveal delay={0.1}>
+                <SectionHeading>Frequently asked questions</SectionHeading>
+              </Reveal>
+            </div>
+            <div className="space-y-3">
+              {faqs.map((faq, i) => (
+                <Reveal key={faq.q} delay={i * 0.04}>
+                  <details className="group rounded-2xl border border-zinc-800/80 bg-gradient-to-r from-bg-card to-bg-elevated transition-all duration-200 open:border-zinc-700 hover:border-zinc-700/80 overflow-hidden">
+                    <summary className="flex cursor-pointer items-center justify-between px-6 py-4 sm:py-5 text-[15px] sm:text-base font-medium text-text-primary">
+                      {faq.q}
+                      <span className="ml-3 shrink-0 text-text-tertiary transition-transform duration-300 group-open:rotate-180">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          aria-hidden="true"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </span>
+                    </summary>
+                    <div className="border-t border-zinc-800/60 px-6 pb-5 pt-3">
+                      <p className="text-[15px] text-text-secondary leading-relaxed">{faq.a}</p>
+                    </div>
+                  </details>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
 
-      {/* ── Footer CTA ── */}
-      <section className="border-t border-zinc-800 py-16 sm:py-20" id="cta">
+      {/* ── FINAL CTA ── */}
+      <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="cta">
         <Container>
-          <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <Reveal>
-              <p className="text-xl font-semibold text-text-primary">
+              <p className="text-2xl sm:text-3xl font-bold text-text-primary">
                 Need help fixing these issues?
               </p>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="mt-3 text-text-secondary leading-relaxed">
+              <p className="mt-4 text-[17px] text-text-secondary leading-relaxed max-w-xl mx-auto">
                 Nexora Creation provides hands-on SEO technical services. Let us help you implement
                 the improvements your site needs.
               </p>
@@ -819,7 +910,7 @@ export default function HomePage() {
                 href="https://nexora.de"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-6 py-3 text-sm font-medium text-text-primary hover:bg-bg-hover transition-colors"
+                className="mt-8 inline-flex items-center gap-2.5 rounded-2xl border border-zinc-700 bg-transparent px-8 py-4 text-base font-medium text-text-primary hover:bg-bg-tertiary transition-all duration-200"
               >
                 Talk to Nexora Creation
               </a>

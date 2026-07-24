@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { Button } from "@/components/ui/Button";
+import { motion } from "motion/react";
 
 const formSchema = z.object({
   url: z
@@ -48,20 +48,17 @@ export function AuditForm() {
     [url, keyword, router],
   );
 
-  const inputBase =
-    "w-full rounded-xl border bg-bg-card px-4 py-[13px] text-base sm:text-[16px] text-text-primary placeholder:text-text-tertiary transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 border-zinc-700 hover:border-zinc-500";
-
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 w-full">
       <div className="flex flex-col gap-1.5">
         <label htmlFor="url" className="sr-only">
           Website URL
         </label>
         <div className="relative">
-          <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">
+          <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-text-tertiary">
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -78,7 +75,7 @@ export function AuditForm() {
             value={url}
             onChange={(e) => {
               setUrl(e.target.value);
-              if (errors.url) setErrors((prev) => ({ ...prev, url: undefined }));
+              if (errors.url) setErrors((p) => ({ ...p, url: undefined }));
             }}
             placeholder="https://example.com"
             required
@@ -88,11 +85,12 @@ export function AuditForm() {
             autoFocus
             aria-invalid={errors.url ? "true" : undefined}
             aria-describedby={errors.url ? "url-error" : undefined}
-            className={`${inputBase} pl-11`}
+            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/80 pl-13 pr-5 py-4 text-[17px] text-text-primary placeholder:text-text-tertiary/60 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
+            style={{ paddingLeft: "3.25rem" }}
           />
         </div>
         {errors.url && (
-          <p id="url-error" className="text-xs text-critical" role="alert">
+          <p id="url-error" className="text-sm text-critical" role="alert">
             {errors.url}
           </p>
         )}
@@ -103,10 +101,10 @@ export function AuditForm() {
           Target keyword (optional)
         </label>
         <div className="relative">
-          <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">
+          <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-text-tertiary">
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -123,31 +121,35 @@ export function AuditForm() {
             value={keyword}
             onChange={(e) => {
               setKeyword(e.target.value);
-              if (errors.keyword) setErrors((prev) => ({ ...prev, keyword: undefined }));
+              if (errors.keyword) setErrors((p) => ({ ...p, keyword: undefined }));
             }}
             placeholder="Target keyword (optional)"
             disabled={submitting}
             autoComplete="off"
             aria-invalid={errors.keyword ? "true" : undefined}
-            className={`${inputBase} pl-11`}
+            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/60 pl-13 pr-5 py-4 text-[17px] text-text-primary placeholder:text-text-tertiary/60 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
+            style={{ paddingLeft: "3.25rem" }}
           />
         </div>
         {errors.keyword && (
-          <p className="text-xs text-critical" role="alert">
+          <p className="text-sm text-critical" role="alert">
             {errors.keyword}
           </p>
         )}
       </div>
 
-      <Button
+      <motion.button
         type="submit"
         disabled={submitting}
-        className="w-full py-[13px] text-base min-h-[48px]"
+        className="w-full rounded-2xl bg-brand px-8 py-4 text-[17px] font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-xl shadow-brand/25 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+        whileHover={submitting ? {} : { scale: 1.01 }}
+        whileTap={submitting ? {} : { scale: 0.98 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       >
         {submitting ? (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center justify-center gap-3">
             <svg
-              className="h-4 w-4 animate-spin"
+              className="h-5 w-5 animate-spin"
               viewBox="0 0 24 24"
               fill="none"
               aria-hidden="true"
@@ -171,7 +173,7 @@ export function AuditForm() {
         ) : (
           "Analyze Website"
         )}
-      </Button>
+      </motion.button>
     </form>
   );
 }

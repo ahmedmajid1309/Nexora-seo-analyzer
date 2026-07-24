@@ -1,33 +1,30 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+const EASE_OUT_BACK = [0.34, 1.56, 0.64, 1] as const;
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
-  as?: "div" | "span" | "section" | "h1" | "h2" | "h3" | "p";
 };
 
-export function Reveal({ children, className, delay = 0, as }: RevealProps) {
+export function Reveal({ children, className, delay = 0 }: RevealProps) {
   const reduced = useReducedMotion();
-  const Component = as ? motion[as] : motion.div;
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
+  if (reduced) return <div className={className}>{children}</div>;
   return (
-    <Component
+    <motion.div
       className={className}
-      initial={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, delay, ease: EASE_OUT_EXPO }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.55, delay, ease: EASE_OUT_EXPO }}
     >
       {children}
-    </Component>
+    </motion.div>
   );
 }
 
@@ -37,19 +34,17 @@ type StaggerGroupProps = {
   staggerDelay?: number;
 };
 
-export function StaggerGroup({ children, className, staggerDelay = 0.08 }: StaggerGroupProps) {
+export function StaggerGroup({ children, className, staggerDelay = 0.1 }: StaggerGroupProps) {
   const reduced = useReducedMotion();
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
+  if (reduced) return <div className={className}>{children}</div>;
   return (
     <motion.div
       className={className}
-      initial="visible"
+      initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: "-60px" }}
       variants={{
-        visible: { transition: { staggerChildren: staggerDelay } },
+        visible: { transition: { staggerChildren: staggerDelay, delayChildren: 0.1 } },
       }}
     >
       {children}
@@ -59,15 +54,13 @@ export function StaggerGroup({ children, className, staggerDelay = 0.08 }: Stagg
 
 export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
   const reduced = useReducedMotion();
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
+  if (reduced) return <div className={className}>{children}</div>;
   return (
     <motion.div
       className={className}
       variants={{
-        hidden: { opacity: 1, y: 0 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT_EXPO } },
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT_EXPO } },
       }}
     >
       {children}
@@ -75,56 +68,92 @@ export function StaggerItem({ children, className }: { children: ReactNode; clas
   );
 }
 
-type AnimatedNumberProps = {
-  value: number;
+type LineRevealProps = {
+  children: ReactNode;
   className?: string;
+  delay?: number;
 };
 
-export function AnimatedNumber({ value, className }: AnimatedNumberProps) {
+export function LineReveal({ children, className, delay = 0 }: LineRevealProps) {
   const reduced = useReducedMotion();
-  if (reduced) {
-    return <span className={className}>{value}</span>;
-  }
+  if (reduced) return <div className={className}>{children}</div>;
   return (
-    <motion.span
-      className={className}
-      initial={{ opacity: 1 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-    >
-      <motion.span
-        initial={{ opacity: 1 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.01 }}
+    <div className={`relative overflow-hidden ${className ?? ""}`}>
+      <motion.div
+        initial={{ y: "100%" }}
+        whileInView={{ y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.6, delay, ease: EASE_OUT_EXPO }}
       >
-        {value}
-      </motion.span>
-    </motion.span>
+        {children}
+      </motion.div>
+    </div>
   );
 }
 
-type CollapsibleMotionProps = {
-  isOpen: boolean;
-  children: ReactNode;
+type AnimatedNumberProps = {
+  value: number;
   className?: string;
+  suffix?: string;
 };
 
-export function CollapsibleMotion({ isOpen, children, className }: CollapsibleMotionProps) {
+export function AnimatedNumber({ value, className, suffix = "" }: AnimatedNumberProps) {
   const reduced = useReducedMotion();
-  if (reduced) {
-    return <div className={`${className ?? ""} ${isOpen ? "" : "hidden"}`}>{children}</div>;
-  }
+  const [display, setDisplay] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (reduced) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const duration = 1200;
+          const steps = 30;
+          const increment = value / steps;
+          let current = 0;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= value) {
+              setDisplay(value);
+              clearInterval(timer);
+            } else {
+              setDisplay(Math.round(current));
+            }
+          }, duration / steps);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [value, reduced]);
+
+  return (
+    <span ref={ref} className={className}>
+      {reduced ? value : display}
+      {suffix}
+    </span>
+  );
+}
+
+type ScaleInProps = {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+};
+
+export function ScaleIn({ children, className, delay = 0 }: ScaleInProps) {
+  const reduced = useReducedMotion();
+  if (reduced) return <div className={className}>{children}</div>;
   return (
     <motion.div
       className={className}
-      initial={false}
-      animate={{
-        height: isOpen ? "auto" : 0,
-        opacity: isOpen ? 1 : 0,
-      }}
-      transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
-      style={{ overflow: "hidden" }}
+      initial={{ opacity: 0, scale: 0.92 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.5, delay, ease: EASE_OUT_BACK }}
     >
       {children}
     </motion.div>

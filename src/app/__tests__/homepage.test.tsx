@@ -49,7 +49,8 @@ describe("HomePage", () => {
 
   it("renders every audit checks section", () => {
     render(<HomePage />);
-    expect(screen.getByText(/14 categories\. Hundreds/i)).toBeInTheDocument();
+    expect(screen.getByText(/85\+/)).toBeInTheDocument();
+    expect(screen.getByText(/Evidence-based checks/i)).toBeInTheDocument();
   });
 
   it("renders methodology transparency section", () => {

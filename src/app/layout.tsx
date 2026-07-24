@@ -24,15 +24,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nexora SEO Analyzer — Free, No-Signup SEO Audit Tool",
+  title: "Nexora SEO Analyzer — Free, Evidence-Based SEO Audit Tool",
   description:
-    "Free, no-signup SEO audit tool. Enter your URL and receive a detailed, evidence-based report with actionable recommendations.",
+    "Free, no-signup SEO audit tool. Enter any URL and receive a detailed, evidence-based forensic report with prioritized, actionable recommendations across 14 categories.",
   robots: {
     index: true,
     follow: true,
   },
   icons: {
     icon: "/icon.svg",
+  },
+  openGraph: {
+    title: "Nexora SEO Analyzer — Free, No-Signup SEO Audit Tool",
+    description:
+      "Enter any URL and receive a detailed, evidence-based forensic report with prioritized, actionable recommendations across 14 categories.",
+    url: "https://nexora-seo-analyzer.vercel.app",
+    siteName: "Nexora SEO Analyzer",
+    type: "website",
   },
 };
 
@@ -49,7 +57,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col bg-bg-primary antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-black focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-brand focus:px-5 focus:py-3 focus:text-black focus:shadow-2xl focus:font-medium"
         >
           Skip to main content
         </a>
