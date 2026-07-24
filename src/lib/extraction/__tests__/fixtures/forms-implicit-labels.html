@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Implicit Labels</title>
+  </head>
+  <body>
+    <form action="/signup">
+      <label
+        >First Name:
+        <input type="text" name="first_name" required />
+      </label>
+      <label
+        >Last Name:
+        <input type="text" name="last_name" />
+      </label>
+      <label> <input type="checkbox" name="agree" /> I agree </label>
+      <input type="text" name="search" aria-label="Search query" />
+      <input type="text" name="search2" aria-labelledby="search-label" />
+      <span id="search-label">Search Label</span>
+      <input type="text" name="no-label" />
+      <button>Sign Up</button>
+    </form>
+  </body>
+</html>

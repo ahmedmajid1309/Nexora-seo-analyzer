@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Valid Page - Nexora SEO Analyzer</title>
+    <meta
+      name="description"
+      content="A complete, modern HTML5 page used for testing the Nexora SEO Analyzer extraction capabilities."
+    />
+    <meta name="keywords" content="seo, analyzer, html5, testing" />
+    <meta name="author" content="Nexora" />
+    <link rel="canonical" href="https://example.com/modern-valid" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Modern Valid Page",
+        "description": "A complete HTML5 test page",
+        "url": "https://example.com/modern-valid"
+      }
+    </script>
+    <meta property="og:title" content="Modern Valid Page" />
+    <meta property="og:description" content="A complete test page" />
+    <meta property="og:image" content="https://example.com/og-image.png" />
+    <meta property="og:url" content="https://example.com/modern-valid" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Modern Valid Page" />
+    <meta name="twitter:description" content="A complete test page" />
+    <meta name="twitter:image" content="https://example.com/twitter-image.png" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" crossorigin="anonymous" />
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Modern Valid Page</h1>
+      <p>This is a complete, valid HTML5 page used for integration testing.</p>
+
+      <section id="content" aria-labelledby="content-heading">
+        <h2 id="content-heading">Content Section</h2>
+        <article>
+          <h3>First Article</h3>
+          <p>This is the first article with <a href="https://example.com/article1">a link</a>.</p>
+          <img
+            src="https://example.com/image1.jpg"
+            alt="First image description"
+            width="800"
+            height="600"
+          />
+        </article>
+        <article>
+          <h3>Second Article</h3>
+          <p>This is the second article with <a href="/relative-link">a relative link</a>.</p>
+          <img src="/images/photo.png" alt="Second image description" loading="lazy" />
+        </article>
+      </section>
+
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        <h3>What is this page?</h3>
+        <p>It is a test fixture for the Nexora SEO Analyzer.</p>
+        <h3>Why was it created?</h3>
+        <p>To validate the extraction engine works correctly with valid HTML.</p>
+      </section>
+
+      <section id="lists">
+        <h2>Lists</h2>
+        <ul>
+          <li>Unordered item 1</li>
+          <li>Unordered item 2</li>
+        </ul>
+        <ol>
+          <li>Ordered item 1</li>
+          <li>Ordered item 2</li>
+        </ol>
+        <dl>
+          <dt>Term 1</dt>
+          <dd>Definition 1</dd>
+        </dl>
+      </section>
+
+      <section id="data">
+        <h2>Data</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Item 1</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>Item 2</td>
+              <td>200</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="media">
+        <h2>Media</h2>
+        <video controls width="640">
+          <source src="/media/video.mp4" type="video/mp4" />
+          <track kind="captions" src="/media/captions.vtt" srclang="en" />
+        </video>
+        <audio controls>
+          <source src="/media/audio.mp3" type="audio/mpeg" />
+        </audio>
+      </section>
+
+      <form action="/submit" method="post" autocomplete="on">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" required />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Your message"></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Nexora. All rights reserved.</p>
+      <a href="#content" class="skip-link">Skip to content</a>
+    </footer>
+
+    <script src="/scripts/app.js" defer></script>
+    <script src="/scripts/analytics.js" async></script>
+  </body>
+</html>

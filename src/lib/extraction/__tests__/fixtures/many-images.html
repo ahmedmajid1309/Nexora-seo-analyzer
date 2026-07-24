@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Many Images</title>
+  </head>
+  <body>
+    <img
+      src="/images/photo1.jpg"
+      alt="Photo one"
+      width="800"
+      height="600"
+      loading="lazy"
+      decoding="async"
+      fetchpriority="high"
+      referrerpolicy="no-referrer"
+    />
+    <img src="/images/photo2.jpg" alt="Photo two" width="400" height="300" loading="eager" />
+    <img
+      src="https://cdn.example.com/photo3.jpg"
+      alt="CDN photo"
+      sizes="(max-width: 600px) 100vw, 50vw"
+      srcset="
+        https://cdn.example.com/photo3-small.jpg 400w,
+        https://cdn.example.com/photo3-large.jpg 800w
+      "
+    />
+    <img src="/images/no-alt.jpg" width="200" height="200" />
+    <img src="" alt="" />
+    <picture>
+      <img src="/images/picture-child.jpg" alt="Picture child" />
+    </picture>
+    <input type="image" src="/images/submit-btn.png" alt="Submit" />
+    <video poster="/images/video-poster.jpg" width="640" height="360"></video>
+  </body>
+</html>

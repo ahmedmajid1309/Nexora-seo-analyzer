@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Accessibility Signals</title>
+  </head>
+  <body>
+    <img src="/a.jpg" alt="Has alt" />
+    <img src="/b.jpg" />
+    <img src="/c.jpg" alt="" />
+    <button>Click Me</button>
+    <button aria-label="Close">X</button>
+    <button></button>
+    <input type="submit" value="Send" />
+    <input type="text" id="named-input" />
+    <label for="named-input">Name:</label>
+    <input type="email" id="unlabeled-input" />
+    <input type="text" aria-label="Search" />
+    <a href="/page1">Visible link</a>
+    <a href="/page2" aria-label="Hidden link"></a>
+    <a href="/page3"></a>
+    <a href="#skip">Skip to content</a>
+    <a href="#main">Skip to main</a>
+    <table>
+      <tr>
+        <th>Header cell</th>
+        <td>Data cell</td>
+      </tr>
+    </table>
+    <div role="navigation">Nav</div>
+    <div role="button">Clickable</div>
+    <div role="button">Another</div>
+    <iframe src="/frame1"></iframe>
+    <iframe src="/frame2" title="Embedded frame"></iframe>
+    <video><track kind="captions" /></video>
+    <audio></audio>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  </body>
+</html>

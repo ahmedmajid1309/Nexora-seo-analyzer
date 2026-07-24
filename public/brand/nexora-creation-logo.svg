@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 50" fill="none">
+  <defs>
+    <linearGradient id="diamond-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F4CA57"/>
+      <stop offset="100%" stop-color="#D4942B"/>
+    </linearGradient>
+    <linearGradient id="diamond-inner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F7D97A"/>
+      <stop offset="100%" stop-color="#E6A82C"/>
+    </linearGradient>
+  </defs>
+  <!-- Diamond icon -->
+  <path d="M18 6L6 25l12 19 12-19L18 6z" fill="url(#diamond-grad)" opacity="0.12"/>
+  <path d="M18 10l-8 15 8 12 8-12-8-15z" fill="url(#diamond-inner)"/>
+  <path d="M18 10l-8 15 8 12 8-12-8-15z" fill="url(#diamond-grad)" opacity="0.3" clip-path="inset(0 50% 0 0)"/>
+  <rect x="15.5" y="22" width="5" height="6" rx="1.5" fill="#0D0D0D"/>
+  <!-- Nexora wordmark -->
+  <text x="44" y="23" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" letter-spacing="-0.4">Nexora</text>
+  <text x="120" y="23" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-size="18" font-weight="400" fill="#888888" letter-spacing="-0.15">Creation</text>
+  <!-- Product label -->
+  <text x="44" y="39" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-size="10" font-weight="500" fill="#F4CA57" letter-spacing="1.8">SEO ANALYZER</text>
+</svg>

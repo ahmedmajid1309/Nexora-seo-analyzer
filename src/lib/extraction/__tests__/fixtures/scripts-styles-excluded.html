@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Scripts & Styles Excluded</title>
+    <style>
+      body {
+        color: red;
+      }
+    </style>
+    <script>
+      console.log("hidden");
+    </script>
+  </head>
+  <body>
+    <p>Visible paragraph text.</p>
+    <script type="text/javascript">
+      var x = 1;
+    </script>
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
+    <noscript>No script fallback</noscript>
+    <svg><text>SVG text</text></svg>
+    <p>More visible content.</p>
+  </body>
+</html>

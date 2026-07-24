@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Sensitive Form</title>
+  </head>
+  <body>
+    <form action="/login" method="post">
+      <label for="user">User:</label>
+      <input type="text" id="user" name="username" />
+      <label for="pass">Password:</label>
+      <input type="password" id="pass" name="password" />
+      <input type="hidden" name="csrf_token" value="abc123" />
+      <input type="text" name="api_key" value="sk-xxx" />
+      <input type="text" name="public_info" value="not-sensitive" />
+      <input type="file" name="upload" />
+      <button type="submit">Login</button>
+    </form>
+  </body>
+</html>
