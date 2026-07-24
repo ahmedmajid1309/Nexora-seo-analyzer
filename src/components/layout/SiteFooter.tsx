@@ -6,15 +6,20 @@ export function SiteFooter() {
     <footer className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-primary to-bg-card no-print">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:px-10 lg:px-12">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-between">
-          <Link href="/" className="flex items-center gap-3 shrink-0">
-            <Image
-              src="/brand/nexora-logo-main.svg"
-              alt="Nexora SEO Analyzer"
-              width={160}
-              height={44}
-              className="h-9 w-auto"
-              style={{ objectFit: "contain", width: "auto", height: "auto" }}
-            />
+          <Link
+            href="/"
+            className="inline-flex shrink-0 items-center"
+            aria-label="Nexora SEO Analyzer homepage"
+          >
+            <span className="relative block h-[34px] w-[124px] shrink-0 sm:h-[38px] sm:w-[140px] lg:h-[42px] lg:w-[168px]">
+              <Image
+                src="/brand/nexora-logo-main.svg"
+                alt="Nexora SEO Analyzer"
+                fill
+                sizes="(max-width: 639px) 124px, (max-width: 1023px) 140px, 168px"
+                className="object-contain object-center sm:object-left"
+              />
+            </span>
           </Link>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
             <Link
@@ -49,7 +54,7 @@ export function SiteFooter() {
           <p className="text-sm text-text-tertiary">
             &copy; {new Date().getFullYear()} Nexora Creation. All rights reserved.
           </p>
-          <p className="text-xs text-text-tertiary/40">Built with precision. Zero compromises.</p>
+          <p className="text-sm text-text-tertiary">Built with precision. Zero compromises.</p>
         </div>
       </div>
     </footer>
