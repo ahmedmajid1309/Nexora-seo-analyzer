@@ -59,21 +59,22 @@ export function SiteHeader() {
       />
 
       <nav
-        className={`pointer-events-auto flex items-center justify-between rounded-2xl px-5 sm:px-6 transition-all duration-[400ms] max-w-[1320px] w-full mx-4 ${pillClasses}`}
+        className={`pointer-events-auto flex items-center justify-between rounded-2xl px-5 sm:px-6 transition-all duration-[400ms] max-w-[1320px] w-[calc(100%-2rem)] mx-auto ${pillClasses}`}
         style={{ height: `${HEADER_HEIGHT}px`, marginTop: `${HEADER_MARGIN_TOP}px` }}
         aria-label="Main navigation"
       >
-        <Link href="/" className="flex items-center gap-3 shrink-0">
-          <Image
-            src="/brand/nexora-logo-main.svg"
-            alt="Nexora SEO Analyzer"
-            width={160}
-            height={44}
-            className="h-8 sm:h-10 w-auto"
-            priority
-            style={{ objectFit: "contain", width: "auto", height: "auto" }}
-          />
-        </Link>
+        <div className="relative h-[34px] w-[124px] shrink-0 sm:h-[38px] sm:w-[140px] md:h-[42px] md:w-[154px] lg:w-[168px]">
+          <Link href="/" className="block h-full w-full">
+            <Image
+              src="/brand/nexora-logo-main.svg"
+              alt="Nexora SEO Analyzer"
+              fill
+              priority
+              sizes="(max-width: 639px) 124px, (max-width: 767px) 140px, (max-width: 1023px) 154px, 168px"
+              className="object-contain object-left"
+            />
+          </Link>
+        </div>
 
         <div className="hidden md:flex items-center gap-1">
           <Link
