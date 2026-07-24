@@ -110,7 +110,7 @@ export function ScoreCard({ label, score, confidence, source, info, className }:
           )}
         </p>
         {source && (
-          <span className="shrink-0 rounded bg-brand-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brand">
+          <span className="shrink-0 rounded bg-brand-muted px-1.5 py-0.5 text-[13px] font-medium uppercase tracking-wider text-brand">
             {source === "pagespeed-mobile"
               ? "Mobile"
               : source === "pagespeed-desktop-fallback"

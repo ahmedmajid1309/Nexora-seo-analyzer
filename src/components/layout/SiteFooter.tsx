@@ -8,10 +8,10 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-between">
           <Link href="/" className="flex items-center gap-3 shrink-0">
             <Image
-              src="/brand/nexora-creation-logo.svg"
-              alt="Nexora Creation — SEO Analyzer"
+              src="/brand/nexora-logo-main.svg"
+              alt="Nexora SEO Analyzer"
               width={160}
-              height={34}
+              height={44}
               className="h-9 w-auto"
               style={{ objectFit: "contain", width: "auto", height: "auto" }}
             />
@@ -46,7 +46,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-10 pt-8 border-t border-zinc-800/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-text-tertiary/60">
+          <p className="text-sm text-text-tertiary">
             &copy; {new Date().getFullYear()} Nexora Creation. All rights reserved.
           </p>
           <p className="text-xs text-text-tertiary/40">Built with precision. Zero compromises.</p>

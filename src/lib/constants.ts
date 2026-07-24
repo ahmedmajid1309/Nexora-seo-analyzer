@@ -1,0 +1,3 @@
+export const HEADER_HEIGHT = 76;
+export const HEADER_MARGIN_TOP = 14;
+export const HEADER_OFFSET = HEADER_HEIGHT + HEADER_MARGIN_TOP;

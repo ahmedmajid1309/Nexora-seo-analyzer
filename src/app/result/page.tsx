@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ScoreCard } from "@/components/report/ScoreCard";
+import { HEADER_OFFSET } from "@/lib/constants";
 import { FindingCard } from "@/components/report/FindingCard";
 import { FindingFilters } from "@/components/report/FindingFilters";
 import { PerformanceSection } from "@/components/report/PerformanceSection";
@@ -13,7 +14,6 @@ import { SerpPreview } from "@/components/report/SerpPreview";
 import { SocialPreview } from "@/components/report/SocialPreview";
 import type { AuditResponse, AuditResponseData } from "@/lib/audit/types";
 
-const HEADER_OFFSET = 84;
 const NAV_OFFSET = 48;
 const SCROLL_MT = HEADER_OFFSET + NAV_OFFSET;
 
@@ -292,7 +292,7 @@ function ResultContent() {
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     ) : (
-                      <span className="text-[10px] font-bold">{i + 1}</span>
+                      <span className="text-[13px] font-bold">{i + 1}</span>
                     )}
                   </div>
                   <span
@@ -565,7 +565,7 @@ function ResultContent() {
                     .map((cap) => (
                       <span
                         key={cap.capId}
-                        className="rounded bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning"
+                        className="rounded bg-warning/10 px-2 py-0.5 text-[13px] font-medium text-warning"
                         title={cap.reason}
                       >
                         {capLabel[cap.capId] ?? cap.capId}

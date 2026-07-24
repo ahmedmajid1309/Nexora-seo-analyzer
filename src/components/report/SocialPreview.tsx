@@ -18,7 +18,7 @@ export function SocialPreview({
     <div className="space-y-4">
       {/* Open Graph Preview */}
       <div className="rounded-xl border border-zinc-800 bg-gradient-to-b from-bg-elevated to-bg-card p-4 shadow-md shadow-black/10">
-        <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
+        <p className="mb-3 text-[13px] font-medium uppercase tracking-wider text-text-tertiary">
           Open Graph Preview <span className="font-normal normal-case">(Approximation)</span>
         </p>
         {hasAny ? (
@@ -58,7 +58,7 @@ export function SocialPreview({
             <p className="mt-2 text-sm text-text-tertiary italic">No Open Graph metadata found</p>
           </div>
         )}
-        <p className="mt-3 text-[10px] text-text-tertiary">
+        <p className="mt-3 text-[13px] text-text-tertiary">
           How your page appears when shared on social platforms. Actual rendering may vary.
         </p>
       </div>
@@ -66,7 +66,7 @@ export function SocialPreview({
       {/* Twitter/X Preview */}
       {hasTwitter && (
         <div className="rounded-xl border border-zinc-800 bg-gradient-to-b from-bg-elevated to-bg-card p-4 shadow-md shadow-black/10">
-          <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
+          <p className="mb-3 text-[13px] font-medium uppercase tracking-wider text-text-tertiary">
             Twitter/X Preview <span className="font-normal normal-case">(Approximation)</span>
           </p>
           <div className="rounded-lg bg-bg-card/50 p-3">

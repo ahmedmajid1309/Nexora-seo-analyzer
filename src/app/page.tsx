@@ -196,7 +196,7 @@ export default function HomePage() {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <p className="mt-4 text-sm text-text-tertiary/70">
+                  <p className="mt-4 text-sm text-text-tertiary">
                     Free &middot; No signup &middot; Actionable results &middot; ~10s audit
                   </p>
                 </StaggerItem>
@@ -222,7 +222,7 @@ export default function HomePage() {
                           Briefing Preview
                         </span>
                       </div>
-                      <span className="rounded-lg bg-brand-muted px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-brand border border-brand/20">
+                      <span className="rounded-lg bg-brand-muted px-2.5 py-1 text-[13px] font-bold uppercase tracking-wider text-brand border border-brand/20">
                         Demo data
                       </span>
                     </div>
@@ -271,19 +271,19 @@ export default function HomePage() {
 
                     <div className="grid grid-cols-3 gap-3">
                       <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
-                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                        <p className="text-[13px] text-text-tertiary uppercase tracking-wider">
                           Performance
                         </p>
                         <p className="text-2xl font-bold text-success tabular-nums">92</p>
                       </div>
                       <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
-                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                        <p className="text-[13px] text-text-tertiary uppercase tracking-wider">
                           Accessibility
                         </p>
                         <p className="text-2xl font-bold text-warning tabular-nums">65</p>
                       </div>
                       <div className="rounded-xl border border-zinc-800 bg-bg-card/60 p-4">
-                        <p className="text-[11px] text-text-tertiary uppercase tracking-wider">
+                        <p className="text-[13px] text-text-tertiary uppercase tracking-wider">
                           Security
                         </p>
                         <p className="text-2xl font-bold text-critical tabular-nums">42</p>
@@ -292,7 +292,7 @@ export default function HomePage() {
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div className="rounded-xl border border-l-4 border-l-critical border-zinc-800 bg-bg-card/60 p-4">
-                        <span className="rounded-md bg-critical/15 px-2 py-0.5 text-[11px] font-semibold uppercase text-critical">
+                        <span className="rounded-md bg-critical/15 px-2 py-0.5 text-[13px] font-semibold uppercase text-critical">
                           Critical
                         </span>
                         <p className="mt-2 text-sm font-semibold text-text-primary">
@@ -303,7 +303,7 @@ export default function HomePage() {
                         </p>
                       </div>
                       <div className="rounded-xl border border-l-4 border-l-success border-zinc-800 bg-bg-card/60 p-4">
-                        <span className="rounded-md bg-success/15 px-2 py-0.5 text-[11px] font-semibold uppercase text-success">
+                        <span className="rounded-md bg-success/15 px-2 py-0.5 text-[13px] font-semibold uppercase text-success">
                           Quick Win
                         </span>
                         <p className="mt-2 text-sm font-semibold text-text-primary">
@@ -574,7 +574,7 @@ export default function HomePage() {
                     style={{ borderLeftColor: "inherit" }}
                   >
                     <div
-                      className={`${r.badgeClass} inline-flex rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase`}
+                      className={`${r.badgeClass} inline-flex rounded-lg px-2.5 py-1 text-[13px] font-semibold uppercase`}
                     >
                       {r.badge}
                     </div>

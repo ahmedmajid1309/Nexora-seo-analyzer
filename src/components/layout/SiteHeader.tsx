@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { HEADER_HEIGHT, HEADER_MARGIN_TOP } from "@/lib/constants";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -59,16 +60,16 @@ export function SiteHeader() {
 
       <nav
         className={`pointer-events-auto flex items-center justify-between rounded-2xl px-5 sm:px-6 transition-all duration-[400ms] max-w-[1320px] w-full mx-4 ${pillClasses}`}
-        style={{ height: "76px", marginTop: "14px" }}
+        style={{ height: `${HEADER_HEIGHT}px`, marginTop: `${HEADER_MARGIN_TOP}px` }}
         aria-label="Main navigation"
       >
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <Image
-            src="/brand/nexora-creation-logo.svg"
-            alt="Nexora Creation — SEO Analyzer"
-            width={170}
-            height={36}
-            className="h-7 sm:h-9 w-auto"
+            src="/brand/nexora-logo-main.svg"
+            alt="Nexora SEO Analyzer"
+            width={160}
+            height={44}
+            className="h-8 sm:h-10 w-auto"
             priority
             style={{ objectFit: "contain", width: "auto", height: "auto" }}
           />

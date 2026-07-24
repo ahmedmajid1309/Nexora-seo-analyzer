@@ -85,7 +85,7 @@ export function AuditForm() {
             autoFocus
             aria-invalid={errors.url ? "true" : undefined}
             aria-describedby={errors.url ? "url-error" : undefined}
-            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/80 pl-13 pr-5 py-4 text-[17px] text-text-primary placeholder:text-text-tertiary/60 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
+            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/80 pl-13 pr-5 py-4 text-base text-text-primary placeholder:text-text-tertiary transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
             style={{ paddingLeft: "3.25rem" }}
           />
         </div>
@@ -127,7 +127,7 @@ export function AuditForm() {
             disabled={submitting}
             autoComplete="off"
             aria-invalid={errors.keyword ? "true" : undefined}
-            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/60 pl-13 pr-5 py-4 text-[17px] text-text-primary placeholder:text-text-tertiary/60 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
+            className="w-full rounded-2xl border border-zinc-700 bg-bg-card/60 pl-13 pr-5 py-4 text-base text-text-primary placeholder:text-text-tertiary transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 hover:border-zinc-600"
             style={{ paddingLeft: "3.25rem" }}
           />
         </div>
@@ -141,7 +141,7 @@ export function AuditForm() {
       <motion.button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-2xl bg-brand px-8 py-4 text-[17px] font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-xl shadow-brand/25 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+        className="w-full rounded-2xl bg-brand px-8 py-4 text-base font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-xl shadow-brand/25 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
         whileHover={submitting ? {} : { scale: 1.01 }}
         whileTap={submitting ? {} : { scale: 0.98 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}

@@ -2,18 +2,18 @@
 
 @theme {
   /* ── Primitive colors ── */
-  --color-bg-primary: #0a0a0a;
+  --color-bg-primary: #050505;
   --color-bg-card: #111111;
   --color-bg-elevated: #181818;
   --color-bg-hover: #1e1e1e;
   --color-bg-secondary: #141414;
   --color-bg-tertiary: #222222;
-  --color-brand: #f4ca57;
-  --color-brand-hover: #f8d97a;
-  --color-brand-muted: rgba(244, 202, 87, 0.1);
-  --color-text-primary: #f5f5f5;
-  --color-text-secondary: #aaaaaa;
-  --color-text-tertiary: #777777;
+  --color-brand: #fec700;
+  --color-brand-hover: #ffd633;
+  --color-brand-muted: rgba(254, 199, 0, 0.1);
+  --color-text-primary: #f7f7f5;
+  --color-text-secondary: #d0d0cb;
+  --color-text-tertiary: #969690;
   --color-success: #22c55e;
   --color-warning: #e99a35;
   --color-critical: #ef4444;
@@ -24,10 +24,10 @@
   --color-surface-hover: #1e1e1e;
   --color-surface-overlay: rgba(0, 0, 0, 0.7);
 
-  --color-border-default: #222222;
+  --color-border-default: #303030;
   --color-border-subtle: rgba(255, 255, 255, 0.06);
-  --color-border-hover: #333333;
-  --color-border-brand: rgba(244, 202, 87, 0.25);
+  --color-border-hover: #474747;
+  --color-border-brand: rgba(254, 199, 0, 0.38);
 
   --radius-xs: 0.25rem;
   --radius-sm: 0.375rem;

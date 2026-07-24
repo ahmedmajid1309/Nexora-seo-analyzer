@@ -18,7 +18,7 @@ export function SerpPreview({ title, description, url }: SerpPreviewProps) {
 
   return (
     <div className="max-w-full overflow-hidden rounded-xl border border-zinc-800 bg-gradient-to-b from-bg-elevated to-bg-card p-4 shadow-md shadow-black/10">
-      <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
+      <p className="mb-3 text-[13px] font-medium uppercase tracking-wider text-text-tertiary">
         Google SERP Preview <span className="font-normal normal-case">(Approximation)</span>
       </p>
       <div className="space-y-1.5 rounded-lg bg-white p-3 shadow-inner">
@@ -44,7 +44,7 @@ export function SerpPreview({ title, description, url }: SerpPreviewProps) {
           <p className="text-xs text-gray-400 italic">No meta description found</p>
         )}
       </div>
-      <p className="mt-3 text-[10px] text-text-tertiary">
+      <p className="mt-3 text-[13px] text-text-tertiary">
         This is an approximation. Actual search snippets may differ.
       </p>
     </div>

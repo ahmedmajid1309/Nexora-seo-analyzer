@@ -175,7 +175,7 @@ export function FindingFilters({
           </svg>
           Filters
           {activeCount > 0 && (
-            <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-black">
+            <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-[13px] font-bold text-black">
               {activeCount}
             </span>
           )}

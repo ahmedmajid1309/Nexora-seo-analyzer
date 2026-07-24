@@ -67,13 +67,13 @@ export function FindingCard({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <span
-              className={`rounded px-1.5 py-0.5 text-[10px] font-medium uppercase ${badgeClass}`}
+              className={`rounded px-1.5 py-0.5 text-[13px] font-medium uppercase ${badgeClass}`}
             >
               {state}
             </span>
             {severity && severity !== "informational" && (
               <span
-                className={`rounded px-1.5 py-0.5 text-[10px] font-medium uppercase ${
+                className={`rounded px-1.5 py-0.5 text-[13px] font-medium uppercase ${
                   severity === "critical"
                     ? "bg-critical/15 text-critical"
                     : severity === "high"
@@ -86,7 +86,7 @@ export function FindingCard({
                 {severity}
               </span>
             )}
-            <span className="technical-value text-[10px] text-text-tertiary">{checkId}</span>
+            <span className="technical-value text-[13px] text-text-tertiary">{checkId}</span>
           </div>
           <p className="mt-1.5 text-sm font-medium text-text-primary break-words">{summary}</p>
         </div>

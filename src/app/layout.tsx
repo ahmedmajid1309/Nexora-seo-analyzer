@@ -32,7 +32,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/icon.svg",
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
   },
   openGraph: {
     title: "Nexora SEO Analyzer — Free, No-Signup SEO Audit Tool",

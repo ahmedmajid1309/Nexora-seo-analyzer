@@ -65,7 +65,7 @@ export function PerformanceSection({
           Performance
         </p>
         {source && (
-          <span className="shrink-0 rounded bg-brand-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brand">
+          <span className="shrink-0 rounded bg-brand-muted px-1.5 py-0.5 text-[13px] font-medium uppercase tracking-wider text-brand">
             {source === "pagespeed-mobile" ? "Mobile Primary" : "Desktop Fallback"}
           </span>
         )}
@@ -164,7 +164,7 @@ function LabMetricsTable({ metrics }: { metrics: PageSpeedSideData["labMetrics"]
       <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
         Lab Data <span className="font-normal normal-case text-text-tertiary">(Lighthouse)</span>
       </p>
-      <p className="mt-0.5 text-[10px] text-text-tertiary">
+      <p className="mt-0.5 text-[13px] text-text-tertiary">
         Simulated performance metrics. Results may vary in real-world conditions.
       </p>
       <div className="mt-2 space-y-1.5">
@@ -223,7 +223,7 @@ function FieldDataTable({ fieldData }: { fieldData: PageSpeedSideData["fieldData
       <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
         Field Data <span className="font-normal normal-case text-text-tertiary">(CrUX)</span>
       </p>
-      <p className="mt-0.5 text-[10px] text-text-tertiary">
+      <p className="mt-0.5 text-[13px] text-text-tertiary">
         Real-world performance from Chrome users. Missing data does not indicate zero traffic.
       </p>
       {fieldData.overallCategory && (
@@ -264,7 +264,7 @@ function OpportunityList({ opportunities }: { opportunities: PageSpeedSideData["
       <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
         Opportunities ({opportunities.length})
       </p>
-      <p className="mt-0.5 text-[10px] text-text-tertiary">
+      <p className="mt-0.5 text-[13px] text-text-tertiary">
         Optimization suggestions to improve load performance.
       </p>
       <div className="mt-2 space-y-1.5">
