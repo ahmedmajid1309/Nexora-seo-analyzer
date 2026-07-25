@@ -3,75 +3,36 @@
 import { AuditForm } from "@/components/landing/AuditForm";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Card } from "@/components/ui/Card";
 import { Reveal, StaggerGroup, StaggerItem, ScaleIn } from "@/components/ui/AnimatedPrimitives";
 import { CategoryTicker } from "@/components/landing/CategoryTicker";
 import { motion } from "motion/react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
-const priorityCards = [
-  {
-    badge: "Critical",
-    badgeClass: "bg-critical/15 text-critical border-l-critical",
-    title: "HTTPS not enforced",
-    desc: "Security and trust issue affecting user confidence and search ranking.",
-    effort: "High",
-  },
-  {
-    badge: "High Impact",
-    badgeClass: "bg-warning/15 text-warning border-l-warning",
-    title: "Missing heading hierarchy",
-    desc: "Improves content structure, readability, and SEO signal distribution.",
-    effort: "Medium",
-  },
-  {
-    badge: "Quick Win",
-    badgeClass: "bg-success/15 text-success border-l-success",
-    title: "Add meta descriptions",
-    desc: "Improves SERP click-through rate with minimal development effort.",
-    effort: "Low",
-  },
-  {
-    badge: "Quick Win",
-    badgeClass: "bg-success/15 text-success border-l-success",
-    title: "Image alt text missing",
-    desc: "Improves accessibility and image search visibility for all users.",
-    effort: "Low",
-  },
-];
-
-const metricsData = [
-  { label: "Performance", value: 92, color: "text-success", barColor: "bg-success" },
-  { label: "SEO Health", value: 78, color: "text-brand", barColor: "bg-brand" },
-  { label: "Accessibility", value: 65, color: "text-warning", barColor: "bg-warning" },
-  { label: "Security", value: 42, color: "text-critical", barColor: "bg-critical" },
-];
-
 const faqs = [
   {
-    q: "Is this really free?",
-    a: "Yes. The Nexora SEO Analyzer is completely free. There are no hidden limits, no trial periods, and no credit card required.",
+    q: "Is the analyzer free?",
+    a: "Yes. You can run the Nexora SEO Analyzer without paying or starting a trial.",
   },
   {
-    q: "Do you store my audit results?",
-    a: "No. Audit results are generated live and returned directly to your browser. We do not persist or share your audit data.",
+    q: "Is signup required?",
+    a: "No. A mandatory account is not required to start a free audit.",
   },
   {
-    q: "How accurate are the scores?",
-    a: "Scores are calculated from deterministic checks against the actual page content and response. We do not fabricate data or predict rankings.",
+    q: "What does it analyze?",
+    a: "It validates the URL, fetches the page server-side, extracts signals across 10 audit categories, and checks SEO, accessibility, metadata, links, images, content, structured data, social tags, forms, and URL signals.",
   },
   {
-    q: "What does AEO and GEO readiness mean?",
-    a: "AEO (Answer Engine Optimization) assesses how well your content answers direct questions. GEO (Generative Engine Optimization) evaluates structure for AI-powered search platforms.",
+    q: "How are scores calculated?",
+    a: "Core SEO checks are deterministic. Category scores use extracted evidence, rule outcomes, confidence, and applicable score caps.",
   },
   {
-    q: "Can I use this for client sites?",
-    a: "Yes. The tool is designed to produce professional reports. Each report includes the methodology and a clear explanation of every finding.",
+    q: "Why might Performance be unavailable?",
+    a: "Performance diagnostics use optional external PageSpeed data. If that data cannot be returned, the core SEO audit still runs and unavailable does not mean a zero score.",
   },
   {
-    q: "How is my URL handled?",
-    a: "Your URL is fetched server-side, checked against multiple security filters, and the page content is analysed for SEO signals.",
+    q: "What are AEO and GEO readiness?",
+    a: "AEO and GEO are readiness outputs that review answer structure, entity clarity, semantic organization, structured data, and topical relationships. They are not ranking guarantees.",
   },
 ];
 
@@ -440,76 +401,6 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── SECTION 3: EVIDENCE ENGINE ── */}
-      <section
-        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
-        id="evidence"
-      >
-        <Container>
-          <div className="text-center max-w-3xl mx-auto">
-            <Reveal>
-              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                How it works
-              </span>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <SectionHeading>The evidence engine behind every audit</SectionHeading>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                Every report is built from real page data, verified through our deterministic
-                analysis pipeline. No guesswork, no AI hallucinations.
-              </p>
-            </Reveal>
-          </div>
-          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                icon: "M21 21l-5.2-5.2",
-                title: "Fetch",
-                desc: "Server-side proxy fetch with security validation",
-              },
-              {
-                icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-                title: "Extract",
-                desc: "Parse across 14 SEO dimensions simultaneously",
-              },
-              {
-                icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-                title: "Verify",
-                desc: "Run hundreds of deterministic checks against real data",
-              },
-              {
-                icon: "M13 10V3L4 14h7v7l9-11h-7z",
-                title: "Score",
-                desc: "Weighted scoring with transparent methodology",
-              },
-            ].map((item, i) => (
-              <Reveal key={item.title} delay={0.1 * i}>
-                <Card hover className="text-center h-full">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      className="text-brand"
-                      aria-hidden="true"
-                    >
-                      <path d={item.icon} />
-                    </svg>
-                  </div>
-                  <h3 className="mt-5 text-lg font-semibold text-text-primary">{item.title}</h3>
-                  <p className="mt-2 text-sm text-text-secondary">{item.desc}</p>
-                </Card>
-              </Reveal>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* ── SECTION 4: AUDIT LIFECYCLE ── */}
       <section
         className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
@@ -812,64 +703,164 @@ export default function HomePage() {
         id="priorities"
       >
         <Container>
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-16">
-            <div>
-              <Reveal>
-                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                  Priority pathway
-                </span>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <SectionHeading>From critical issues to quick wins</SectionHeading>
-              </Reveal>
-              <Reveal delay={0.15}>
-                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                  Every finding is categorized by severity and effort, so you know exactly where to
-                  start and what will have the most impact.
-                </p>
-              </Reveal>
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+              <div>
+                <Reveal>
+                  <span className="inline-block text-[13px] font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                    Priority pathway
+                  </span>
+                </Reveal>
+                <Reveal delay={0.1}>
+                  <SectionHeading>Turn findings into a repair order</SectionHeading>
+                </Reveal>
+                <Reveal delay={0.15}>
+                  <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                    Nexora separates urgent risk from efficient improvements so the report reads
+                    like a prioritized remediation queue, not a flat checklist.
+                  </p>
+                </Reveal>
+              </div>
               <Reveal delay={0.2}>
-                <a
-                  href="/methodology"
-                  className="mt-6 inline-flex items-center gap-2 text-brand hover:text-brand-hover font-medium transition-colors"
-                >
-                  Read full methodology
+                <div className="rounded-3xl border border-brand/20 bg-gradient-to-br from-brand/[0.10] via-bg-card to-bg-elevated p-6 shadow-2xl shadow-brand/5">
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-brand">
+                    Demonstration data
+                  </p>
+                  <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="max-w-xl text-lg font-semibold leading-snug text-text-primary">
+                      Critical Issues demand ownership. Quick Wins create visible progress.
+                    </p>
+                    <a
+                      href="/methodology"
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand/30 px-4 py-2 text-base font-semibold text-brand transition-colors hover:bg-brand/10 focus:outline-none focus:ring-2 focus:ring-brand/60"
+                    >
+                      Methodology
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+
+            <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
+              <div className="rounded-3xl border border-critical/25 bg-gradient-to-b from-critical/[0.10] to-bg-card p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="text-xl font-bold text-text-primary">Critical Issues</h3>
+                  <span className="rounded-full border border-critical/30 bg-critical/15 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.14em] text-critical">
+                    Fix first
+                  </span>
+                </div>
+                <div className="mt-6 space-y-4">
+                  {[
+                    {
+                      title: "Indexing blocked by robots directive",
+                      desc: "Search engines may be prevented from discovering important page content.",
+                      role: "SEO / Dev",
+                      effort: "Medium",
+                      action: "Review robots policy and canonical intent",
+                    },
+                    {
+                      title: "Missing accessible form labels",
+                      desc: "Form controls can become unclear for assistive technology and keyboard users.",
+                      role: "Frontend",
+                      effort: "Low-Medium",
+                      action: "Connect labels or accessible names",
+                    },
+                  ].map((item, i) => (
+                    <Reveal key={item.title} delay={i * 0.08}>
+                      <div className="rounded-2xl border border-critical/20 bg-bg-primary/70 p-5">
+                        <p className="text-base font-bold text-text-primary">{item.title}</p>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                          {item.desc}
+                        </p>
+                        <div className="mt-4 grid gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-text-secondary sm:grid-cols-3">
+                          <span>Role: {item.role}</span>
+                          <span>Effort: {item.effort}</span>
+                          <span>First: {item.action}</span>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+
+              <div
+                className="hidden w-16 flex-col items-center justify-center lg:flex"
+                aria-hidden="true"
+              >
+                <motion.div
+                  className="h-full w-px origin-top bg-gradient-to-b from-critical/50 via-brand to-success/50 motion-safe:scale-y-0 motion-reduce:scale-y-100"
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.9, ease: EASE_OUT_EXPO }}
+                />
+                <div className="my-4 flex h-12 w-12 items-center justify-center rounded-full border border-brand/30 bg-brand text-black shadow-[0_0_24px_rgba(254,199,0,0.22)]">
                   <svg
-                    width="16"
-                    height="16"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
+                    strokeWidth="2.5"
                   >
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
-                </a>
-              </Reveal>
-            </div>
-            <div className="space-y-3">
-              {priorityCards.map((r, i) => (
-                <Reveal key={r.title} delay={0.1 * i}>
-                  <div
-                    className="rounded-2xl border border-zinc-800/80 bg-gradient-to-r from-bg-card to-bg-elevated p-5 border-l-4 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg"
-                    style={{ borderLeftColor: "inherit" }}
-                  >
-                    <div
-                      className={`${r.badgeClass} inline-flex rounded-lg px-2.5 py-1 text-[13px] font-semibold uppercase`}
-                    >
-                      {r.badge}
-                    </div>
-                    <div className="mt-3 flex items-start justify-between gap-3">
-                      <p className="text-base font-semibold text-text-primary">{r.title}</p>
-                      <span className="shrink-0 text-xs text-text-tertiary">
-                        Effort: {r.effort}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-text-secondary">{r.desc}</p>
-                  </div>
-                </Reveal>
-              ))}
+                </div>
+                <motion.div
+                  className="h-full w-px origin-top bg-gradient-to-b from-brand to-success/50 motion-safe:scale-y-0 motion-reduce:scale-y-100"
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.9, delay: 0.15, ease: EASE_OUT_EXPO }}
+                />
+              </div>
+
+              <div className="rounded-3xl border border-success/25 bg-gradient-to-b from-success/[0.10] to-bg-card p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="text-xl font-bold text-text-primary">Quick Wins</h3>
+                  <span className="rounded-full border border-success/30 bg-success/15 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.14em] text-success">
+                    Improve next
+                  </span>
+                </div>
+                <div className="mt-6 space-y-4">
+                  {[
+                    {
+                      title: "Add missing meta descriptions",
+                      desc: "Clear snippets can improve how pages communicate their purpose in search results.",
+                      step: "Write unique descriptions for priority pages",
+                      outcome: "Sharper SERP messaging",
+                    },
+                    {
+                      title: "Complete image alt text",
+                      desc: "Descriptive alternatives improve accessibility and image understanding.",
+                      step: "Add concise alt text to meaningful images",
+                      outcome: "Better accessible context",
+                    },
+                  ].map((item, i) => (
+                    <Reveal key={item.title} delay={i * 0.08}>
+                      <div className="rounded-2xl border border-success/20 bg-bg-primary/70 p-5">
+                        <p className="text-base font-bold text-text-primary">{item.title}</p>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                          {item.desc}
+                        </p>
+                        <div className="mt-4 flex flex-col gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-text-secondary sm:flex-row sm:items-center sm:justify-between">
+                          <span>Step: {item.step}</span>
+                          <span className="text-success">Outcome: {item.outcome}</span>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </Container>
@@ -878,53 +869,115 @@ export default function HomePage() {
       {/* ── SECTION 6: PERFORMANCE INTELLIGENCE ── */}
       <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="performance">
         <Container>
-          <div className="text-center max-w-3xl mx-auto">
-            <Reveal>
-              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                Metrics that matter
-              </span>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <SectionHeading>Performance intelligence at a glance</SectionHeading>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                Category scores with confidence indicators, powered by real PageSpeed data and
-                deterministic rule checks.
-              </p>
-            </Reveal>
-          </div>
-          <div className="mx-auto mt-14 max-w-4xl grid gap-5 sm:grid-cols-2">
-            {metricsData.map((m, i) => (
-              <Reveal key={m.label} delay={0.1 * i}>
-                <Card hover>
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm font-medium text-text-tertiary uppercase tracking-wider">
-                      {m.label}
-                    </p>
-                    <p className={`text-3xl font-bold tabular-nums ${m.color}`}>{m.value}</p>
-                  </div>
-                  <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
-                    <motion.div
-                      className={`h-full rounded-full ${m.barColor}`}
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${m.value}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.3 + i * 0.1, ease: EASE_OUT_EXPO }}
-                    />
-                  </div>
-                  <p className="mt-2 text-xs text-text-tertiary">
-                    {m.value >= 90
-                      ? "Excellent"
-                      : m.value >= 70
-                        ? "Good"
-                        : m.value >= 50
-                          ? "Needs Work"
-                          : "Poor"}
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+              <div>
+                <Reveal>
+                  <span className="inline-block text-[13px] font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                    Optional diagnostics
+                  </span>
+                </Reveal>
+                <Reveal delay={0.1}>
+                  <SectionHeading>
+                    Performance intelligence without replacing the SEO audit
+                  </SectionHeading>
+                </Reveal>
+                <Reveal delay={0.15}>
+                  <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                    When PageSpeed data is available, Nexora adds mobile and desktop diagnostics to
+                    the report. If the external data is unavailable, the core SEO audit still runs
+                    and unavailable does not mean score zero.
                   </p>
-                </Card>
-              </Reveal>
-            ))}
+                </Reveal>
+                <Reveal delay={0.2}>
+                  <div className="mt-6 rounded-2xl border border-zinc-800 bg-bg-card p-5 text-base leading-relaxed text-text-secondary">
+                    Example metrics below are demonstration content, not the visitor&apos;s live
+                    audit.
+                  </div>
+                </Reveal>
+              </div>
+
+              <ScaleIn delay={0.2}>
+                <div className="rounded-3xl border border-zinc-800 bg-gradient-to-b from-bg-card to-bg-elevated p-5 shadow-2xl shadow-black/30 sm:p-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-brand">
+                        Example PageSpeed layer
+                      </p>
+                      <h3 className="mt-2 text-xl font-bold text-text-primary">
+                        Mobile vs desktop
+                      </h3>
+                    </div>
+                    <span className="rounded-full border border-brand/25 bg-brand/10 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
+                      Optional external data
+                    </span>
+                  </div>
+
+                  <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                    {[
+                      {
+                        label: "Mobile",
+                        value: 78,
+                        color: "text-warning",
+                        ring: "border-warning/35",
+                      },
+                      {
+                        label: "Desktop",
+                        value: 92,
+                        color: "text-success",
+                        ring: "border-success/35",
+                      },
+                    ].map((score, i) => (
+                      <Reveal key={score.label} delay={i * 0.08}>
+                        <div className={`rounded-2xl border ${score.ring} bg-bg-primary/70 p-5`}>
+                          <p className="text-base font-semibold text-text-secondary">
+                            {score.label}
+                          </p>
+                          <div className="mt-4 flex items-end gap-3">
+                            <p
+                              className={`text-6xl font-bold leading-none tabular-nums ${score.color}`}
+                            >
+                              {score.value}
+                            </p>
+                            <p className="pb-2 text-base text-text-secondary">performance score</p>
+                          </div>
+                        </div>
+                      </Reveal>
+                    ))}
+                  </div>
+
+                  <div className="mt-7 space-y-4">
+                    {[
+                      { label: "Largest Contentful Paint", value: 72 },
+                      { label: "Total Blocking Time", value: 84 },
+                      { label: "Cumulative Layout Shift", value: 90 },
+                    ].map((metric, i) => (
+                      <div key={metric.label}>
+                        <div className="flex items-center justify-between gap-4 text-base">
+                          <span className="font-medium text-text-primary">{metric.label}</span>
+                          <span className="font-semibold tabular-nums text-brand">
+                            {metric.value}
+                          </span>
+                        </div>
+                        <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-zinc-800">
+                          <motion.div
+                            className="h-full rounded-full bg-brand"
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${metric.value}%` }}
+                            viewport={{ once: true }}
+                            transition={{
+                              duration: 0.85,
+                              delay: 0.15 + i * 0.08,
+                              ease: EASE_OUT_EXPO,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ScaleIn>
+            </div>
           </div>
         </Container>
       </section>
@@ -935,55 +988,67 @@ export default function HomePage() {
         id="aeo-geo"
       >
         <Container>
-          <div className="mx-auto max-w-5xl">
-            <div className="text-center max-w-3xl mx-auto">
+          <div className="mx-auto max-w-6xl">
+            <div className="max-w-3xl">
               <Reveal>
-                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                  Future-ready
+                <span className="inline-block text-[13px] font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Readiness outputs
                 </span>
               </Reveal>
               <Reveal delay={0.1}>
-                <SectionHeading>Preparing for the next era of search</SectionHeading>
+                <SectionHeading>
+                  AEO and GEO are readiness signals, not ranking promises
+                </SectionHeading>
+              </Reveal>
+              <Reveal delay={0.15}>
+                <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
+                  Nexora reviews whether the page is structured for answer-oriented and AI-assisted
+                  discovery. These outputs do not count as RuleCategory values and do not guarantee
+                  rankings, citations, or visibility.
+                </p>
               </Reveal>
             </div>
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
-              <ScaleIn delay={0.1}>
-                <Card hover className="h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
-                      <span className="text-2xl font-bold text-brand">A</span>
+
+            <div className="mt-12 rounded-3xl border border-zinc-800 bg-gradient-to-br from-bg-card via-bg-primary to-bg-elevated p-5 shadow-2xl shadow-black/25 sm:p-7">
+              <div className="grid gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
+                <Reveal delay={0.1}>
+                  <div className="h-full rounded-2xl border border-brand/20 bg-brand/[0.04] p-5">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-2xl font-bold text-brand">
+                        A
+                      </span>
+                      <h3 className="text-xl font-bold text-text-primary">AEO Readiness</h3>
                     </div>
-                    <h3 className="text-xl font-semibold text-text-primary">AEO Readiness</h3>
+                    <ul className="mt-6 space-y-4 text-base leading-relaxed text-text-secondary">
+                      <li>Question-oriented content that maps to real user intent.</li>
+                      <li>Direct answers near relevant headings and page sections.</li>
+                      <li>Structured FAQ signals where the content genuinely supports them.</li>
+                    </ul>
                   </div>
-                  <p className="text-[15px] text-text-secondary leading-relaxed">
-                    Answer Engine Optimization assesses how well your content answers direct
-                    questions. Pages with clear, structured answers are more likely to appear in
-                    voice search results and AI-generated summaries.
-                  </p>
-                </Card>
-              </ScaleIn>
-              <ScaleIn delay={0.2}>
-                <Card hover className="h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-muted border border-brand/10">
-                      <span className="text-2xl font-bold text-brand">G</span>
+                </Reveal>
+
+                <div
+                  className="hidden w-px bg-gradient-to-b from-transparent via-brand/40 to-transparent lg:block"
+                  aria-hidden="true"
+                />
+
+                <Reveal delay={0.2}>
+                  <div className="h-full rounded-2xl border border-blue-400/20 bg-blue-400/[0.04] p-5">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-blue-400/25 bg-blue-400/10 text-2xl font-bold text-blue-400">
+                        G
+                      </span>
+                      <h3 className="text-xl font-bold text-text-primary">GEO Readiness</h3>
                     </div>
-                    <h3 className="text-xl font-semibold text-text-primary">GEO Readiness</h3>
+                    <ul className="mt-6 space-y-4 text-base leading-relaxed text-text-secondary">
+                      <li>Entity clarity across headings, copy, and metadata.</li>
+                      <li>Semantic organization with structured data and topical relationships.</li>
+                      <li>Consistent page meaning that machines can parse without guessing.</li>
+                    </ul>
                   </div>
-                  <p className="text-[15px] text-text-secondary leading-relaxed">
-                    Generative Engine Optimization evaluates how well your page is structured for
-                    AI-powered search platforms. This includes semantic HTML, clear entity signals,
-                    and consistent schema markup.
-                  </p>
-                </Card>
-              </ScaleIn>
+                </Reveal>
+              </div>
             </div>
-            <Reveal delay={0.3}>
-              <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-text-tertiary">
-                Both scores are informational and not ranking predictors. They help you prepare for
-                emerging search paradigms.
-              </p>
-            </Reveal>
           </div>
         </Container>
       </section>
@@ -991,138 +1056,90 @@ export default function HomePage() {
       {/* ── SECTION 8: PRIVACY & SECURITY ── */}
       <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="privacy">
         <Container>
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-6xl">
             <div className="text-center max-w-3xl mx-auto">
               <Reveal>
-                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                  Trust
+                <span className="inline-block text-[13px] font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                  Trust architecture
                 </span>
               </Reveal>
               <Reveal delay={0.1}>
-                <SectionHeading>Privacy &amp; security built in</SectionHeading>
+                <SectionHeading>Protected fetching before analysis begins</SectionHeading>
               </Reveal>
               <Reveal delay={0.15}>
                 <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                  Your audit data stays private. We never store, share, or sell the URLs you submit.
-                  Results are delivered directly to your browser with no server-side persistence.
+                  Submitted URLs are fetched server-side with validation layers around destination,
+                  redirects, response type, and request bounds. No mandatory account is required to
+                  start an audit.
                 </p>
               </Reveal>
             </div>
-            <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-3">
-              {[
-                {
-                  title: "No storage",
-                  desc: "URLs and results are never persisted. Your data stays yours.",
-                },
-                {
-                  title: "SSRF protection",
-                  desc: "All fetched content is checked against DNS rebinding and SSRF protections.",
-                },
-                {
-                  title: "Transparent scoring",
-                  desc: "Every score includes a methodology note explaining how it was calculated.",
-                },
-              ].map((item) => (
-                <StaggerItem key={item.title}>
-                  <Card className="h-full text-center">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-brand-muted border border-brand/10 mb-4">
-                      <svg
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        className="text-brand"
-                        aria-hidden="true"
-                      >
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                    </div>
-                    <p className="text-base font-semibold text-text-primary">{item.title}</p>
-                    <p className="mt-2 text-sm text-text-secondary">{item.desc}</p>
-                  </Card>
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
-            <Reveal delay={0.2}>
-              <p className="mt-8 text-center">
-                <a
-                  href="/privacy"
-                  className="text-brand hover:text-brand-hover font-medium transition-colors"
-                >
-                  Read privacy policy
-                </a>
-              </p>
-            </Reveal>
-          </div>
-        </Container>
-      </section>
 
-      {/* ── SECTION 9: NEXORA EXPERT SUPPORT ── */}
-      <section
-        className="border-t border-zinc-800/60 bg-gradient-to-b from-bg-card/30 to-bg-primary py-20 sm:py-28"
-        id="about"
-      >
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <Reveal>
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-muted to-brand/[0.05] border border-brand/20 mb-8 shadow-lg shadow-brand/5">
-                <svg
-                  width="36"
-                  height="36"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="text-brand"
-                  aria-hidden="true"
-                >
-                  <path d="M12 2L2 12l10 10 10-10L12 2z" />
-                </svg>
+            <div className="relative mt-14 rounded-3xl border border-zinc-800 bg-gradient-to-b from-bg-card to-bg-elevated p-5 shadow-2xl shadow-black/25 sm:p-8">
+              <div
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(254,199,0,0.06),transparent_55%)]"
+                aria-hidden="true"
+              />
+              <div className="relative grid gap-6 lg:grid-cols-[1fr_280px_1fr] lg:items-center">
+                <div className="space-y-4">
+                  {[
+                    [
+                      "DNS and redirect validation",
+                      "Destination checks help avoid unsafe or unexpected fetch targets.",
+                    ],
+                    [
+                      "SSRF protections",
+                      "Network policy blocks private, loopback, and restricted destinations.",
+                    ],
+                  ].map(([title, desc], i) => (
+                    <Reveal key={title} delay={i * 0.08}>
+                      <div className="rounded-2xl border border-zinc-800 bg-bg-primary/70 p-5">
+                        <p className="text-base font-bold text-text-primary">{title}</p>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">{desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+
+                <ScaleIn delay={0.2}>
+                  <div className="relative mx-auto flex h-[240px] w-full max-w-[280px] items-center justify-center rounded-3xl border border-brand/25 bg-brand/[0.06] shadow-[0_0_42px_rgba(254,199,0,0.10)]">
+                    <motion.div
+                      className="absolute inset-x-8 top-1/2 h-1 origin-left rounded-full bg-brand motion-safe:scale-x-0 motion-reduce:scale-x-100"
+                      aria-hidden="true"
+                      whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
+                    />
+                    <div className="relative z-10 rounded-2xl border border-brand/30 bg-bg-primary px-5 py-4 text-center">
+                      <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-brand">
+                        Protected request
+                      </p>
+                      <p className="mt-2 text-xl font-bold text-text-primary">Server-side fetch</p>
+                    </div>
+                  </div>
+                </ScaleIn>
+
+                <div className="space-y-4">
+                  {[
+                    [
+                      "Bounded request size/time",
+                      "Fetches are constrained so analysis remains controlled and failure states are honest.",
+                    ],
+                    [
+                      "Unavailable states",
+                      "If external data cannot be returned, the report can still show the core SEO findings.",
+                    ],
+                  ].map(([title, desc], i) => (
+                    <Reveal key={title} delay={0.16 + i * 0.08}>
+                      <div className="rounded-2xl border border-zinc-800 bg-bg-primary/70 p-5">
+                        <p className="text-base font-bold text-text-primary">{title}</p>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">{desc}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
               </div>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
-                Built by Nexora Creation
-              </span>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <SectionHeading>Expert support when you need it</SectionHeading>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <p className="mt-5 text-[17px] text-text-secondary leading-relaxed max-w-2xl mx-auto">
-                We build premium digital products. This free SEO tool is our way of demonstrating
-                what careful engineering and thoughtful design can achieve.
-              </p>
-            </Reveal>
-            <Reveal delay={0.25}>
-              <div className="mt-10 flex flex-wrap justify-center gap-4">
-                <a
-                  href="https://nexora.de"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 rounded-2xl bg-brand px-8 py-4 text-base font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-xl shadow-brand/25"
-                >
-                  Visit Nexora Creation
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    aria-hidden="true"
-                  >
-                    <path d="M7 17l9.2-9.2M17 17V7H7" />
-                  </svg>
-                </a>
-                <a
-                  href="/methodology"
-                  className="inline-flex items-center gap-2.5 rounded-2xl border border-zinc-700 bg-transparent px-8 py-4 text-base font-medium text-text-primary hover:bg-bg-tertiary transition-all duration-200"
-                >
-                  View Methodology
-                </a>
-              </div>
-            </Reveal>
+            </div>
           </div>
         </Container>
       </section>
@@ -1130,10 +1147,10 @@ export default function HomePage() {
       {/* ── FAQ ── */}
       <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="faq">
         <Container>
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <Reveal>
-                <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-brand mb-4">
+                <span className="inline-block text-[13px] font-semibold uppercase tracking-[0.15em] text-brand mb-4">
                   Questions?
                 </span>
               </Reveal>
@@ -1141,13 +1158,13 @@ export default function HomePage() {
                 <SectionHeading>Frequently asked questions</SectionHeading>
               </Reveal>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {faqs.map((faq, i) => (
                 <Reveal key={faq.q} delay={i * 0.04}>
-                  <details className="group rounded-2xl border border-zinc-800/80 bg-gradient-to-r from-bg-card to-bg-elevated transition-all duration-200 open:border-zinc-700 hover:border-zinc-700/80 overflow-hidden">
-                    <summary className="flex cursor-pointer items-center justify-between px-6 py-4 sm:py-5 text-[15px] sm:text-base font-medium text-text-primary">
+                  <details className="group overflow-hidden rounded-2xl border border-zinc-800/80 bg-gradient-to-r from-bg-card to-bg-elevated transition-all duration-200 open:border-brand/35 hover:border-zinc-700/80 focus-within:border-brand/50">
+                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-base font-semibold text-text-primary outline-none transition-colors marker:hidden focus-visible:ring-2 focus-visible:ring-brand/60 sm:px-6">
                       {faq.q}
-                      <span className="ml-3 shrink-0 text-text-tertiary transition-transform duration-300 group-open:rotate-180">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-zinc-700 text-text-secondary transition-transform duration-300 group-open:rotate-180 group-open:border-brand/40 group-open:text-brand">
                         <svg
                           width="14"
                           height="14"
@@ -1161,8 +1178,8 @@ export default function HomePage() {
                         </svg>
                       </span>
                     </summary>
-                    <div className="border-t border-zinc-800/60 px-6 pb-5 pt-3">
-                      <p className="text-[15px] text-text-secondary leading-relaxed">{faq.a}</p>
+                    <div className="border-t border-zinc-800/60 px-5 pb-5 pt-4 sm:px-6">
+                      <p className="text-base leading-relaxed text-text-secondary">{faq.a}</p>
                     </div>
                   </details>
                 </Reveal>
@@ -1175,29 +1192,53 @@ export default function HomePage() {
       {/* ── FINAL CTA ── */}
       <section className="border-t border-zinc-800/60 py-20 sm:py-28" id="cta">
         <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            <Reveal>
-              <p className="text-2xl sm:text-3xl font-bold text-text-primary">
-                Need help fixing these issues?
-              </p>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="mt-4 text-[17px] text-text-secondary leading-relaxed max-w-xl mx-auto">
-                Nexora Creation provides hands-on SEO technical services. Let us help you implement
-                the improvements your site needs.
-              </p>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <a
-                href="https://nexora.de"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2.5 rounded-2xl border border-zinc-700 bg-transparent px-8 py-4 text-base font-medium text-text-primary hover:bg-bg-tertiary transition-all duration-200"
-              >
-                Talk to Nexora Creation
-              </a>
-            </Reveal>
-          </div>
+          <Reveal>
+            <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-brand/20 bg-gradient-to-br from-brand/[0.10] via-bg-card to-bg-primary p-6 text-center shadow-2xl shadow-brand/5 sm:p-10">
+              <div
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(254,199,0,0.08),transparent_58%)]"
+                aria-hidden="true"
+              />
+              <div className="relative z-10 mx-auto max-w-3xl">
+                <span className="inline-flex rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.16em] text-brand">
+                  No mandatory signup
+                </span>
+                <h2 className="mt-5 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+                  Run the next evidence-led audit
+                </h2>
+                <p className="mt-4 text-[17px] leading-relaxed text-text-secondary">
+                  Start another free audit and turn extracted page evidence into prioritized SEO,
+                  accessibility, and readiness findings.
+                </p>
+                <div className="mt-8 flex flex-col items-stretch justify-center gap-4 sm:flex-row">
+                  <a
+                    href="#hero"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand px-7 py-3 text-base font-bold text-black shadow-xl shadow-brand/20 transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand/70 focus:ring-offset-2 focus:ring-offset-bg-primary"
+                  >
+                    Start free audit
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://nexora.de"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-zinc-700 bg-bg-primary/50 px-7 py-3 text-base font-semibold text-text-primary transition-colors hover:bg-bg-tertiary focus:outline-none focus:ring-2 focus:ring-brand/60"
+                  >
+                    Talk to Nexora Creation
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Reveal>
         </Container>
       </section>
     </>
