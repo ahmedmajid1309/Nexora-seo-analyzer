@@ -22,16 +22,15 @@ function buildPsiUrl(options: PageSpeedClientOptions): string {
   const { strategy, url } = options;
   const apiKey = env.PAGESPEED_API_KEY;
 
-  if (!apiKey) {
-    throw new PageSpeedAuthError("PAGESPEED_API_KEY is not configured");
-  }
-
   const params = new URLSearchParams({
     url,
     strategy,
-    key: apiKey,
     category: ["performance", "accessibility", "best-practices", "seo"].join(","),
   });
+
+  if (apiKey) {
+    params.set("key", apiKey);
+  }
 
   return `${PSI_BASE_URL}?${params.toString()}`;
 }

@@ -68,7 +68,9 @@ const hoisted = vi.hoisted(() => {
       }),
     });
   }
-  return { MOCK_RULES: arr };
+  const fetchPageSpeedBoth = vi.fn();
+  const MOCK_ENV: { PAGESPEED_API_KEY: string | undefined } = { PAGESPEED_API_KEY: undefined };
+  return { MOCK_RULES: arr, fetchPageSpeedBoth, MOCK_ENV };
 });
 
 vi.mock("@/lib/network", () => ({
@@ -211,73 +213,103 @@ vi.mock("@/lib/rules", () => ({
 }));
 
 vi.mock("@/lib/rules/scoring/engine", () => ({
-  calculateScores: vi.fn().mockImplementation(() => ({
-    calculationVersion: "1.0.0",
-    rawScore: 95.5,
-    cappedScore: 95.5,
-    confidence: 100,
-    applicableScoredRuleCount: 68,
-    evaluatedRuleCount: 68,
-    unavailableRuleCount: 0,
-    notApplicableRuleCount: 0,
-    informationalRuleCount: 17,
-    maxAvailableWeight: 8500,
-    earnedWeight: 8500,
-    appliedCaps: [],
-    scoreFamilies: [
-      {
-        family: "seo-health",
-        name: "SEO Health",
-        rawScore: 95,
-        cappedScore: 95,
-        confidence: 100,
-        categories: [],
-      },
-      {
-        family: "accessibility",
-        name: "Accessibility",
-        rawScore: 100,
-        cappedScore: 100,
-        confidence: 100,
-        categories: [],
-      },
-      {
-        family: "security-trust",
-        name: "Security and Trust",
-        rawScore: 100,
-        cappedScore: 100,
-        confidence: 100,
-        categories: [],
-      },
-      {
-        family: "aeo-readiness",
-        name: "AEO Readiness",
-        rawScore: 90,
-        cappedScore: 90,
-        confidence: 100,
-        categories: [],
-      },
-      {
-        family: "geo-readiness",
-        name: "GEO Readiness",
-        rawScore: 85,
-        cappedScore: 85,
-        confidence: 100,
-        categories: [],
-      },
-    ],
-    categoryContributions: [],
-    excludedSignals: [],
-    performanceScore: null,
-    performanceStatus: "unavailable" as const,
-    performanceSource: null,
-    performanceConfidence: null,
-    performanceExplanation: "PageSpeed not implemented.",
-  })),
+  calculateScores: vi.fn().mockImplementation(({ pagespeed }) => {
+    const mobileScore = pagespeed?.mobile?.labMetrics?.performanceScore;
+    const desktopScore = pagespeed?.desktop?.labMetrics?.performanceScore;
+    const mobileValid = mobileScore !== undefined && mobileScore !== null;
+    const desktopValid = desktopScore !== undefined && desktopScore !== null;
+    const performance = mobileValid
+      ? {
+          performanceScore: mobileScore,
+          performanceStatus: "available" as const,
+          performanceSource: "pagespeed-mobile" as const,
+          performanceConfidence: 100,
+          performanceExplanation: "Performance score based on mobile Lighthouse data.",
+        }
+      : desktopValid
+        ? {
+            performanceScore: desktopScore,
+            performanceStatus: "available" as const,
+            performanceSource: "pagespeed-desktop-fallback" as const,
+            performanceConfidence: 70,
+            performanceExplanation: "Desktop fallback performance data.",
+          }
+        : {
+            performanceScore: null,
+            performanceStatus: "unavailable" as const,
+            performanceSource: null,
+            performanceConfidence: null,
+            performanceExplanation: "PageSpeed Insights returned no performance data.",
+          };
+
+    return {
+      calculationVersion: "1.0.0",
+      rawScore: 95.5,
+      cappedScore: 95.5,
+      confidence: 100,
+      applicableScoredRuleCount: 68,
+      evaluatedRuleCount: 68,
+      unavailableRuleCount: 0,
+      notApplicableRuleCount: 0,
+      informationalRuleCount: 17,
+      maxAvailableWeight: 8500,
+      earnedWeight: 8500,
+      appliedCaps: [],
+      scoreFamilies: [
+        {
+          family: "seo-health",
+          name: "SEO Health",
+          rawScore: 95,
+          cappedScore: 95,
+          confidence: 100,
+          categories: [],
+        },
+        {
+          family: "accessibility",
+          name: "Accessibility",
+          rawScore: 100,
+          cappedScore: 100,
+          confidence: 100,
+          categories: [],
+        },
+        {
+          family: "security-trust",
+          name: "Security and Trust",
+          rawScore: 100,
+          cappedScore: 100,
+          confidence: 100,
+          categories: [],
+        },
+        {
+          family: "aeo-readiness",
+          name: "AEO Readiness",
+          rawScore: 90,
+          cappedScore: 90,
+          confidence: 100,
+          categories: [],
+        },
+        {
+          family: "geo-readiness",
+          name: "GEO Readiness",
+          rawScore: 85,
+          cappedScore: 85,
+          confidence: 100,
+          categories: [],
+        },
+      ],
+      categoryContributions: [],
+      excludedSignals: [],
+      ...performance,
+    };
+  }),
 }));
 
 vi.mock("@/config/env", () => ({
-  env: { PAGESPEED_API_KEY: undefined },
+  env: hoisted.MOCK_ENV,
+}));
+
+vi.mock("@/lib/pagespeed/parser", () => ({
+  fetchPageSpeedBoth: hoisted.fetchPageSpeedBoth,
 }));
 
 vi.mock("@/lib/errors", () => ({
@@ -305,9 +337,31 @@ function createRequest(body: unknown): NextRequest {
   });
 }
 
+function createPageSpeedResult(score: number) {
+  return {
+    strategy: "mobile" as const,
+    labMetrics: {
+      lcp: null,
+      cls: null,
+      tbt: null,
+      si: null,
+      fcp: null,
+      performanceScore: score,
+      lighthouseAccessibilityScore: null,
+      lighthouseSeoScore: null,
+      lighthouseBestPracticesScore: null,
+    },
+    fieldData: null,
+    opportunities: [],
+    diagnostics: [],
+  };
+}
+
 describe("POST /api/audit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.MOCK_ENV.PAGESPEED_API_KEY = undefined;
+    hoisted.fetchPageSpeedBoth.mockResolvedValue({ mobile: null, desktop: null });
   });
 
   it("returns 200 for a valid audit request", async () => {
@@ -340,6 +394,67 @@ describe("POST /api/audit", () => {
     const res = await POST(createRequest({ url: "https://example.com" }));
     const json: AuditResponse = await res.json();
     expect(json.data!.performanceStatus).toBe("unavailable");
+    expect(json.data!.performanceScore).toBeNull();
+  });
+
+  it("attempts PageSpeed without an API key", async () => {
+    await POST(createRequest({ url: "https://example.com" }));
+
+    expect(hoisted.fetchPageSpeedBoth).toHaveBeenCalledWith({
+      url: "https://example.com",
+      timeoutMs: 15000,
+    });
+  });
+
+  it("attempts PageSpeed when an API key is configured", async () => {
+    hoisted.MOCK_ENV.PAGESPEED_API_KEY = "test-key";
+
+    await POST(createRequest({ url: "https://example.com" }));
+
+    expect(hoisted.fetchPageSpeedBoth).toHaveBeenCalledWith({
+      url: "https://example.com",
+      timeoutMs: 15000,
+    });
+  });
+
+  it("isolates PageSpeed API failures from the core audit", async () => {
+    hoisted.fetchPageSpeedBoth.mockRejectedValueOnce(new Error("quota exceeded"));
+
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.success).toBe(true);
+    expect(json.data!.performanceStatus).toBe("unavailable");
+    expect(json.data!.performanceScore).toBeNull();
+  });
+
+  it("uses mobile PageSpeed as the primary performance source", async () => {
+    hoisted.fetchPageSpeedBoth.mockResolvedValueOnce({
+      mobile: createPageSpeedResult(82),
+      desktop: createPageSpeedResult(95),
+    });
+
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+
+    expect(json.data!.performanceStatus).toBe("available");
+    expect(json.data!.performanceScore).toBe(82);
+    expect(json.data!.performanceSource).toBe("pagespeed-mobile");
+  });
+
+  it("uses desktop PageSpeed as fallback when mobile is unavailable", async () => {
+    hoisted.fetchPageSpeedBoth.mockResolvedValueOnce({
+      mobile: null,
+      desktop: createPageSpeedResult(91),
+    });
+
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+
+    expect(json.data!.performanceStatus).toBe("available");
+    expect(json.data!.performanceScore).toBe(91);
+    expect(json.data!.performanceSource).toBe("pagespeed-desktop-fallback");
   });
 
   it("returns real SERP preview fields from metadata", async () => {

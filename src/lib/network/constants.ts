@@ -21,7 +21,7 @@ export const MAX_DNS_ANSWERS = 32;
 export const MAX_HEADERS_SIZE = 8 * 1024;
 
 export const USER_AGENT =
-  "Mozilla/5.0 (compatible; NexoraSEOAnalyzer/1.0; +https://nexora.de/seo-analyzer)";
+  "Mozilla/5.0 (compatible; NexoraSEOAnalyzer/1.0; +https://nexoracreation.com/seo-analyzer)";
 
 export const ACCEPT_HEADER = "text/html,application/xhtml+xml";
 

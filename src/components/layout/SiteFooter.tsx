@@ -41,12 +41,12 @@ export function SiteFooter() {
               Terms
             </Link>
             <a
-              href="https://nexora.de"
+              href="https://nexoracreation.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
             >
-              Nexora.de
+              Nexora Creation
             </a>
           </div>
         </div>

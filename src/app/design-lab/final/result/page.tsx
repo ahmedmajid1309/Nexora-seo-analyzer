@@ -1324,7 +1324,7 @@ export default function ResultPage() {
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
-                href="https://nexora.de"
+                href="https://nexoracreation.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 rounded-2xl bg-brand px-6 py-3.5 text-sm font-semibold text-black hover:bg-[#e3b94a] transition-all duration-200 shadow-lg shadow-brand/20"
@@ -1362,7 +1362,7 @@ export default function ResultPage() {
               </svg>
               Powered by{" "}
               <a
-                href="https://nexora.de"
+                href="https://nexoracreation.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand hover:underline"

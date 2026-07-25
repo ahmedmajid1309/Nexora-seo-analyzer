@@ -1228,7 +1228,7 @@ export default function HomePage() {
                     </svg>
                   </a>
                   <a
-                    href="https://nexora.de"
+                    href="https://nexoracreation.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-zinc-700 bg-bg-primary/50 px-7 py-3 text-base font-semibold text-text-primary transition-colors hover:bg-bg-tertiary focus:outline-none focus:ring-2 focus:ring-brand/60"

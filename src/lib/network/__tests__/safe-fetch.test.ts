@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import * as http from "http";
 import { safeFetch } from "@/lib/network/safe-fetch";
+import { normalizeUrl } from "@/lib/network/normalize-url";
+import { checkUrlPolicy } from "@/lib/network/network-policy";
 import {
   _enablePermissivePorts,
   _disablePermissivePorts,
@@ -150,11 +152,11 @@ describe("safeFetch integration", () => {
 
 describe("port policy", () => {
   it("allows port 80 on public URL", async () => {
-    await expect(safeFetch("http://example.com:80")).rejects.toThrow();
+    expect(checkUrlPolicy(normalizeUrl("http://example.com:80")).allowed).toBe(true);
   });
 
   it("allows port 443 on public URL", async () => {
-    await expect(safeFetch("https://example.com:443")).rejects.toThrow();
+    expect(checkUrlPolicy(normalizeUrl("https://example.com:443")).allowed).toBe(true);
   });
 
   it("rejects non-standard public port", async () => {

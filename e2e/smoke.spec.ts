@@ -2,17 +2,17 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Smoke tests", () => {
   test("homepage loads and shows heading", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.getByText(/Evidence-Backed/i)).toBeVisible();
   });
 
   test("homepage has URL input", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.getByLabel(/website url/i)).toBeVisible();
   });
 
   test("homepage has enabled submit button (audit is live)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("button", { name: /analyze website/i })).toBeEnabled();
   });
 
@@ -37,7 +37,7 @@ test.describe("Smoke tests", () => {
   });
 
   test("keyboard navigation works on homepage", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
     await expect(focused).toBeVisible();

@@ -64,14 +64,14 @@ const mockData: AuditResponseData = {
     ogTitle: "Nexora SEO Analyzer — Technical SEO Audit Tool",
     ogDescription:
       "Get a comprehensive technical SEO audit with actionable recommendations for your website. Analyze meta tags, performance, accessibility, structured data, and more.",
-    ogImage: "https://nexora.de/og-image.jpg",
+    ogImage: "https://nexoracreation.com/og-image.jpg",
     ogUrl: "https://www.example-nexora-site.com",
     ogType: "website",
     twitterCard: "summary_large_image",
     twitterTitle: "Nexora SEO Analyzer — Technical SEO Audit Tool",
     twitterDescription:
       "Get a comprehensive technical SEO audit with actionable recommendations for your website.",
-    twitterImage: "https://nexora.de/twitter-image.jpg",
+    twitterImage: "https://nexoracreation.com/twitter-image.jpg",
   },
   calculationVersion: "2026-07-v3",
   snapshotSchemaVersion: "2026-07-v3",
@@ -1324,7 +1324,7 @@ function MockResultContent() {
             improvements your site needs.
           </p>
           <a
-            href={`https://nexora.de?ref=nexora-seo-audit&url=${encodeURIComponent(data.finalUrl)}`}
+            href={`https://nexoracreation.com/?ref=nexora-seo-audit&url=${encodeURIComponent(data.finalUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-6 inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-6 py-3 text-sm font-medium text-text-primary hover:bg-bg-hover transition-colors"
@@ -1344,7 +1344,7 @@ function MockResultContent() {
             </svg>
             Powered by{" "}
             <a
-              href="https://nexora.de"
+              href="https://nexoracreation.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand hover:underline"

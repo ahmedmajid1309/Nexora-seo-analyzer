@@ -1369,7 +1369,7 @@ export default function SignalTheatreHome() {
           <FadeUp delay={0.25}>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <a
-                href="https://nexora.de"
+                href="https://nexoracreation.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 rounded-2xl bg-brand px-8 py-4 text-base font-semibold text-black hover:bg-[#e3b94a] transition-all duration-200 shadow-xl shadow-brand/25"

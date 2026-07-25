@@ -64,7 +64,7 @@ export function SiteHeader() {
         aria-label="Main navigation"
       >
         <div className="relative h-[34px] w-[124px] shrink-0 sm:h-[38px] sm:w-[140px] md:h-[42px] md:w-[154px] lg:w-[168px]">
-          <Link href="/" className="block h-full w-full">
+          <Link href="/" className="relative block h-full w-full">
             <Image
               src="/brand/nexora-logo-main.svg"
               alt="Nexora SEO Analyzer"

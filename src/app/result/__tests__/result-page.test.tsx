@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 const mockUrl = "https://example.com";
 let mockSearchParams = new URLSearchParams(`url=${encodeURIComponent(mockUrl)}`);
@@ -191,6 +192,40 @@ function createMockResponse(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function createJsonResponse(body: unknown, ok = true, status = 200) {
+  return {
+    ok,
+    status,
+    json: () => Promise.resolve(body),
+  };
+}
+
+function createAbortAwareFetch(body: unknown) {
+  return vi.fn().mockImplementation((_url: string, init?: RequestInit) => {
+    const signal = init?.signal;
+    return new Promise((resolve, reject) => {
+      if (signal?.aborted) {
+        reject(new DOMException("Aborted", "AbortError"));
+        return;
+      }
+      signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), {
+        once: true,
+      });
+      setTimeout(() => resolve(createJsonResponse(body)), 0);
+    });
+  });
+}
+
+function deferredResponse() {
+  let resolve!: (value: unknown) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe("ResultPage", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -311,6 +346,157 @@ describe("ResultPage", () => {
     await waitFor(() => {
       expect(screen.getByText(/audit failed/i)).toBeInTheDocument();
     });
+  });
+
+  it("setup cleanup setup performs a working second request", async () => {
+    globalThis.fetch = createAbortAwareFetch(createMockResponse());
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(
+      <StrictMode>
+        <ResultPage />
+      </StrictMode>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
+    });
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("aborted obsolete request does not update state", async () => {
+    const first = deferredResponse();
+    const second = deferredResponse();
+    globalThis.fetch = vi
+      .fn()
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise);
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    const { rerender } = render(<ResultPage />);
+
+    mockSearchParams = new URLSearchParams(`url=${encodeURIComponent("https://second.example")}`);
+    rerender(<ResultPage />);
+
+    first.resolve(createJsonResponse(createMockResponse({ finalUrl: "https://first.example" })));
+    second.resolve(createJsonResponse(createMockResponse({ finalUrl: "https://second.example" })));
+
+    await waitFor(() => {
+      expect(screen.getByText("https://second.example")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("https://first.example")).not.toBeInTheDocument();
+  });
+
+  it("HTTP 502 JSON response exits loading and displays public message", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      createJsonResponse(
+        {
+          success: false,
+          requestId: "dns-123",
+          error: {
+            code: "DNS_RESOLUTION_FAILED",
+            message: "DNS resolution failed for nexoracreation.com: no records found",
+          },
+        },
+        false,
+        502,
+      ),
+    );
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("DNS resolution failed for nexoracreation.com: no records found"),
+      ).toBeInTheDocument();
+    });
+    expect(screen.queryByText("Analyzing your website")).not.toBeInTheDocument();
+  });
+
+  it("non-JSON HTTP response exits loading", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 502,
+      json: () => Promise.reject(new Error("not json")),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("The audit service returned an unreadable response."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("network rejection exits loading", async () => {
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error("network down"));
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Network error. Please check your connection and try again."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("successful response exits loading", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(createJsonResponse(createMockResponse()));
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByText("Analyzing your website")).not.toBeInTheDocument();
+  });
+
+  it("Retry starts a new request", async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createJsonResponse(
+          {
+            success: false,
+            requestId: "err-123",
+            error: { code: "FETCH_FAILED", message: "Temporary failure" },
+          },
+          false,
+          502,
+        ),
+      )
+      .mockResolvedValueOnce(createJsonResponse(createMockResponse()));
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Temporary failure")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+
+    await waitFor(() => {
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
+    });
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("missing URL exits loading with a clear error", async () => {
+    mockSearchParams = new URLSearchParams();
+    globalThis.fetch = vi.fn();
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Enter a website URL to run an audit.")).toBeInTheDocument();
+    });
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it("has noindex meta tag", async () => {

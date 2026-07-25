@@ -35,10 +35,13 @@ function ResultContent() {
   const url = searchParams.get("url") ?? "";
   const keyword = searchParams.get("keyword") ?? undefined;
 
-  const [status, setStatus] = useState<AuditStatus>("loading");
+  const [status, setStatus] = useState<AuditStatus>(() => (url ? "loading" : "error"));
   const [data, setData] = useState<AuditResponseData | null>(null);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState(() =>
+    url ? "" : "Enter a website URL to run an audit.",
+  );
   const [errorRequestId, setErrorRequestId] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [activeSection, setActiveSection] = useState<Section>("overview");
   const [filters, setFilters] = useState({
     state: "all",
@@ -48,20 +51,21 @@ function ResultContent() {
     search: "",
     sort: "priority",
   });
-  const startedRef = useRef(false);
+  const requestSeqRef = useRef(0);
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-
     if (!url) return;
 
     const controller = new AbortController();
+    const requestSeq = requestSeqRef.current + 1;
+    requestSeqRef.current = requestSeq;
 
     const body: Record<string, unknown> = { url };
     if (keyword) body.keyword = keyword;
 
     let cancelled = false;
+
+    const isCurrentRequest = () => !cancelled && requestSeqRef.current === requestSeq;
 
     fetch("/api/audit", {
       method: "POST",
@@ -70,11 +74,26 @@ function ResultContent() {
       signal: controller.signal,
     })
       .then(async (res) => {
-        if (cancelled) return;
-        const json: AuditResponse = await res.json();
+        if (!isCurrentRequest()) return;
+        let json: AuditResponse;
+        try {
+          json = (await res.json()) as AuditResponse;
+        } catch {
+          if (!isCurrentRequest()) return;
+          setStatus("error");
+          setErrorMsg("The audit service returned an unreadable response.");
+          setErrorRequestId(null);
+          return;
+        }
+        if (!isCurrentRequest()) return;
         if (!json.success || !json.data) {
           setStatus("error");
-          setErrorMsg(json.error?.message ?? "The audit could not be completed.");
+          setErrorMsg(
+            json.error?.message ??
+              (res.ok
+                ? "The audit could not be completed."
+                : `Audit failed with HTTP ${res.status}.`),
+          );
           setErrorRequestId(json.requestId ?? null);
           return;
         }
@@ -83,7 +102,8 @@ function ResultContent() {
         document.title = `Audit Results — ${new URL(json.data.finalUrl).hostname} — Nexora SEO Analyzer`;
       })
       .catch((err: Error) => {
-        if (cancelled || err.name === "AbortError") return;
+        if (!isCurrentRequest()) return;
+        if (err.name === "AbortError") return;
         setStatus("error");
         setErrorMsg("Network error. Please check your connection and try again.");
       });
@@ -92,7 +112,15 @@ function ResultContent() {
       cancelled = true;
       controller.abort();
     };
-  }, [url, keyword]);
+  }, [url, keyword, retryNonce]);
+
+  const retryAudit = useCallback(() => {
+    setStatus("loading");
+    setData(null);
+    setErrorMsg("");
+    setErrorRequestId(null);
+    setRetryNonce((n) => n + 1);
+  }, []);
 
   const findings = useMemo(() => {
     if (!data) return [];
@@ -290,7 +318,7 @@ function ResultContent() {
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     ) : (
-                      <span className="text-[13px] font-bold">{i + 1}</span>
+                      <span className="h-2 w-2 rounded-full bg-current" aria-hidden="true" />
                     )}
                   </div>
                   <span
@@ -337,7 +365,7 @@ function ResultContent() {
             <p className="mt-3 text-[13px] text-text-tertiary">Request ID: {errorRequestId}</p>
           )}
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button onClick={() => window.location.reload()}>Retry</Button>
+            <Button onClick={retryAudit}>Retry</Button>
             <Button onClick={() => router.push("/")} variant="secondary">
               Back to homepage
             </Button>

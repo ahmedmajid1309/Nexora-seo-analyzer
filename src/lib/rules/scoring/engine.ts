@@ -182,7 +182,7 @@ function computePageSpeedScore(pagespeed: PageSpeedOutput | undefined): {
       performanceSource: null,
       performanceConfidence: null,
       performanceExplanation:
-        "PageSpeed Insights API key is not configured. Add PAGESPEED_API_KEY to enable performance scoring.",
+        "PageSpeed Insights data was unavailable. The core SEO audit completed without performance scoring.",
     };
   }
 

@@ -15,7 +15,6 @@ import {
   getExecutionDeadline,
 } from "@/lib/audit/abuse-protection";
 import { CALCULATION_VERSION } from "@/lib/rules/scoring/types";
-import { env } from "@/config/env";
 import type { PageSpeedOutput } from "@/lib/pagespeed/types";
 import {
   trackAuditRequest,
@@ -192,13 +191,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const runResult = runAll(snapshot);
 
       let pagespeed: PageSpeedOutput | undefined;
-      if (env.PAGESPEED_API_KEY) {
-        try {
-          const { fetchPageSpeedBoth } = await import("@/lib/pagespeed/parser");
-          pagespeed = await fetchPageSpeedBoth({ url, timeoutMs: 15000 });
-        } catch {
-          // PageSpeed is optional — continue without it
-        }
+      try {
+        const { fetchPageSpeedBoth } = await import("@/lib/pagespeed/parser");
+        pagespeed = await fetchPageSpeedBoth({ url, timeoutMs: 15000 });
+      } catch {
+        // PageSpeed is optional — continue without it
       }
 
       const scores = calculateScores({ results: runResult.results, snapshot, pagespeed });
