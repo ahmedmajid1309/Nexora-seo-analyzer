@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 const mockUrl = "https://example.com";
 let mockSearchParams = new URLSearchParams(`url=${encodeURIComponent(mockUrl)}`);
@@ -167,6 +167,23 @@ function createMockResponse(overrides: Record<string, unknown> = {}) {
         ],
       },
       performanceDesktop: null,
+      serpPreview: {
+        title: "Real SERP Title",
+        description: "Real meta description for the result page",
+        canonicalUrl: "https://example.com/canonical",
+        displayUrl: "https://example.com/canonical",
+      },
+      socialPreview: {
+        ogTitle: "Real OG Title",
+        ogDescription: "Real OG Description",
+        ogImage: "https://example.com/og.jpg",
+        ogUrl: "https://example.com/share",
+        ogType: "website",
+        twitterCard: "summary_large_image",
+        twitterTitle: "Real Twitter Title",
+        twitterDescription: "Real Twitter Description",
+        twitterImage: "https://example.com/twitter.jpg",
+      },
       calculationVersion: "1.0",
       snapshotSchemaVersion: "1.0",
       ...overrides,
@@ -189,12 +206,12 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("SEO Health")).toBeInTheDocument();
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
     });
-    expect(screen.getByText("Accessibility")).toBeInTheDocument();
-    expect(screen.getByText("Security & Trust")).toBeInTheDocument();
-    expect(screen.getByText("AEO Readiness")).toBeInTheDocument();
-    expect(screen.getByText("GEO Readiness")).toBeInTheDocument();
+    expect(screen.getAllByText("Accessibility").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Security & Trust").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("AEO Readiness").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("GEO Readiness").length).toBeGreaterThan(0);
   });
 
   it("shows confidence display", async () => {
@@ -305,7 +322,7 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("SEO Health")).toBeInTheDocument();
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
     });
 
     const meta = document.querySelector('meta[name="robots"]');
@@ -322,11 +339,11 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Need help fixing these issues/i)).toBeInTheDocument();
+      expect(screen.getByText(/Ready for the next audit/i)).toBeInTheDocument();
     });
   });
 
-  it("shows mobile navigation toggle", async () => {
+  it("shows horizontally scrollable report navigation", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       json: () => Promise.resolve(createMockResponse()),
     });
@@ -335,15 +352,13 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("SEO Health")).toBeInTheDocument();
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle report navigation");
-    expect(toggle).toBeInTheDocument();
-    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "Search & Social" })).toBeInTheDocument();
   });
 
-  it("opens mobile nav on toggle click", async () => {
+  it("uses real response fields in Search/Social previews", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       json: () => Promise.resolve(createMockResponse()),
     });
@@ -352,18 +367,11 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Toggle report navigation")).toBeInTheDocument();
+      expect(screen.getByText("Real SERP Title")).toBeInTheDocument();
     });
-
-    const toggle = screen.getByLabelText("Toggle report navigation");
-    await act(async () => {
-      toggle.click();
-    });
-
-    await waitFor(() => {
-      const mobileLinks = document.querySelectorAll(".sm\\:hidden button");
-      expect(mobileLinks.length).toBeGreaterThanOrEqual(7);
-    });
+    expect(screen.getByText("Real meta description for the result page")).toBeInTheDocument();
+    expect(screen.getByText("Real OG Title")).toBeInTheDocument();
+    expect(screen.getByText("Real OG Description")).toBeInTheDocument();
   });
 
   it("no body-level horizontal overflow", async () => {
@@ -375,7 +383,7 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("SEO Health")).toBeInTheDocument();
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
     });
 
     const body = document.body;
@@ -398,6 +406,20 @@ describe("ResultPage", () => {
     expect(filterBtn).toHaveTextContent(/Filters/);
   });
 
+  it("renders one full Performance diagnostics panel", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(createMockResponse()),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Performance diagnostics")).toHaveLength(1);
+    });
+    expect(screen.getByText("Performance summary")).toBeInTheDocument();
+  });
+
   it("no unexpected console errors", async () => {
     const spy = vi.spyOn(console, "error");
     globalThis.fetch = vi.fn().mockResolvedValue({
@@ -408,7 +430,7 @@ describe("ResultPage", () => {
     render(<ResultPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("SEO Health")).toBeInTheDocument();
+      expect(screen.getAllByText("SEO Health").length).toBeGreaterThan(0);
     });
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();

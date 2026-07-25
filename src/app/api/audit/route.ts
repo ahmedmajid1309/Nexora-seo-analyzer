@@ -24,8 +24,79 @@ import {
   captureError,
 } from "@/lib/monitoring";
 import { auditLogger } from "@/lib/logging";
+import type { PageSnapshot } from "@/lib/extraction/types";
 
 export const runtime = "nodejs";
+
+function firstMetadata(snapshot: PageSnapshot, name: string): string | null {
+  const entry = snapshot.metadata.find((m) => m.name.toLowerCase() === name.toLowerCase());
+  return entry?.normalizedValue?.trim() || entry?.rawValue?.trim() || null;
+}
+
+function firstOpenGraph(snapshot: PageSnapshot, property: string): string | null {
+  return (
+    snapshot.social.openGraph
+      .find((entry) => entry.property.toLowerCase() === property.toLowerCase())
+      ?.content.trim() || null
+  );
+}
+
+function firstTwitter(snapshot: PageSnapshot, name: string): string | null {
+  return (
+    snapshot.social.twitter
+      .find((entry) => entry.name.toLowerCase() === name.toLowerCase())
+      ?.content.trim() || null
+  );
+}
+
+function resolveAgainstFinalUrl(value: string | null, finalUrl: string): string | null {
+  if (!value) return null;
+  try {
+    return new URL(value, finalUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
+function buildPreviewData(
+  snapshot: PageSnapshot,
+): Pick<AuditResponseData, "serpPreview" | "socialPreview"> {
+  const metaDescription = firstMetadata(snapshot, "description");
+  const canonicalUrl = resolveAgainstFinalUrl(
+    firstMetadata(snapshot, "canonical"),
+    snapshot.finalUrl,
+  );
+  const ogTitle = firstOpenGraph(snapshot, "og:title");
+  const ogDescription = firstOpenGraph(snapshot, "og:description");
+  const ogImage = resolveAgainstFinalUrl(firstOpenGraph(snapshot, "og:image"), snapshot.finalUrl);
+  const ogUrl = resolveAgainstFinalUrl(firstOpenGraph(snapshot, "og:url"), snapshot.finalUrl);
+  const twitterTitle = firstTwitter(snapshot, "twitter:title");
+  const twitterDescription = firstTwitter(snapshot, "twitter:description");
+  const twitterImage = resolveAgainstFinalUrl(
+    firstTwitter(snapshot, "twitter:image"),
+    snapshot.finalUrl,
+  );
+
+  return {
+    serpPreview: {
+      title: snapshot.document.title || ogTitle || null,
+      description: metaDescription || ogDescription || null,
+      canonicalUrl,
+      displayUrl: canonicalUrl || snapshot.finalUrl,
+    },
+    socialPreview: {
+      ogTitle,
+      ogDescription,
+      ogImage,
+      ogUrl,
+      ogType: firstOpenGraph(snapshot, "og:type"),
+      twitterCard: firstTwitter(snapshot, "twitter:card"),
+      twitterTitle,
+      twitterDescription,
+      twitterImage,
+    },
+  };
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
@@ -184,6 +255,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       const psMobile = pagespeed?.mobile ?? null;
       const psDesktop = pagespeed?.desktop ?? null;
+      const previews = buildPreviewData(snapshot);
 
       const data: AuditResponseData = {
         requestId,
@@ -228,6 +300,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
               opportunities: psDesktop.opportunities.slice(0, 10),
             }
           : null,
+        serpPreview: previews.serpPreview,
+        socialPreview: previews.socialPreview,
         calculationVersion: CALCULATION_VERSION,
         snapshotSchemaVersion: snapshot.schemaVersion,
       };

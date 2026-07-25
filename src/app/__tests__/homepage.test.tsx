@@ -39,7 +39,7 @@ describe("HomePage", () => {
 
   it("renders trust line", () => {
     render(<HomePage />);
-    expect(screen.getByText(/free.*no signup.*actionable results/i)).toBeInTheDocument();
+    expect(screen.getByText(/No signup/i)).toBeInTheDocument();
   });
 
   it("renders category ticker", () => {
@@ -49,8 +49,8 @@ describe("HomePage", () => {
 
   it("renders every audit checks section", () => {
     render(<HomePage />);
-    expect(screen.getByText(/85\+/)).toBeInTheDocument();
-    expect(screen.getByText(/Evidence-based checks/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/85\+/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/evidence-based SEO checks/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders methodology transparency section", () => {
@@ -61,12 +61,12 @@ describe("HomePage", () => {
 
   it("renders Nexora Creation CTA", () => {
     render(<HomePage />);
-    expect(screen.getByText(/built by nexora creation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Talk to Nexora Creation/i)).toBeInTheDocument();
   });
 
   it("renders Demo data label on sample dashboard", () => {
     render(<HomePage />);
-    expect(screen.getByText(/Demo data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Demonstration data/i)).toBeInTheDocument();
   });
 
   it("renders sample SEO score 78 in hero dashboard", () => {

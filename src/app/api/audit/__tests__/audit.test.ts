@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { POST } from "../route";
 import type { AuditResponse } from "@/lib/audit/types";
+import { buildPageSnapshot } from "@/lib/extraction";
 
 const hoisted = vi.hoisted(() => {
   type MockRule = {
@@ -91,7 +92,7 @@ vi.mock("@/lib/extraction", () => ({
     schemaVersion: "1.0.0",
     extractedAt: new Date().toISOString(),
     requestedUrl: fetchResult.url,
-    finalUrl: fetchResult.url,
+    finalUrl: "https://example.com/path/page",
     response: {
       status: fetchResult.status,
       contentType: "text/html",
@@ -113,14 +114,43 @@ vi.mock("@/lib/extraction", () => ({
       approxDomNodeCount: 50,
       declaredLanguage: "en",
     },
-    metadata: [],
+    metadata: [
+      {
+        name: "description",
+        rawValue: "Meta description from page",
+        normalizedValue: "Meta description from page",
+        sourceAttribute: "name",
+        elementOrder: 1,
+      },
+      {
+        name: "canonical",
+        rawValue: "/canonical-page",
+        normalizedValue: "/canonical-page",
+        sourceAttribute: "href",
+        elementOrder: 2,
+      },
+    ],
     headings: [],
     links: [],
     images: [],
     structuredData: [],
     microdata: { present: false, itemCount: 0, itemTypes: [] },
     rdfa: { present: false, typeofCount: 0, propertyCount: 0 },
-    social: { openGraph: [], twitter: [] },
+    social: {
+      openGraph: [
+        { property: "og:title", content: "OG Title", elementOrder: 0 },
+        { property: "og:description", content: "OG Description", elementOrder: 1 },
+        { property: "og:image", content: "/og-image.jpg", elementOrder: 2 },
+        { property: "og:url", content: "/share", elementOrder: 3 },
+        { property: "og:type", content: "website", elementOrder: 4 },
+      ],
+      twitter: [
+        { name: "twitter:card", content: "summary_large_image", elementOrder: 0 },
+        { name: "twitter:title", content: "Twitter Title", elementOrder: 1 },
+        { name: "twitter:description", content: "Twitter Description", elementOrder: 2 },
+        { name: "twitter:image", content: "/twitter-image.jpg", elementOrder: 3 },
+      ],
+    },
     content: {
       visibleText: "Hello",
       totalChars: 5,
@@ -254,6 +284,15 @@ vi.mock("@/lib/errors", () => ({
   isNexoraError: vi.fn().mockReturnValue(false),
 }));
 
+vi.mock("@/lib/audit/abuse-protection", () => ({
+  checkRateLimit: vi.fn().mockReturnValue({ allowed: true }),
+  checkHostCooldown: vi.fn().mockReturnValue({ allowed: true }),
+  setHostCooldown: vi.fn(),
+  acquireConcurrentSlot: vi.fn().mockReturnValue(true),
+  releaseConcurrentSlot: vi.fn(),
+  getExecutionDeadline: vi.fn().mockReturnValue(30_000),
+}));
+
 vi.mock("@/lib/rules/scoring/types", () => ({
   CALCULATION_VERSION: "1.0.0",
 }));
@@ -301,6 +340,69 @@ describe("POST /api/audit", () => {
     const res = await POST(createRequest({ url: "https://example.com" }));
     const json: AuditResponse = await res.json();
     expect(json.data!.performanceStatus).toBe("unavailable");
+  });
+
+  it("returns real SERP preview fields from metadata", async () => {
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+    expect(json.data!.serpPreview.title).toBe("Test");
+    expect(json.data!.serpPreview.description).toBe("Meta description from page");
+    expect(json.data!.serpPreview.canonicalUrl).toBe("https://example.com/canonical-page");
+    expect(json.data!.serpPreview.displayUrl).toBe("https://example.com/canonical-page");
+  });
+
+  it("returns real Open Graph and Twitter preview fields", async () => {
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+    expect(json.data!.socialPreview.ogTitle).toBe("OG Title");
+    expect(json.data!.socialPreview.ogDescription).toBe("OG Description");
+    expect(json.data!.socialPreview.ogImage).toBe("https://example.com/og-image.jpg");
+    expect(json.data!.socialPreview.twitterCard).toBe("summary_large_image");
+    expect(json.data!.socialPreview.twitterTitle).toBe("Twitter Title");
+    expect(json.data!.socialPreview.twitterImage).toBe("https://example.com/twitter-image.jpg");
+  });
+
+  it("uses Twitter fallback for social title and description when Open Graph is missing", async () => {
+    const original = vi.mocked(buildPageSnapshot).getMockImplementation() as (
+      fetchResult: never,
+    ) => ReturnType<typeof buildPageSnapshot>;
+    vi.mocked(buildPageSnapshot).mockImplementationOnce((fetchResult) => ({
+      ...original(fetchResult as never),
+      document: { ...original(fetchResult as never).document, title: null },
+      metadata: [],
+      social: {
+        openGraph: [],
+        twitter: [
+          { name: "twitter:title", content: "Fallback Twitter Title", elementOrder: 0 },
+          { name: "twitter:description", content: "Fallback Twitter Description", elementOrder: 1 },
+        ],
+      },
+    }));
+
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+    expect(json.data!.socialPreview.ogTitle).toBeNull();
+    expect(json.data!.socialPreview.twitterTitle).toBe("Fallback Twitter Title");
+    expect(json.data!.socialPreview.twitterDescription).toBe("Fallback Twitter Description");
+  });
+
+  it("returns honest null preview values when metadata is missing", async () => {
+    const original = vi.mocked(buildPageSnapshot).getMockImplementation() as (
+      fetchResult: never,
+    ) => ReturnType<typeof buildPageSnapshot>;
+    vi.mocked(buildPageSnapshot).mockImplementationOnce((fetchResult) => ({
+      ...original(fetchResult as never),
+      document: { ...original(fetchResult as never).document, title: null },
+      metadata: [],
+      social: { openGraph: [], twitter: [] },
+    }));
+
+    const res = await POST(createRequest({ url: "https://example.com" }));
+    const json: AuditResponse = await res.json();
+    expect(json.data!.serpPreview.title).toBeNull();
+    expect(json.data!.serpPreview.description).toBeNull();
+    expect(json.data!.serpPreview.canonicalUrl).toBeNull();
+    expect(json.data!.socialPreview.ogImage).toBeNull();
   });
 
   it("returns 400 for invalid URL", async () => {

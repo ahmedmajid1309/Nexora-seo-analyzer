@@ -53,6 +53,26 @@ const mockData: AuditResponseData = {
   performanceSource: "pagespeed-mobile",
   performanceConfidence: 78,
   performanceExplanation: "Based on Lighthouse simulation and CrUX field data.",
+  serpPreview: {
+    title: "Nexora SEO Analyzer — Technical SEO Audit Tool",
+    description:
+      "Get a comprehensive technical SEO audit with actionable recommendations. Analyze meta tags, performance, accessibility, structured data, and more — powered by Nexora Creation.",
+    canonicalUrl: "https://www.example-nexora-site.com",
+    displayUrl: "https://www.example-nexora-site.com",
+  },
+  socialPreview: {
+    ogTitle: "Nexora SEO Analyzer — Technical SEO Audit Tool",
+    ogDescription:
+      "Get a comprehensive technical SEO audit with actionable recommendations for your website. Analyze meta tags, performance, accessibility, structured data, and more.",
+    ogImage: "https://nexora.de/og-image.jpg",
+    ogUrl: "https://www.example-nexora-site.com",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    twitterTitle: "Nexora SEO Analyzer — Technical SEO Audit Tool",
+    twitterDescription:
+      "Get a comprehensive technical SEO audit with actionable recommendations for your website.",
+    twitterImage: "https://nexora.de/twitter-image.jpg",
+  },
   calculationVersion: "2026-07-v3",
   snapshotSchemaVersion: "2026-07-v3",
   scoreFamilies: [
@@ -1266,9 +1286,10 @@ function MockResultContent() {
           <h2 className="text-base font-bold text-text-primary sm:text-lg">SERP Preview</h2>
           <div className="mt-4 max-w-xl">
             <SerpPreview
-              title="Nexora SEO Analyzer — Technical SEO Audit Tool"
-              description="Get a comprehensive technical SEO audit with actionable recommendations. Analyze meta tags, performance, accessibility, structured data, and more — powered by Nexora Creation."
-              url={data.finalUrl}
+              title={data.serpPreview.title}
+              description={data.serpPreview.description}
+              canonicalUrl={data.serpPreview.canonicalUrl}
+              displayUrl={data.serpPreview.displayUrl}
             />
           </div>
         </section>
@@ -1282,10 +1303,15 @@ function MockResultContent() {
           <h2 className="text-base font-bold text-text-primary sm:text-lg">Social Preview</h2>
           <div className="mt-4 max-w-xl">
             <SocialPreview
-              ogTitle="Nexora SEO Analyzer — Technical SEO Audit Tool"
-              ogDescription="Get a comprehensive technical SEO audit with actionable recommendations for your website. Analyze meta tags, performance, accessibility, structured data, and more."
-              ogImage="https://nexora.de/og-image.jpg"
-              twitterCard="summary_large_image"
+              ogTitle={data.socialPreview.ogTitle}
+              ogDescription={data.socialPreview.ogDescription}
+              ogImage={data.socialPreview.ogImage}
+              ogUrl={data.socialPreview.ogUrl}
+              ogType={data.socialPreview.ogType}
+              twitterCard={data.socialPreview.twitterCard}
+              twitterTitle={data.socialPreview.twitterTitle}
+              twitterDescription={data.socialPreview.twitterDescription}
+              twitterImage={data.socialPreview.twitterImage}
             />
           </div>
         </section>

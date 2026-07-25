@@ -39,12 +39,15 @@ export function PerformanceSection({
 
   if (status === "unavailable") {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-bg-card p-4 sm:p-5">
-        <p className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
-          Performance
+      <div className="rounded-2xl border border-zinc-800 bg-gradient-to-b from-bg-card to-bg-elevated p-5 sm:p-6">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-brand">
+          Performance diagnostics
         </p>
-        <p className="mt-2 text-4xl font-bold text-text-tertiary">&mdash;</p>
-        <p className="mt-1 text-xs text-text-tertiary">{explanation}</p>
+        <p className="mt-3 text-xl font-bold text-text-primary">Optional data unavailable</p>
+        <p className="mt-2 text-base leading-relaxed text-text-secondary">
+          {explanation} The core SEO audit completed. Unavailable Performance data is not a zero
+          score, and you can rescan later.
+        </p>
       </div>
     );
   }
@@ -59,30 +62,30 @@ export function PerformanceSection({
       : "text-text-tertiary";
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-bg-card p-5">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
-          Performance
+    <div className="rounded-2xl border border-zinc-800 bg-gradient-to-b from-bg-card to-bg-elevated p-5 sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-brand">
+          Performance diagnostics
         </p>
         {source && (
-          <span className="shrink-0 rounded bg-brand-muted px-1.5 py-0.5 text-[13px] font-medium uppercase tracking-wider text-brand">
+          <span className="shrink-0 rounded-full border border-brand/25 bg-brand-muted px-3 py-1 text-[13px] font-semibold uppercase tracking-wider text-brand">
             {source === "pagespeed-mobile" ? "Mobile Primary" : "Desktop Fallback"}
           </span>
         )}
       </div>
 
-      <div className="mt-3 flex items-baseline gap-3">
-        <span className={`text-4xl font-bold tabular-nums ${scoreColor}`}>
+      <div className="mt-4 flex items-end gap-3">
+        <span className={`text-6xl font-bold leading-none tabular-nums ${scoreColor}`}>
           {score !== null ? Math.round(score) : "\u2014"}
         </span>
         {score !== null && (
-          <span className="text-xs text-text-tertiary">
+          <span className="pb-2 text-base text-text-secondary">
             {score >= 90 ? "Excellent" : score >= 50 ? "Needs Work" : "Poor"}
           </span>
         )}
       </div>
 
-      <div className="mt-1 flex flex-wrap gap-2 text-xs text-text-tertiary">
+      <div className="mt-3 flex flex-wrap gap-3 text-base text-text-secondary">
         {explanation && <span>{explanation}</span>}
         {performanceConfidence !== null && performanceConfidence !== undefined && (
           <span>Confidence: {performanceConfidence}%</span>
@@ -94,10 +97,10 @@ export function PerformanceSection({
         )}
       </div>
 
-      <div className="mt-4 flex gap-2 border-b border-zinc-800 pb-2 overflow-x-auto">
+      <div className="mt-5 flex gap-2 overflow-x-auto border-b border-zinc-800 pb-3">
         <button
           onClick={() => setTab("mobile")}
-          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`min-h-11 rounded-xl px-4 py-2 text-base font-semibold transition-colors ${
             tab === "mobile"
               ? "bg-brand/15 text-brand"
               : "text-text-tertiary hover:text-text-primary"
@@ -108,7 +111,7 @@ export function PerformanceSection({
         </button>
         <button
           onClick={() => setTab("desktop")}
-          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`min-h-11 rounded-xl px-4 py-2 text-base font-semibold transition-colors ${
             tab === "desktop"
               ? "bg-brand/15 text-brand"
               : "text-text-tertiary hover:text-text-primary"
@@ -161,7 +164,7 @@ function LabMetricsTable({ metrics }: { metrics: PageSpeedSideData["labMetrics"]
 
   return (
     <div className="mt-4">
-      <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+      <p className="text-[13px] font-semibold uppercase tracking-wider text-text-tertiary">
         Lab Data <span className="font-normal normal-case text-text-tertiary">(Lighthouse)</span>
       </p>
       <p className="mt-0.5 text-[13px] text-text-tertiary">
@@ -171,12 +174,14 @@ function LabMetricsTable({ metrics }: { metrics: PageSpeedSideData["labMetrics"]
         {rows.map((r) => (
           <div
             key={r.label}
-            className="flex items-center justify-between rounded-lg bg-bg-elevated px-3 py-2"
+            className="flex items-center justify-between rounded-lg bg-bg-elevated px-3 py-2.5"
           >
-            <span className="text-xs font-medium text-text-primary">{r.label}</span>
+            <span className="text-base font-medium text-text-primary">{r.label}</span>
             <div className="flex items-center gap-2">
-              <span className="technical-value text-xs text-text-secondary">{r.value}</span>
-              <span className={`technical-value text-xs font-medium ${metricScoreClass(r.score)}`}>
+              <span className="technical-value text-[13px] text-text-secondary">{r.value}</span>
+              <span
+                className={`technical-value text-[13px] font-medium ${metricScoreClass(r.score)}`}
+              >
                 {r.score}
               </span>
             </div>
@@ -220,14 +225,14 @@ function FieldDataTable({ fieldData }: { fieldData: PageSpeedSideData["fieldData
 
   return (
     <div className="mt-4">
-      <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+      <p className="text-[13px] font-semibold uppercase tracking-wider text-text-tertiary">
         Field Data <span className="font-normal normal-case text-text-tertiary">(CrUX)</span>
       </p>
       <p className="mt-0.5 text-[13px] text-text-tertiary">
         Real-world performance from Chrome users. Missing data does not indicate zero traffic.
       </p>
       {fieldData.overallCategory && (
-        <p className="mt-1 text-xs text-text-secondary">
+        <p className="mt-1 text-base text-text-secondary">
           Overall:{" "}
           <span className={`font-medium ${fieldCategoryClass(fieldData.overallCategory)}`}>
             {fieldData.overallCategory}
@@ -238,13 +243,13 @@ function FieldDataTable({ fieldData }: { fieldData: PageSpeedSideData["fieldData
         {rows.map((r) => (
           <div
             key={r.label}
-            className="flex items-center justify-between rounded-lg bg-bg-elevated px-3 py-2"
+            className="flex items-center justify-between rounded-lg bg-bg-elevated px-3 py-2.5"
           >
-            <span className="text-xs font-medium text-text-primary">{r.label}</span>
+            <span className="text-base font-medium text-text-primary">{r.label}</span>
             <div className="flex items-center gap-2">
-              <span className="technical-value text-xs text-text-secondary">{r.value}</span>
+              <span className="technical-value text-[13px] text-text-secondary">{r.value}</span>
               <span
-                className={`technical-value text-xs font-medium ${fieldCategoryClass(r.category)}`}
+                className={`technical-value text-[13px] font-medium ${fieldCategoryClass(r.category)}`}
               >
                 {r.category}
               </span>
@@ -261,7 +266,7 @@ function OpportunityList({ opportunities }: { opportunities: PageSpeedSideData["
 
   return (
     <div className="mt-4">
-      <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+      <p className="text-[13px] font-semibold uppercase tracking-wider text-text-tertiary">
         Opportunities ({opportunities.length})
       </p>
       <p className="mt-0.5 text-[13px] text-text-tertiary">
@@ -271,9 +276,9 @@ function OpportunityList({ opportunities }: { opportunities: PageSpeedSideData["
         {opportunities.map((o) => (
           <div key={o.id} className="rounded-lg bg-bg-elevated px-3 py-2">
             <div className="flex items-start justify-between gap-2">
-              <p className="text-xs text-text-primary">{o.title}</p>
+              <p className="text-base font-medium text-text-primary">{o.title}</p>
               <span
-                className={`technical-value shrink-0 text-xs font-medium ${
+                className={`technical-value shrink-0 text-[13px] font-medium ${
                   o.score < 50 ? "text-critical" : o.score < 90 ? "text-warning" : "text-success"
                 }`}
               >
@@ -281,7 +286,7 @@ function OpportunityList({ opportunities }: { opportunities: PageSpeedSideData["
               </span>
             </div>
             {o.estimatedSavingsMs !== null && (
-              <p className="mt-0.5 text-xs text-text-tertiary">
+              <p className="mt-1 text-[13px] text-text-tertiary">
                 Potential savings: ~{o.estimatedSavingsMs}ms
               </p>
             )}

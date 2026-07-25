@@ -85,6 +85,25 @@ export interface PageSpeedSideData {
 
 export type AuditPerformanceSource = "pagespeed-mobile" | "pagespeed-desktop-fallback" | null;
 
+export interface SerpPreviewData {
+  title: string | null;
+  description: string | null;
+  canonicalUrl: string | null;
+  displayUrl: string;
+}
+
+export interface SocialPreviewData {
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImage: string | null;
+  ogUrl: string | null;
+  ogType: string | null;
+  twitterCard: string | null;
+  twitterTitle: string | null;
+  twitterDescription: string | null;
+  twitterImage: string | null;
+}
+
 export interface AuditResponseData {
   requestId: string;
   requestedUrl: string;
@@ -111,6 +130,8 @@ export interface AuditResponseData {
   performanceExplanation: string;
   performanceMobile: PageSpeedSideData | null;
   performanceDesktop: PageSpeedSideData | null;
+  serpPreview: SerpPreviewData;
+  socialPreview: SocialPreviewData;
   calculationVersion: string;
   snapshotSchemaVersion: string;
 }

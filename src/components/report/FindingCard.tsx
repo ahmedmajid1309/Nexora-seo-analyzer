@@ -18,6 +18,9 @@ type FindingCardProps = {
   effort: string | null;
   evidenceValue: string | number | boolean | null;
   scored: boolean;
+  confidence?: number;
+  applicabilityReason?: string;
+  unavailableReason?: string;
 };
 
 export function FindingCard({
@@ -33,6 +36,9 @@ export function FindingCard({
   effort,
   evidenceValue,
   scored,
+  confidence,
+  applicabilityReason,
+  unavailableReason,
 }: FindingCardProps) {
   const [expanded, setExpanded] = useState(false);
   const reduced = useReducedMotion();
@@ -57,15 +63,15 @@ export function FindingCard({
   const badgeClass = stateBadge[state] || "bg-zinc-700/50 text-text-tertiary";
 
   return (
-    <div className={`rounded-lg border border-zinc-800 border-l-4 overflow-hidden ${borderClass}`}>
+    <div className={`overflow-hidden rounded-2xl border border-zinc-800 border-l-4 ${borderClass}`}>
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-bg-hover/50"
+        className="flex min-h-[72px] w-full items-start justify-between gap-4 px-4 py-4 text-left transition-colors hover:bg-bg-hover/50 sm:px-5"
         aria-expanded={expanded}
       >
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`rounded px-1.5 py-0.5 text-[13px] font-medium uppercase ${badgeClass}`}
             >
@@ -88,10 +94,16 @@ export function FindingCard({
             )}
             <span className="technical-value text-[13px] text-text-tertiary">{checkId}</span>
           </div>
-          <p className="mt-1.5 text-sm font-medium text-text-primary break-words">{summary}</p>
+          <p className="mt-2 break-words text-base font-semibold text-text-primary">{summary}</p>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-medium uppercase tracking-[0.11em] text-text-secondary">
+            <span>{category}</span>
+            {impact && <span>Impact: {impact}</span>}
+            {effort && <span>Effort: {effort}</span>}
+            {responsible && <span>Role: {responsible}</span>}
+          </div>
         </div>
         <motion.span
-          className="mt-1 shrink-0 text-text-tertiary"
+          className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-zinc-700 text-text-tertiary"
           animate={{ rotate: expanded ? 180 : 0 }}
           transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
         >
@@ -109,31 +121,33 @@ export function FindingCard({
             transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
             style={{ overflow: "hidden" }}
           >
-            <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
+            <div className="border-t border-zinc-800 px-4 pb-5 pt-4 sm:px-5">
               {impact && (
-                <div className="mb-3">
-                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <div className="mb-4">
+                  <p className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
                     Impact
                   </p>
-                  <p className="mt-0.5 text-sm text-text-secondary">{impact}</p>
+                  <p className="mt-1 text-base leading-relaxed text-text-secondary">{impact}</p>
                 </div>
               )}
 
               {remediationSummary && (
-                <div className="mb-3">
-                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
-                    How to fix
+                <div className="mb-4">
+                  <p className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
+                    Remediation summary
                   </p>
-                  <p className="mt-0.5 text-sm text-text-secondary">{remediationSummary}</p>
+                  <p className="mt-1 text-base leading-relaxed text-text-secondary">
+                    {remediationSummary}
+                  </p>
                 </div>
               )}
 
               {remediationSteps.length > 0 && (
-                <div className="mb-3">
-                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wider">
+                <div className="mb-4">
+                  <p className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
                     Steps
                   </p>
-                  <ol className="mt-1 list-decimal pl-4 text-sm text-text-secondary">
+                  <ol className="mt-2 list-decimal space-y-1 pl-5 text-base leading-relaxed text-text-secondary">
                     {remediationSteps.map((step, i) => (
                       <li key={i}>{step}</li>
                     ))}
@@ -141,7 +155,22 @@ export function FindingCard({
                 </div>
               )}
 
-              <div className="mt-3 flex flex-wrap gap-3 text-xs text-text-tertiary">
+              {(applicabilityReason || unavailableReason || evidenceValue !== null) && (
+                <div className="mb-4 rounded-xl border border-zinc-800 bg-bg-primary/60 p-4">
+                  <p className="text-[13px] font-semibold uppercase tracking-wider text-text-tertiary">
+                    Evidence and applicability
+                  </p>
+                  <div className="mt-2 space-y-1 text-[15px] leading-relaxed text-text-secondary">
+                    {evidenceValue !== null && evidenceValue !== undefined && (
+                      <p className="technical-value">Observed value: {String(evidenceValue)}</p>
+                    )}
+                    {applicabilityReason && <p>{applicabilityReason}</p>}
+                    {unavailableReason && <p>{unavailableReason}</p>}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-3 flex flex-wrap gap-3 text-[13px] text-text-tertiary">
                 {responsible && (
                   <span>
                     <span className="font-medium text-text-tertiary">Responsible:</span>{" "}
@@ -153,12 +182,7 @@ export function FindingCard({
                     <span className="font-medium text-text-tertiary">Effort:</span> {effort}
                   </span>
                 )}
-                {evidenceValue !== null && evidenceValue !== undefined && (
-                  <span className="technical-value">
-                    <span className="font-medium text-text-tertiary">Value:</span>{" "}
-                    {String(evidenceValue)}
-                  </span>
-                )}
+                {confidence !== undefined && <span>Confidence: {confidence}%</span>}
                 <span>
                   <span className="font-medium text-text-tertiary">Category:</span> {category}
                 </span>
