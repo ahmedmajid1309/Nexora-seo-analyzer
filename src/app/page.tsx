@@ -527,171 +527,279 @@ export default function HomePage() {
             </Reveal>
             <Reveal delay={0.15}>
               <p className="mt-5 text-[17px] text-text-secondary leading-relaxed">
-                From URL submission to complete report — every stage is deterministic and
-                transparent.
+                From secure URL validation to a prioritized report, every stage is visible and
+                evidence-led.
               </p>
             </Reveal>
           </div>
 
-          {/* Desktop: connected lifecycle (3 × 2 grid with connectors) */}
-          <div className="hidden lg:block mt-16">
-            {/* Top row */}
-            <div className="grid grid-cols-3 gap-8">
-              {[
-                {
-                  step: "01",
-                  title: "Secure & Validate",
-                  desc: "URL verified through our secure proxy. DNS, TLS, and response integrity checked before analysis begins.",
-                },
-                {
-                  step: "02",
-                  title: "Fetch & Extract",
-                  desc: "Page fetched server-side and parsed across 11+ SEO dimensions simultaneously.",
-                },
-                {
-                  step: "03",
-                  title: "Run Deterministic Checks",
-                  desc: "Hundreds of evidence-based rules evaluate each signal against best-practice criteria.",
-                },
-              ].map((stage, i) => (
-                <Reveal key={stage.step} delay={i * 0.1}>
-                  <div className="relative flex flex-col items-center text-center px-2">
-                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-base font-bold text-black shadow-lg shadow-brand/20">
-                      {stage.step}
-                    </div>
-                    <div
-                      className="mt-1 h-6 w-0.5 bg-gradient-to-b from-brand/40 to-zinc-800"
-                      aria-hidden="true"
-                    />
-                    <h3 className="mt-2 text-base font-semibold text-text-primary">
-                      {stage.title}
-                    </h3>
-                    <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
-                      {stage.desc}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+          <div className="mt-16">
+            <div className="hidden xl:block">
+              <div className="relative mx-auto max-w-7xl px-2 pb-2 pt-3">
+                <div
+                  className="absolute left-[7%] right-[7%] top-[39px] h-1 rounded-full bg-zinc-800"
+                  aria-hidden="true"
+                />
+                <motion.div
+                  className="absolute left-[7%] right-[7%] top-[39px] h-1 origin-left rounded-full bg-brand shadow-[0_0_24px_rgba(254,199,0,0.28)] motion-safe:scale-x-0 motion-reduce:scale-x-100"
+                  aria-hidden="true"
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true, margin: "-120px" }}
+                  transition={{ duration: 1.4, ease: EASE_OUT_EXPO }}
+                />
 
-            {/* Downward connector */}
-            <div className="flex justify-center py-5" aria-hidden="true">
-              <div className="flex flex-col items-center gap-1">
-                <div className="h-8 w-0.5 bg-gradient-to-b from-zinc-800 to-zinc-800" />
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-zinc-600"
-                >
-                  <path d="M12 5v14M5 12l7 7 7-7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Bottom row */}
-            <div className="grid grid-cols-3 gap-8">
-              {[
-                {
-                  step: "04",
-                  title: "Calculate Scores",
-                  desc: "Category scores from pass/fail ratios with weighted caps per dimension.",
-                },
-                {
-                  step: "05",
-                  title: "Request Performance Data",
-                  desc: "Optional PageSpeed diagnostics requested to enrich your performance intelligence.",
-                },
-                {
-                  step: "06",
-                  title: "Assemble Report",
-                  desc: "All findings, scores, and priorities compiled into a single actionable report.",
-                },
-              ].map((stage, i) => (
-                <Reveal key={stage.step} delay={(i + 3) * 0.1}>
-                  <div className="relative flex flex-col items-center text-center px-2">
-                    <motion.div
-                      className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-base font-bold text-black shadow-lg shadow-brand/20"
-                      initial={{ scale: 0.8 }}
-                      whileInView={{ scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
-                    >
-                      {stage.step}
-                    </motion.div>
-                    <h3 className="mt-4 text-base font-semibold text-text-primary">
-                      {stage.title}
-                    </h3>
-                    <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
-                      {stage.desc}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile: vertical timeline */}
-          <div className="lg:hidden mt-12">
-            <div className="relative">
-              <div className="absolute left-[23px] top-0 bottom-0 w-0.5 bg-zinc-800" />
-              <motion.div
-                className="absolute left-[23px] top-0 w-0.5 bg-gradient-to-b from-brand to-brand/40"
-                initial={{ height: "0%" }}
-                whileInView={{ height: "100%" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, ease: EASE_OUT_EXPO }}
-              />
-              <div className="space-y-10">
-                {[
-                  {
-                    step: "01",
-                    title: "Secure & Validate",
-                    desc: "URL verified through our secure proxy. DNS, TLS, and response integrity checked before analysis begins.",
-                  },
-                  {
-                    step: "02",
-                    title: "Fetch & Extract",
-                    desc: "Page fetched server-side and parsed across 11+ SEO dimensions simultaneously.",
-                  },
-                  {
-                    step: "03",
-                    title: "Run Deterministic Checks",
-                    desc: "Hundreds of evidence-based rules evaluate each signal against best-practice criteria.",
-                  },
-                  {
-                    step: "04",
-                    title: "Calculate Scores",
-                    desc: "Category scores calculated from pass/fail ratios with weighted caps per dimension.",
-                  },
-                  {
-                    step: "05",
-                    title: "Request Performance Data",
-                    desc: "Optional PageSpeed diagnostics requested to enrich your performance intelligence.",
-                  },
-                  {
-                    step: "06",
-                    title: "Assemble Report",
-                    desc: "All findings, scores, and priorities compiled into a single actionable audit report.",
-                  },
-                ].map((stage, i) => (
-                  <Reveal key={stage.step} delay={i * 0.08}>
-                    <div className="relative flex gap-5">
-                      <div className="relative z-10 flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-black shadow-lg shadow-brand/20">
-                        {stage.step}
-                      </div>
-                      <div className="min-w-0 pt-2">
-                        <h3 className="text-base font-semibold text-text-primary">{stage.title}</h3>
-                        <p className="mt-1.5 text-base text-text-tertiary leading-relaxed">
+                <div className="grid grid-cols-6 gap-5">
+                  {[
+                    {
+                      step: "01",
+                      title: "Secure & Validate",
+                      desc: "Validate the URL, DNS destination, redirects, TLS, response type and request bounds.",
+                      status: "Protected intake",
+                    },
+                    {
+                      step: "02",
+                      title: "Fetch & Extract",
+                      desc: "Fetch the page securely and extract signals across 10 audit categories.",
+                      status: "Signal capture",
+                    },
+                    {
+                      step: "03",
+                      title: "Run Verified Checks",
+                      desc: "Evaluate extracted signals through 85+ evidence-based SEO checks.",
+                      status: "Rule engine",
+                    },
+                    {
+                      step: "04",
+                      title: "Calculate Scores",
+                      desc: "Calculate category scores, confidence and applicable score caps.",
+                      status: "Score model",
+                    },
+                    {
+                      step: "05",
+                      title: "Request Performance Data",
+                      desc: "Request optional PageSpeed diagnostics without blocking the core SEO audit.",
+                      status: "Optional enrich",
+                    },
+                    {
+                      step: "06",
+                      title: "Assemble Your Report",
+                      desc: "Organize critical issues, quick wins, evidence and remediation into one prioritized report.",
+                      status: "Report Ready",
+                      final: true,
+                    },
+                  ].map((stage, i) => (
+                    <Reveal key={stage.step} delay={i * 0.08}>
+                      <div className="relative flex h-full flex-col items-center text-center">
+                        <motion.div
+                          className={`relative z-10 flex h-[56px] w-[56px] items-center justify-center rounded-full border text-base font-bold ${
+                            stage.final
+                              ? "border-brand bg-brand text-black shadow-[0_0_34px_rgba(254,199,0,0.38)]"
+                              : "border-brand/30 bg-bg-elevated text-brand shadow-lg shadow-brand/10"
+                          }`}
+                          initial={{ scale: 0.92 }}
+                          whileInView={{ scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.35, delay: i * 0.04, ease: EASE_OUT_EXPO }}
+                        >
+                          {stage.step}
+                        </motion.div>
+                        <span
+                          className={`mt-5 rounded-full border px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.14em] ${
+                            stage.final
+                              ? "border-brand/35 bg-brand/10 text-brand"
+                              : "border-zinc-800 bg-bg-card text-text-secondary"
+                          }`}
+                        >
+                          {stage.status}
+                        </span>
+                        <h3 className="mt-3 text-base font-bold leading-snug text-text-primary">
+                          {stage.title}
+                        </h3>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">
                           {stage.desc}
                         </p>
                       </div>
-                    </div>
-                  </Reveal>
-                ))}
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="hidden md:block xl:hidden">
+              <div className="relative mx-auto max-w-5xl px-2 py-3">
+                <div
+                  className="absolute left-[12%] right-[12%] top-[39px] h-1 rounded-full bg-zinc-800"
+                  aria-hidden="true"
+                />
+                <motion.div
+                  className="absolute left-[12%] right-[12%] top-[39px] h-1 origin-left rounded-full bg-brand shadow-[0_0_22px_rgba(254,199,0,0.24)] motion-safe:scale-x-0 motion-reduce:scale-x-100"
+                  aria-hidden="true"
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.95, ease: EASE_OUT_EXPO }}
+                />
+                <div
+                  className="absolute right-[12%] top-[39px] h-[238px] w-1 rounded-full bg-zinc-800"
+                  aria-hidden="true"
+                />
+                <motion.div
+                  className="absolute right-[12%] top-[39px] h-[238px] w-1 origin-top rounded-full bg-brand shadow-[0_0_22px_rgba(254,199,0,0.22)] motion-safe:scale-y-0 motion-reduce:scale-y-100"
+                  aria-hidden="true"
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.55, delay: 0.75, ease: EASE_OUT_EXPO }}
+                />
+                <div
+                  className="absolute left-[12%] right-[12%] top-[277px] h-1 rounded-full bg-zinc-800"
+                  aria-hidden="true"
+                />
+                <motion.div
+                  className="absolute left-[12%] right-[12%] top-[277px] h-1 origin-left rounded-full bg-brand shadow-[0_0_22px_rgba(254,199,0,0.24)] motion-safe:scale-x-0 motion-reduce:scale-x-100"
+                  aria-hidden="true"
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.95, delay: 1.05, ease: EASE_OUT_EXPO }}
+                />
+
+                <div className="grid grid-cols-3 gap-x-8 gap-y-14">
+                  {[
+                    {
+                      step: "01",
+                      title: "Secure & Validate",
+                      desc: "Validate the URL, DNS destination, redirects, TLS, response type and request bounds.",
+                    },
+                    {
+                      step: "02",
+                      title: "Fetch & Extract",
+                      desc: "Fetch the page securely and extract signals across 10 audit categories.",
+                    },
+                    {
+                      step: "03",
+                      title: "Run Verified Checks",
+                      desc: "Evaluate extracted signals through 85+ evidence-based SEO checks.",
+                    },
+                    {
+                      step: "04",
+                      title: "Calculate Scores",
+                      desc: "Calculate category scores, confidence and applicable score caps.",
+                    },
+                    {
+                      step: "05",
+                      title: "Request Performance Data",
+                      desc: "Request optional PageSpeed diagnostics without blocking the core SEO audit.",
+                    },
+                    {
+                      step: "06",
+                      title: "Assemble Your Report",
+                      desc: "Organize critical issues, quick wins, evidence and remediation into one prioritized report.",
+                      final: true,
+                    },
+                  ].map((stage, i) => (
+                    <Reveal key={stage.step} delay={i * 0.08}>
+                      <div className="relative flex h-full flex-col items-center text-center">
+                        <motion.div
+                          className={`relative z-10 flex h-[56px] w-[56px] items-center justify-center rounded-full border text-base font-bold ${
+                            stage.final
+                              ? "border-brand bg-brand text-black shadow-[0_0_32px_rgba(254,199,0,0.36)]"
+                              : "border-brand/30 bg-bg-elevated text-brand shadow-lg shadow-brand/10"
+                          }`}
+                          initial={{ scale: 0.92 }}
+                          whileInView={{ scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.35, delay: i * 0.04, ease: EASE_OUT_EXPO }}
+                        >
+                          {stage.step}
+                        </motion.div>
+                        <h3 className="mt-4 text-base font-bold leading-snug text-text-primary">
+                          {stage.title}
+                        </h3>
+                        <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                          {stage.desc}
+                        </p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="md:hidden">
+              <div className="relative">
+                <div className="absolute left-[27px] top-0 bottom-0 w-1 rounded-full bg-zinc-800" />
+                <motion.div
+                  className="absolute left-[27px] top-0 w-1 origin-top rounded-full bg-brand shadow-[0_0_22px_rgba(254,199,0,0.24)] motion-safe:scale-y-0 motion-reduce:scale-y-100"
+                  aria-hidden="true"
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 1.2, ease: EASE_OUT_EXPO }}
+                  style={{ height: "100%" }}
+                />
+                <div className="space-y-10">
+                  {[
+                    {
+                      step: "01",
+                      title: "Secure & Validate",
+                      desc: "Validate the URL, DNS destination, redirects, TLS, response type and request bounds.",
+                    },
+                    {
+                      step: "02",
+                      title: "Fetch & Extract",
+                      desc: "Fetch the page securely and extract signals across 10 audit categories.",
+                    },
+                    {
+                      step: "03",
+                      title: "Run Verified Checks",
+                      desc: "Evaluate extracted signals through 85+ evidence-based SEO checks.",
+                    },
+                    {
+                      step: "04",
+                      title: "Calculate Scores",
+                      desc: "Calculate category scores, confidence and applicable score caps.",
+                    },
+                    {
+                      step: "05",
+                      title: "Request Performance Data",
+                      desc: "Request optional PageSpeed diagnostics without blocking the core SEO audit.",
+                    },
+                    {
+                      step: "06",
+                      title: "Assemble Your Report",
+                      desc: "Organize critical issues, quick wins, evidence and remediation into one prioritized report.",
+                      final: true,
+                    },
+                  ].map((stage, i) => (
+                    <Reveal key={stage.step} delay={i * 0.08}>
+                      <div className="relative flex gap-5">
+                        <motion.div
+                          className={`relative z-10 flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full border text-base font-bold ${
+                            stage.final
+                              ? "border-brand bg-brand text-black shadow-[0_0_32px_rgba(254,199,0,0.36)]"
+                              : "border-brand/30 bg-bg-elevated text-brand shadow-lg shadow-brand/10"
+                          }`}
+                          initial={{ scale: 0.92 }}
+                          whileInView={{ scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.35, delay: i * 0.04, ease: EASE_OUT_EXPO }}
+                        >
+                          {stage.step}
+                        </motion.div>
+                        <div className="min-w-0 pt-1.5">
+                          {stage.final && (
+                            <span className="mb-2 inline-flex rounded-full border border-brand/35 bg-brand/10 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
+                              Report Ready
+                            </span>
+                          )}
+                          <h3 className="text-base font-bold leading-snug text-text-primary">
+                            {stage.title}
+                          </h3>
+                          <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                            {stage.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
