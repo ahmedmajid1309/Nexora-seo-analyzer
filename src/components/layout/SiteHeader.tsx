@@ -84,6 +84,12 @@ export function SiteHeader() {
             Methodology
           </Link>
           <Link
+            href="/site-audit"
+            className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
+          >
+            Site Audit
+          </Link>
+          <Link
             href="/privacy"
             className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
           >
@@ -166,6 +172,13 @@ export function SiteHeader() {
                 tabIndex={0}
               >
                 Privacy
+              </Link>
+              <Link
+                href="/site-audit"
+                className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
+                tabIndex={0}
+              >
+                Site Audit
               </Link>
               <Link
                 href="/terms"

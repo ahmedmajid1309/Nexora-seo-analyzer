@@ -190,6 +190,7 @@
 ## Phase 11: Limited Full-Site Audit (Post-Launch)
 
 **Objective**: Implement controlled multi-page crawling and cross-page analysis. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria    | Deliverables                                            | Exit Criteria                                      |
 | ----------------- | ------------------------------------------------------- | -------------------------------------------------- |
@@ -200,6 +201,8 @@
 |                   | Aggregate scoring                                       |                                                    |
 
 **Excluded**: Unlimited crawling, Playwright.
+
+**Completion artifacts**: See `45-phase-11-precheck.md`, `46-phase-11-crawl-architecture-spec.md`, `47-phase-11-cross-page-rule-register.md`, `48-phase-11-aggregate-scoring-spec.md`, `49-phase-11-security-verification-matrix.md`, and `50-phase-11-implementation-report.md`.
 
 ---
 

@@ -5,7 +5,7 @@ import { checkUrlPolicy, checkResolvedAddresses, checkSingleAddress } from "./ne
 import { defaultResolver, type HostResolver } from "./resolve-host";
 import { classifyAddress } from "./ip-address";
 import { checkRedirect } from "./redirect-policy";
-import { classifyContentType, sniffIsHtml } from "./content-type";
+import { classifyContentType, isAllowedContentType, sniffIsHtml } from "./content-type";
 import { TOTAL_DEADLINE_MS, isPrivateIpAllowed } from "./constants";
 import { networkError } from "./types";
 import type { FetchResult, ResolvedAddress, RedirectStep } from "./types";
@@ -15,6 +15,7 @@ export interface SafeFetchOptions {
   resolver?: HostResolver;
   signal?: AbortSignal;
   deadline?: number;
+  additionalAllowedContentTypes?: string[];
 }
 
 function measure(): { start: number; elapsed(): number } {
@@ -199,7 +200,10 @@ export async function safeFetch(
       : finalResult.headers["content-type"]) ?? "";
 
   const contentCheck = classifyContentType(contentType);
-  if (!contentCheck.isAllowed) {
+  if (
+    !contentCheck.isAllowed &&
+    !isAllowedContentType(contentType, options.additionalAllowedContentTypes ?? [])
+  ) {
     const buffer = finalResult.buffer;
     if (buffer.length > 0 && sniffIsHtml(buffer)) {
     } else {

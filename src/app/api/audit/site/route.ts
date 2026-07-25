@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AuditRequestSchema } from "@/lib/audit/schemas";
-import type { AuditResponse } from "@/lib/audit/types";
+import { SiteAuditRequestSchema } from "@/lib/site-audit/schemas";
+import { runSiteAudit, type SiteAuditResponse } from "@/lib/site-audit";
 import { isNexoraError } from "@/lib/errors";
-import { runQuickAudit } from "@/lib/audit/quick-audit";
 import {
-  checkRateLimit,
-  checkHostCooldown,
-  setHostCooldown,
   acquireConcurrentSlot,
+  checkHostCooldown,
+  checkRateLimit,
   releaseConcurrentSlot,
-  getExecutionDeadline,
+  setHostCooldown,
 } from "@/lib/audit/abuse-protection";
 import {
-  trackAuditRequest,
-  trackAuditError,
-  trackRateLimitHit,
   captureError,
+  trackAuditError,
+  trackAuditRequest,
+  trackRateLimitHit,
 } from "@/lib/monitoring";
 import { auditLogger } from "@/lib/logging";
 
@@ -28,7 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const rateCheck = checkRateLimit(request);
   if (!rateCheck.allowed) {
     trackRateLimitHit();
-    auditLogger.warn("Rate limit hit", { requestId });
+    auditLogger.warn("Site audit rate limit hit", { requestId });
     return NextResponse.json(
       {
         success: false,
@@ -37,7 +35,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           code: "RATE_LIMITED",
           message: "Too many requests. Please wait before trying again.",
         },
-      } satisfies AuditResponse,
+      } satisfies SiteAuditResponse,
       { status: 429, headers: { "Retry-After": String(rateCheck.retryAfter ?? 60) } },
     );
   }
@@ -51,7 +49,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           code: "CAPACITY_EXHAUSTED",
           message: "The audit system is at capacity. Please try again shortly.",
         },
-      } satisfies AuditResponse,
+      } satisfies SiteAuditResponse,
       { status: 503 },
     );
   }
@@ -66,12 +64,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           success: false,
           requestId,
           error: { code: "INVALID_REQUEST", message: "Invalid JSON body" },
-        } satisfies AuditResponse,
+        } satisfies SiteAuditResponse,
         { status: 400 },
       );
     }
 
-    const parsed = AuditRequestSchema.safeParse(body);
+    const parsed = SiteAuditRequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         {
@@ -81,13 +79,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             code: "VALIDATION_ERROR",
             message: parsed.error.issues[0]?.message ?? "Invalid input",
           },
-        } satisfies AuditResponse,
+        } satisfies SiteAuditResponse,
         { status: 400 },
       );
     }
 
-    const { url } = parsed.data;
-
+    const { url, pageLimit, crawlMode } = parsed.data;
     const cooldownCheck = checkHostCooldown(url);
     if (!cooldownCheck.allowed) {
       return NextResponse.json(
@@ -98,33 +95,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             code: "HOST_COOLDOWN",
             message: "This website was recently audited. Please wait before scanning it again.",
           },
-        } satisfies AuditResponse,
+        } satisfies SiteAuditResponse,
         { status: 429, headers: { "Retry-After": String(cooldownCheck.retryAfter ?? 30) } },
       );
     }
 
-    const deadline = getExecutionDeadline();
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), deadline);
-
     try {
-      const { data } = await runQuickAudit({
-        url,
-        requestId,
-        signal: controller.signal,
-        pagespeed: true,
-      });
-      clearTimeout(timeout);
-
-      return NextResponse.json({ success: true, requestId, data } satisfies AuditResponse, {
+      const data = await runSiteAudit({ requestId, url, pageLimit, crawlMode });
+      return NextResponse.json({ success: true, requestId, data } satisfies SiteAuditResponse, {
         status: 200,
       });
-    } catch (err: unknown) {
-      clearTimeout(timeout);
+    } catch (err) {
       setHostCooldown(url);
       trackAuditError();
-      captureError("audit", err);
-
+      captureError("site-audit", err);
       if (isNexoraError(err)) {
         const resp = err.toPublicResponse();
         return NextResponse.json(
@@ -132,34 +116,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             success: false,
             requestId,
             error: { code: resp.error.code, message: resp.error.message },
-          } satisfies AuditResponse,
+          } satisfies SiteAuditResponse,
           { status: err.httpStatus },
         );
       }
-
-      if (err instanceof DOMException && err.name === "AbortError") {
-        return NextResponse.json(
-          {
-            success: false,
-            requestId,
-            error: {
-              code: "TIMEOUT",
-              message: "The audit timed out. The page may be too slow or too large.",
-            },
-          } satisfies AuditResponse,
-          { status: 504 },
-        );
-      }
-
       return NextResponse.json(
         {
           success: false,
           requestId,
-          error: {
-            code: "FETCH_FAILED",
-            message: "Failed to fetch the URL. The page may be unreachable.",
-          },
-        } satisfies AuditResponse,
+          error: { code: "SITE_AUDIT_FAILED", message: "The site audit could not be completed." },
+        } satisfies SiteAuditResponse,
         { status: 502 },
       );
     }

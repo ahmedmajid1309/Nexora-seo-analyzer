@@ -154,6 +154,28 @@
 - **Residual risk**: Low
 - **Status**: Accepted for first release
 
+## R-015: Public Site Crawl Resource Exhaustion
+
+- **Severity**: HIGH
+- **Category**: Security / Operations
+- **Description**: A public full-site audit could be abused to crawl too many pages or exhaust worker resources.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Phase 11 caps selected pages at 25, uses same-origin crawling, default concurrency 3, total deadline 45s, per-host cooldown, existing IP rate limits, existing host cooldown, and existing concurrent slot limits.
+- **Residual risk**: Medium until distributed rate limiting and queue isolation arrive in Phase 15.
+- **Status**: MITIGATED FOR PHASE 11 SCOPE
+
+## R-016: Site Audit False Orphan Classification
+
+- **Severity**: MEDIUM
+- **Category**: Accuracy
+- **Description**: A 25-page crawl can miss legitimate internal links and incorrectly imply a page is orphaned.
+- **Likelihood**: Medium
+- **Impact**: Medium
+- **Mitigation**: Orphan results are labeled as candidates unless evidence is sufficient. Confidence is reduced for candidate findings.
+- **Residual risk**: Low
+- **Status**: MITIGATED BY LABELING AND CONFIDENCE
+
 ## Risk Summary
 
 | ID    | Severity | Status                                              | Mitigation Phase |
@@ -172,3 +194,5 @@
 | R-012 | LOW      | Mitigated by documentation                          | N/A              |
 | R-013 | LOW      | Mitigated — platform-independent path handling used | Phase 1          |
 | R-014 | LOW      | Accepted for first release                          | Phase 15         |
+| R-015 | HIGH     | MITIGATED FOR PHASE 11 SCOPE                        | Phase 11         |
+| R-016 | MEDIUM   | MITIGATED BY LABELING AND CONFIDENCE                | Phase 11         |
