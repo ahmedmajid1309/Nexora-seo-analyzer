@@ -1,4 +1,9 @@
-import type { AuditFinding, ScoreCap, ScoreFamilyOutput } from "@/lib/audit/types";
+import type {
+  AuditFinding,
+  RenderedDomAnalysisOutput,
+  ScoreCap,
+  ScoreFamilyOutput,
+} from "@/lib/audit/types";
 import type { RuleResult } from "@/lib/rules/types";
 
 export const SITE_AUDIT_MAX_PAGES = 25;
@@ -14,6 +19,7 @@ export type SiteAuditProgressState =
   | "crawling-pages"
   | "running-page-checks"
   | "running-cross-page-checks"
+  | "running-rendered-dom-checks"
   | "calculating-site-score"
   | "preparing-report"
   | "complete"
@@ -59,6 +65,7 @@ export interface SitePageResult {
   crawlState: CrawlUrlState;
   failureReason: string | null;
   redirectChain: { url: string; statusCode: number }[];
+  renderedDom?: RenderedDomAnalysisOutput | null;
 }
 
 export interface SiteLevelFinding {
@@ -114,6 +121,19 @@ export interface SiteAuditResponseData {
   internalLinkFindings: SiteLevelFinding[];
   redirectFindings: SiteLevelFinding[];
   orphanCandidates: SiteLevelFinding[];
+  renderedDom?: {
+    status: "disabled" | "available" | "unavailable";
+    analyzedPageCount: number;
+    unavailablePageCount: number;
+    selectedPages: {
+      url: string;
+      selectionReason: string;
+      renderedStatus: "disabled" | "available" | "unavailable";
+      findings: { checkId: string; summary: string; state: string }[];
+      unavailableReason: string | null;
+    }[];
+    findings: { url: string; checkId: string; summary: string; state: string }[];
+  };
 }
 
 export interface SiteAuditResponse {

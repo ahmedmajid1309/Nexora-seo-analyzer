@@ -104,6 +104,51 @@ export interface SocialPreviewData {
   twitterImage: string | null;
 }
 
+export interface RenderedDomFindingOutput {
+  checkId: string;
+  state: "passed" | "warning" | "failed" | "unavailable";
+  severity: "high" | "medium" | "low" | "informational";
+  summary: string;
+  evidence: string;
+  impact: string;
+  remediation: string;
+  responsible: "owner" | "seo" | "developer" | "content-editor" | "designer";
+  effort: "low" | "medium" | "high";
+  applicability: string;
+  staticValue: string | number | null;
+  renderedValue: string | number | null;
+  confidence: number;
+}
+
+export interface RenderedDomLabOutput {
+  source: "Rendered browser lab observation";
+  navigationTtfbMs: number | null;
+  fcpMs: number | null;
+  observedLcpMs: number | null;
+  observedCls: number | null;
+  longTaskCount: number | null;
+  totalLongTaskDurationMs: number | null;
+  domContentLoadedMs: number | null;
+  loadMs: number | null;
+  resourceCount: number | null;
+  transferredBytesEstimate: number | null;
+}
+
+export interface RenderedDomAnalysisOutput {
+  status: "disabled" | "available" | "unavailable";
+  workerStatus: "not-configured" | "healthy" | "unreachable" | "error" | "circuit-open";
+  renderedUrl: string | null;
+  durationMs: number | null;
+  domNodeDelta: number | null;
+  visibleTextDelta: number | null;
+  consoleErrorCount: number | null;
+  requestFailedCount: number | null;
+  lab: RenderedDomLabOutput | null;
+  findings: RenderedDomFindingOutput[];
+  unavailableReason: string | null;
+  schemaVersion: string;
+}
+
 export interface AuditResponseData {
   requestId: string;
   requestedUrl: string;
@@ -132,6 +177,7 @@ export interface AuditResponseData {
   performanceDesktop: PageSpeedSideData | null;
   serpPreview: SerpPreviewData;
   socialPreview: SocialPreviewData;
+  renderedDom?: RenderedDomAnalysisOutput | null;
   calculationVersion: string;
   snapshotSchemaVersion: string;
 }

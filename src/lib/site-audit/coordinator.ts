@@ -85,6 +85,7 @@ function toPageResult(
     crawlState: input.snapshot.response.redirectChain.length ? "redirected" : "selected",
     failureReason: null,
     redirectChain: input.snapshot.response.redirectChain,
+    renderedDom: input.data.renderedDom,
   };
 }
 
@@ -113,6 +114,7 @@ function failedPage(
     crawlState: status === "failed" ? "failed" : status === "blocked" ? "blocked" : "skipped",
     failureReason: reason,
     redirectChain: [],
+    renderedDom: null,
   };
 }
 
@@ -173,6 +175,7 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
   const discovered = new Set<string>([normalizedStart]);
   let robots: RobotsPolicy | null = null;
   let lastFetchAt = 0;
+  let renderedSlots = 0;
 
   const counts = (currentUrl: string | null = null) => ({
     discoveredPageCount: discovered.size,
@@ -252,6 +255,8 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
           lastFetchAt = Date.now();
 
           try {
+            const shouldAnalyzeRenderedDom = renderedSlots < 3;
+            if (shouldAnalyzeRenderedDom) renderedSlots += 1;
             if (item.depth === 0) {
               pushProgress(progress, "fetching-entry-page", startedAt, counts(item.url));
             }
@@ -261,6 +266,7 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
               requestId: input.requestId,
               signal,
               pagespeed: item.url === normalizedStart,
+              renderedDom: shouldAnalyzeRenderedDom,
             });
             const finalNormalized =
               normalizeCrawlUrl(quick.snapshot.finalUrl) ?? quick.snapshot.finalUrl;
@@ -373,6 +379,47 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
 
     pushProgress(progress, "running-cross-page-checks", startedAt, counts());
     const siteFindings = analyzeCrossPage(pages, [...discovered].sort());
+    pushProgress(progress, "running-rendered-dom-checks", startedAt, counts());
+    const renderedCandidates = pages
+      .filter((page) => page.status === "audited" && page.renderedDom)
+      .slice(0, 3);
+    const renderedDom = {
+      status: renderedCandidates.some((page) => page.renderedDom?.status === "available")
+        ? ("available" as const)
+        : renderedCandidates.some((page) => page.renderedDom?.status === "unavailable")
+          ? ("unavailable" as const)
+          : ("disabled" as const),
+      analyzedPageCount: renderedCandidates.filter(
+        (page) => page.renderedDom?.status === "available",
+      ).length,
+      unavailablePageCount: renderedCandidates.filter(
+        (page) => page.renderedDom?.status === "unavailable",
+      ).length,
+      selectedPages: renderedCandidates.map((page) => ({
+        url: page.finalUrl ?? page.requestedUrl,
+        selectionReason:
+          page.depth === 0
+            ? "Entry page render sample"
+            : "Early crawl representative render sample",
+        renderedStatus: page.renderedDom?.status ?? "disabled",
+        findings: (page.renderedDom?.findings ?? []).map((finding) => ({
+          checkId: finding.checkId,
+          summary: finding.summary,
+          state: finding.state,
+        })),
+        unavailableReason: page.renderedDom?.unavailableReason ?? null,
+      })),
+      findings: renderedCandidates.flatMap((page) =>
+        (page.renderedDom?.findings ?? [])
+          .filter((finding) => finding.state !== "passed")
+          .map((finding) => ({
+            url: page.finalUrl ?? page.requestedUrl,
+            checkId: finding.checkId,
+            summary: finding.summary,
+            state: finding.state,
+          })),
+      ),
+    };
     pushProgress(progress, "calculating-site-score", startedAt, counts());
     const aggregate = calculateSiteAggregate({
       pages,
@@ -412,6 +459,7 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
       ),
       redirectFindings: siteFindings.filter((f) => f.checkId === "SITE-008"),
       orphanCandidates: siteFindings.filter((f) => f.checkId === "SITE-010"),
+      renderedDom,
     };
   } catch (err) {
     pushProgress(progress, "failed", startedAt, counts());

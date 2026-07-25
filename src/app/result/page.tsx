@@ -18,7 +18,14 @@ const NAV_OFFSET = 48;
 const SCROLL_MT = HEADER_OFFSET + NAV_OFFSET;
 
 type AuditStatus = "loading" | "error" | "done";
-type Section = "overview" | "critical" | "quickwins" | "findings" | "performance" | "search-social";
+type Section =
+  | "overview"
+  | "critical"
+  | "quickwins"
+  | "findings"
+  | "performance"
+  | "rendered-dom"
+  | "search-social";
 
 const navSections: { id: Section; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -26,6 +33,7 @@ const navSections: { id: Section; label: string }[] = [
   { id: "quickwins", label: "Quick Wins" },
   { id: "findings", label: "All Findings" },
   { id: "performance", label: "Performance" },
+  { id: "rendered-dom", label: "Rendered DOM" },
   { id: "search-social", label: "Search & Social" },
 ];
 
@@ -780,6 +788,54 @@ function ResultContent() {
             />
           </div>
         </section>
+
+        {/* Rendered DOM */}
+        {data.renderedDom ? (
+          <section
+            id="section-rendered-dom"
+            style={{ scrollMarginTop: `${SCROLL_MT}px` }}
+            className="mt-8 sm:mt-10 lg:mt-14"
+          >
+            <h2 className="text-base font-bold text-text-primary sm:text-lg">
+              Rendered DOM &amp; JavaScript
+            </h2>
+            <div className="mt-4 rounded-3xl border border-border bg-bg-card p-5 sm:p-6">
+              <div className="grid gap-4 sm:grid-cols-4">
+                {[
+                  ["Status", data.renderedDom.status],
+                  ["DOM delta", data.renderedDom.domNodeDelta ?? "Unavailable"],
+                  ["Text delta", data.renderedDom.visibleTextDelta ?? "Unavailable"],
+                  ["JS errors", data.renderedDom.consoleErrorCount ?? "Unavailable"],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-2xl bg-bg-elevated p-4">
+                    <p className="text-xs uppercase tracking-[0.16em] text-text-muted">{label}</p>
+                    <p className="mt-2 text-lg font-semibold text-text-primary">{value}</p>
+                  </div>
+                ))}
+              </div>
+              {data.renderedDom.unavailableReason ? (
+                <p className="mt-4 text-sm text-text-tertiary">
+                  {data.renderedDom.unavailableReason}
+                </p>
+              ) : null}
+              {data.renderedDom.findings.filter((finding) => finding.state !== "passed").length >
+              0 ? (
+                <div className="mt-5 space-y-3">
+                  {data.renderedDom.findings
+                    .filter((finding) => finding.state !== "passed")
+                    .map((finding) => (
+                      <div key={finding.checkId} className="rounded-2xl border border-border p-4">
+                        <p className="font-mono text-xs uppercase tracking-[0.16em] text-text-muted">
+                          {finding.checkId} · {finding.state}
+                        </p>
+                        <p className="mt-2 text-sm text-text-secondary">{finding.summary}</p>
+                      </div>
+                    ))}
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
 
         {/* Search and Social */}
         <section

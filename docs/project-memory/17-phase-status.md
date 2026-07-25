@@ -17,7 +17,7 @@
 | 10 | Production Verification | COMPLETE |
 | **First Release Complete** | (Phases 1-10) | — |
 | 11 | Limited Full-Site Audit | COMPLETE |
-| 12 | Rendered DOM Worker | PENDING |
+| 12 | Rendered DOM Worker | COMPLETE |
 | 13 | Optional Gemini/Groq Summaries | PENDING |
 | 14 | Report History and User Accounts | PENDING |
 | 15 | Advanced Infrastructure | PENDING |
@@ -295,6 +295,24 @@
 | Site report route (`/site-result`)            | CREATED |
 | Phase 11 documentation set                    | CREATED |
 | Phase 11 tests                                | CREATED |
+
+## Phase 12 Detail
+
+| Item                                                        | Status   |
+| ----------------------------------------------------------- | -------- |
+| Isolated render worker (`services/render-worker`)           | CREATED  |
+| Signed `POST /render` and `GET /health`                     | CREATED  |
+| Worker SSRF and browser safety controls                     | VERIFIED |
+| Bounded rendered snapshot contract                          | CREATED  |
+| Rendered-browser lab observations                           | CREATED  |
+| App-side rendered DOM client and circuit breaker            | CREATED  |
+| JS-001 through JS-014 diagnostic rule set                   | CREATED  |
+| Quick audit optional rendered DOM integration               | CREATED  |
+| Site audit max-3 rendered page integration                  | CREATED  |
+| Result and site-result rendered DOM summaries               | CREATED  |
+| Health endpoint rendered readiness state                    | CREATED  |
+| Phase 12 documentation set                                  | CREATED  |
+| Rendered analysis remains optional, graceful, and non-score | VERIFIED |
 
 ## Phase Entry Criteria
 

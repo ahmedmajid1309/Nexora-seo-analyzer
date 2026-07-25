@@ -113,6 +113,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         requestId,
         signal: controller.signal,
         pagespeed: true,
+        renderedDom: true,
       });
       clearTimeout(timeout);
 

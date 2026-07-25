@@ -108,7 +108,18 @@
 - **Impact**: Medium (cost, latency)
 - **Mitigation**: Dedicated worker pool for rendered DOM. Browser binary caching. Warm container pool. Separate queue from static audits. Deferred to Phase 12.
 - **Residual risk**: Medium — cost depends on usage volume
-- **Status**: **DEFERRED** — Phase 12 (post-launch). First release uses static analysis only.
+- **Status**: **MITIGATED FOR PHASE 12 SCOPE** — isolated worker, request caps, circuit breaker, and optional rendering.
+
+## R-017: Render Worker SSRF Through Browser Requests
+
+- **Severity**: CRITICAL
+- **Category**: Security
+- **Description**: A rendered page could redirect or load subresources from localhost, cloud metadata, or private services.
+- **Likelihood**: Medium
+- **Impact**: Critical
+- **Mitigation**: Worker validates initial navigation, redirects, and every subresource URL/resolved address; blocks private/reserved destinations and mixed DNS answers.
+- **Residual risk**: Low for Phase 12 scope
+- **Status**: MITIGATED FOR PHASE 12 SCOPE
 
 ## R-011: Third-Party API Provider Discontinuation
 
@@ -189,10 +200,11 @@
 | R-007 | MEDIUM   | MITIGATED — Phase 4 completed                       | Phase 4          |
 | R-008 | MEDIUM   | MITIGATED — Phase 5 completed                       | Phase 5          |
 | R-009 | MEDIUM   | Mitigated by documentation                          | N/A              |
-| R-010 | MEDIUM   | DEFERRED — Phase 12 (post-launch)                   | Phase 12         |
+| R-010 | MEDIUM   | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |
 | R-011 | LOW      | Mitigated by architecture                           | N/A              |
 | R-012 | LOW      | Mitigated by documentation                          | N/A              |
 | R-013 | LOW      | Mitigated — platform-independent path handling used | Phase 1          |
 | R-014 | LOW      | Accepted for first release                          | Phase 15         |
 | R-015 | HIGH     | MITIGATED FOR PHASE 11 SCOPE                        | Phase 11         |
 | R-016 | MEDIUM   | MITIGATED BY LABELING AND CONFIDENCE                | Phase 11         |
+| R-017 | CRITICAL | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |

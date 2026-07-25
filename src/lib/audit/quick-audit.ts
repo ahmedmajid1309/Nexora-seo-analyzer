@@ -86,8 +86,9 @@ export function toPublicAuditData(input: {
   scores: ScoreBreakdown;
   durationMs: number;
   pagespeed?: PageSpeedOutput;
+  renderedDom?: AuditResponseData["renderedDom"];
 }): AuditResponseData {
-  const { requestId, snapshot, results, scores, durationMs, pagespeed } = input;
+  const { requestId, snapshot, results, scores, durationMs, pagespeed, renderedDom } = input;
   const stateCounts: Record<string, number> = {};
   const findings: AuditResponseData["findings"] = [];
 
@@ -181,6 +182,7 @@ export function toPublicAuditData(input: {
       : null,
     serpPreview: previews.serpPreview,
     socialPreview: previews.socialPreview,
+    renderedDom: renderedDom ?? null,
     calculationVersion: CALCULATION_VERSION,
     snapshotSchemaVersion: snapshot.schemaVersion,
   };
@@ -192,6 +194,7 @@ export async function runQuickAudit(input: {
   signal?: AbortSignal;
   fetchOptions?: Omit<SafeFetchOptions, "signal">;
   pagespeed?: boolean;
+  renderedDom?: boolean;
 }): Promise<{
   data: AuditResponseData;
   snapshot: PageSnapshot;
@@ -213,6 +216,19 @@ export async function runQuickAudit(input: {
   }
 
   const scores = calculateScores({ results: runResult.results, snapshot, pagespeed });
+  let renderedDom: AuditResponseData["renderedDom"] = null;
+  if (input.renderedDom) {
+    try {
+      const { analyzeRenderedDom } = await import("@/lib/rendered-dom");
+      renderedDom = await analyzeRenderedDom({
+        requestId: input.requestId,
+        snapshot,
+        signal: input.signal,
+      });
+    } catch {
+      renderedDom = null;
+    }
+  }
   const data = toPublicAuditData({
     requestId: input.requestId,
     snapshot,
@@ -220,6 +236,7 @@ export async function runQuickAudit(input: {
     scores,
     durationMs: runResult.durationMs,
     pagespeed,
+    renderedDom,
   });
 
   return { data, snapshot, results: runResult.results, scores };

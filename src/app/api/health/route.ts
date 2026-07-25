@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getHealthStatus, trackHealthCheck } from "@/lib/monitoring";
 import { getConcurrentCount } from "@/lib/audit/abuse-protection";
+import { getRenderedDomReadiness } from "@/lib/rendered-dom";
 
 export const runtime = "nodejs";
 
 export async function GET(): Promise<NextResponse> {
   trackHealthCheck();
   const health = getHealthStatus();
+  const renderedDom = getRenderedDomReadiness();
 
   return NextResponse.json(
     {
@@ -16,6 +18,7 @@ export async function GET(): Promise<NextResponse> {
       environment: health.environment,
       timestamp: health.timestamp,
       concurrentAudits: getConcurrentCount(),
+      renderedDom,
     },
     {
       status: 200,

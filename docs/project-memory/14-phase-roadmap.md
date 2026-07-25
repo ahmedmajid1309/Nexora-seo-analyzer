@@ -209,16 +209,19 @@
 ## Phase 12: Rendered DOM Worker (Post-Launch)
 
 **Objective**: Build the isolated Playwright worker for CWV measurement and JS rendering analysis. Not required for first release.
+**Status**: COMPLETE
 
-| Entry Criteria    | Deliverables                            | Exit Criteria                                         |
-| ----------------- | --------------------------------------- | ----------------------------------------------------- |
-| Phase 10 complete | Isolated Playwright container/service   | CWV metrics match expected lab values                 |
-|                   | CWV measurement via PerformanceObserver | JS rendering checks detect raw-vs-rendered mismatches |
-|                   | Rendered DOM capture                    | Worker timeout and error handling works               |
-|                   | JS rendering rule category              |                                                       |
-|                   | Integration with audit pipeline         |                                                       |
+| Entry Criteria    | Deliverables                          | Exit Criteria                                         |
+| ----------------- | ------------------------------------- | ----------------------------------------------------- |
+| Phase 11 complete | Isolated Playwright container/service | Rendered-browser lab observations are source-labeled  |
+|                   | PerformanceObserver lab observations  | JS rendering checks detect raw-vs-rendered mismatches |
+|                   | Rendered DOM capture                  | Worker timeout and error handling works               |
+|                   | JS rendering rule category            |                                                       |
+|                   | Integration with audit pipeline       |                                                       |
 
 **Excluded**: AI features, real-user CWV (handled by Phase 7 PSI).
+
+**Completion artifacts**: See `51-phase-12-precheck.md` through `57-phase-12-implementation-report.md`.
 
 ---
 

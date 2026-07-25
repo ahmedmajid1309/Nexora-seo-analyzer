@@ -7,6 +7,13 @@ export const envSchema = z.object({
   PAGESPEED_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
+  RENDER_WORKER_URL: z.string().url().optional(),
+  RENDER_WORKER_SECRET: z.string().optional(),
+  RENDER_WORKER_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),
+  RENDER_WORKER_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 });
 
 export type Env = z.infer<typeof envSchema>;

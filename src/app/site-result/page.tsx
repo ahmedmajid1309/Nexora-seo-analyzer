@@ -267,6 +267,72 @@ function SiteResultContent() {
             </Card>
           </section>
 
+          {data.renderedDom ? (
+            <section className="rounded-3xl border border-border bg-bg-card p-6">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="font-display text-2xl font-semibold text-text-primary">
+                    Rendered DOM &amp; JavaScript
+                  </h2>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    Optional rendered analysis for up to three representative pages.
+                  </p>
+                </div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
+                  {data.renderedDom.status}
+                </p>
+              </div>
+              <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                <Card className="p-4">
+                  <p className="text-sm text-text-muted">Analyzed pages</p>
+                  <p className="mt-2 text-3xl font-semibold text-text-primary">
+                    {data.renderedDom.analyzedPageCount}
+                  </p>
+                </Card>
+                <Card className="p-4">
+                  <p className="text-sm text-text-muted">Unavailable pages</p>
+                  <p className="mt-2 text-3xl font-semibold text-text-primary">
+                    {data.renderedDom.unavailablePageCount}
+                  </p>
+                </Card>
+                <Card className="p-4">
+                  <p className="text-sm text-text-muted">Rendered findings</p>
+                  <p className="mt-2 text-3xl font-semibold text-text-primary">
+                    {data.renderedDom.findings.length}
+                  </p>
+                </Card>
+              </div>
+              {data.renderedDom.findings.length > 0 ? (
+                <div className="mt-5 space-y-3">
+                  {data.renderedDom.findings.slice(0, 8).map((finding) => (
+                    <div
+                      key={`${finding.url}-${finding.checkId}`}
+                      className="rounded-2xl bg-bg-elevated p-4"
+                    >
+                      <p className="break-all font-mono text-xs text-text-muted">{finding.url}</p>
+                      <p className="mt-2 text-sm text-text-secondary">
+                        {finding.checkId}: {finding.summary}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              {data.renderedDom.selectedPages.length > 0 ? (
+                <div className="mt-5 space-y-3 text-sm text-text-secondary">
+                  {data.renderedDom.selectedPages.map((page) => (
+                    <div key={page.url} className="rounded-2xl border border-border p-4">
+                      <p className="break-all font-mono text-xs text-text-muted">{page.url}</p>
+                      <p className="mt-2">
+                        {page.selectionReason} · {page.renderedStatus}
+                      </p>
+                      {page.unavailableReason ? <p>{page.unavailableReason}</p> : null}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
           <section className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="font-display text-2xl font-semibold text-text-primary">

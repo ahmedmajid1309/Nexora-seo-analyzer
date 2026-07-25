@@ -21,6 +21,15 @@ cp .env.example .env
 
 The default `NEXT_PUBLIC_SITE_URL=http://localhost:3000` works for local development. No external API keys are required.
 
+Rendered DOM analysis is optional and disabled by default. To test it locally, run the render worker separately and set:
+
+```bash
+RENDER_WORKER_ENABLED=true
+RENDER_WORKER_URL=http://localhost:3001
+RENDER_WORKER_SECRET=replace-with-local-secret
+RENDER_WORKER_TIMEOUT_MS=8000
+```
+
 ## Development
 
 ```bash
@@ -38,6 +47,20 @@ pnpm test:watch
 
 # E2E tests (requires dev server)
 pnpm test:e2e
+
+# Render worker unit tests
+pnpm test:render-worker
+```
+
+## Render Worker
+
+The Phase 12 rendered-DOM worker is isolated under `services/render-worker/`. It exposes `GET /health` and signed `POST /render`; the Next.js app never launches Playwright inside a public API route.
+
+```bash
+cd services/render-worker
+npm install
+npm run build
+RENDER_WORKER_SECRET=replace-with-local-secret npm start
 ```
 
 ## Quality Checks
@@ -103,6 +126,8 @@ Required environment variables:
 - `NEXT_PUBLIC_SITE_URL` — Production URL (e.g., `https://nexora-seo-analyzer.vercel.app`)
 - `NODE_ENV=production`
 - `PAGESPEED_API_KEY` (optional — enables CrUX/field data)
+- `RENDER_WORKER_ENABLED=false` by default; set to `true` only when an isolated worker is deployed
+- `RENDER_WORKER_URL` and `RENDER_WORKER_SECRET` for the optional Phase 12 render worker
 
 ### Docker
 

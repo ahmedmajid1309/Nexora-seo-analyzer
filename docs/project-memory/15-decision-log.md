@@ -168,3 +168,14 @@
   - Cross-page findings only: Rejected because page-level SEO quality remains important.
 - **Rationale**: The formula is deterministic, transparent, and preserves per-page scores while separately reporting coverage and confidence.
 - **Consequences**: Site audit scores are not directly comparable to quick page audit scores.
+
+## D-017: Phase 12 Browser Rendering Is Isolated and Non-Scoring
+
+- **Date**: 2026-07-25
+- **Decision**: Rendered DOM analysis runs only in an isolated worker and produces diagnostic findings that do not alter SEO Health scoring.
+- **Context**: Browser rendering expands attack surface and can be slow or unavailable. Static audit results must remain reliable even when rendering fails.
+- **Alternatives considered**:
+  - Launch Playwright inside Next.js API routes: Rejected because it couples public request handling to browser execution.
+  - Fold rendered checks into SEO score immediately: Rejected because Phase 12 signals need calibration.
+- **Rationale**: Optional side-channel diagnostics preserve the static audit contract while adding useful JavaScript rendering evidence.
+- **Consequences**: Rendered diagnostics are nullable/unavailable when the worker is disabled or unhealthy; scoring remains unchanged.
