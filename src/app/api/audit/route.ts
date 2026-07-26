@@ -114,6 +114,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         signal: controller.signal,
         pagespeed: true,
         renderedDom: true,
+        executiveSummary: true,
       });
       clearTimeout(timeout);
 

@@ -1,3 +1,4 @@
+import type { AiExecutiveSummary, AiSummaryProgressEvent } from "@/lib/ai-summary/types";
 import type {
   AuditFinding,
   RenderedDomAnalysisOutput,
@@ -21,6 +22,15 @@ export type SiteAuditProgressState =
   | "running-cross-page-checks"
   | "running-rendered-dom-checks"
   | "calculating-site-score"
+  | "preparing-summary-evidence"
+  | "generating-deterministic-summary"
+  | "requesting-gemini-summary"
+  | "validating-gemini-summary"
+  | "requesting-groq-summary"
+  | "validating-groq-summary"
+  | "summary-complete"
+  | "summary-fallback"
+  | "summary-unavailable"
   | "preparing-report"
   | "complete"
   | "partial"
@@ -134,6 +144,8 @@ export interface SiteAuditResponseData {
     }[];
     findings: { url: string; checkId: string; summary: string; state: string }[];
   };
+  executiveSummary?: AiExecutiveSummary;
+  aiSummaryProgress?: AiSummaryProgressEvent[];
 }
 
 export interface SiteAuditResponse {

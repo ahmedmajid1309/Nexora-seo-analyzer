@@ -6,7 +6,22 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PAGESPEED_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().default("gemini-1.5-flash"),
+  GEMINI_BASE_URL: z.string().url().optional(),
   GROQ_API_KEY: z.string().optional(),
+  GROQ_MODEL: z.string().default("llama-3.1-8b-instant"),
+  GROQ_BASE_URL: z.string().url().optional(),
+  AI_SUMMARY_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  AI_SUMMARY_PROVIDER_ORDER: z.string().default("gemini,groq"),
+  AI_SUMMARY_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(12_000),
+  AI_SUMMARY_MAX_INPUT_CHARS: z.coerce.number().int().positive().max(60_000).default(24_000),
+  AI_SUMMARY_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().max(4_000).default(1_200),
+  AI_SUMMARY_CACHE_TTL_MS: z.coerce.number().int().positive().max(3_600_000).default(900_000),
+  AI_SUMMARY_CACHE_MAX_ENTRIES: z.coerce.number().int().positive().max(1_000).default(100),
+  AI_SUMMARY_PROVIDER_MAX_ATTEMPTS: z.coerce.number().int().positive().max(3).default(1),
   RENDER_WORKER_URL: z.string().url().optional(),
   RENDER_WORKER_SECRET: z.string().optional(),
   RENDER_WORKER_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),

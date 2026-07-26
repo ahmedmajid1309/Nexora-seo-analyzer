@@ -586,6 +586,52 @@ function ResultContent() {
             </p>
           </div>
 
+          {data.executiveSummary ? (
+            <div className="mt-5 rounded-3xl border border-brand/20 bg-bg-card p-5 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-brand">
+                    Executive Intelligence
+                  </p>
+                  <h2 className="mt-2 text-xl font-bold text-text-primary">
+                    {data.executiveSummary.headline}
+                  </h2>
+                </div>
+                <span className="w-fit rounded-full border border-zinc-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-text-secondary">
+                  {data.executiveSummary.source}
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-text-secondary">
+                {data.executiveSummary.executiveSummary}
+              </p>
+              <p className="mt-3 text-sm leading-6 text-text-secondary">
+                {data.executiveSummary.businessImpact}
+              </p>
+              {data.executiveSummary.topPriorities.length > 0 ? (
+                <div className="mt-5 grid gap-3 lg:grid-cols-2">
+                  {data.executiveSummary.topPriorities.slice(0, 4).map((priority) => (
+                    <div
+                      key={`${priority.rank}-${priority.findingIds.join("-")}`}
+                      className="rounded-2xl border border-zinc-800 bg-bg-primary/50 p-4"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-text-tertiary">
+                        Priority {priority.rank} · {priority.severity} · {priority.effort} effort
+                      </p>
+                      <p className="mt-2 font-semibold text-text-primary">{priority.title}</p>
+                      <p className="mt-2 text-sm text-text-secondary">{priority.reason}</p>
+                      <p className="mt-2 font-mono text-xs text-text-tertiary">
+                        Evidence: {priority.findingIds.join(", ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <p className="mt-4 text-xs leading-5 text-text-tertiary">
+                {data.executiveSummary.disclaimer}
+              </p>
+            </div>
+          ) : null}
+
           {/* Confidence */}
           {data.confidence < 100 && (
             <div className="mt-4 rounded-lg border border-zinc-800 bg-bg-card p-4">

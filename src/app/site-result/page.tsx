@@ -227,6 +227,49 @@ function SiteResultContent() {
             ))}
           </section>
 
+          {data.executiveSummary ? (
+            <section className="rounded-3xl border border-brand/20 bg-bg-card p-6 sm:p-8">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand">
+                    Executive Intelligence
+                  </p>
+                  <h2 className="mt-2 font-display text-2xl font-semibold text-text-primary">
+                    {data.executiveSummary.headline}
+                  </h2>
+                </div>
+                <span className="w-fit rounded-full border border-border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-text-secondary">
+                  {data.executiveSummary.source}
+                </span>
+              </div>
+              <p className="mt-4 leading-7 text-text-secondary">
+                {data.executiveSummary.executiveSummary}
+              </p>
+              <p className="mt-3 leading-7 text-text-secondary">
+                {data.executiveSummary.businessImpact}
+              </p>
+              {data.executiveSummary.topPriorities.length > 0 ? (
+                <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                  {data.executiveSummary.topPriorities.slice(0, 4).map((priority) => (
+                    <Card key={`${priority.rank}-${priority.findingIds.join("-")}`} className="p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+                        Priority {priority.rank} · {priority.severity} · {priority.responsibleRole}
+                      </p>
+                      <h3 className="mt-2 font-semibold text-text-primary">{priority.title}</h3>
+                      <p className="mt-2 text-sm text-text-secondary">{priority.reason}</p>
+                      <p className="mt-2 font-mono text-xs text-text-muted">
+                        Evidence: {priority.findingIds.join(", ")}
+                      </p>
+                    </Card>
+                  ))}
+                </div>
+              ) : null}
+              <p className="mt-4 text-xs leading-5 text-text-muted">
+                {data.executiveSummary.disclaimer}
+              </p>
+            </section>
+          ) : null}
+
           <section className="space-y-4">
             <h2 className="font-display text-2xl font-semibold text-text-primary">
               Critical Site-Wide Issues

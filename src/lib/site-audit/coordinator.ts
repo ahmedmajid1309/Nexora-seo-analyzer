@@ -3,6 +3,7 @@ import { runQuickAudit } from "@/lib/audit/quick-audit";
 import { safeFetch } from "@/lib/network";
 import { analyzeCrossPage } from "./cross-page";
 import { calculateSiteAggregate } from "./aggregate-scoring";
+import { buildSiteEvidencePack, generateAiExecutiveSummary } from "@/lib/ai-summary";
 import { parseRobotsTxt, isBlockedByRobots, type RobotsPolicy } from "./robots";
 import { parseSitemapUrls } from "./sitemap";
 import {
@@ -428,14 +429,7 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
       selectedCount: pages.length,
     });
     pushProgress(progress, "preparing-report", startedAt, counts());
-    pushProgress(
-      progress,
-      pages.some((p) => p.status === "failed") ? "partial" : "complete",
-      startedAt,
-      counts(),
-    );
-
-    return {
+    const responseData: SiteAuditResponseData = {
       requestId: input.requestId,
       auditType: "site",
       requestedUrl: input.url,
@@ -461,6 +455,24 @@ export async function runSiteAudit(input: RunSiteAuditInput): Promise<SiteAuditR
       orphanCandidates: siteFindings.filter((f) => f.checkId === "SITE-010"),
       renderedDom,
     };
+
+    const evidence = buildSiteEvidencePack(responseData);
+    const summaryResult = await generateAiExecutiveSummary(evidence);
+    responseData.executiveSummary = summaryResult.summary;
+    responseData.aiSummaryProgress = summaryResult.progress;
+    for (const event of summaryResult.progress) {
+      pushProgress(progress, event.state, startedAt, counts());
+    }
+    pushProgress(
+      progress,
+      pages.some((p) => p.status === "failed") ? "partial" : "complete",
+      startedAt,
+      counts(),
+    );
+    responseData.completedAt = new Date().toISOString();
+    responseData.durationMs = Math.round(performance.now() - startedAt);
+
+    return responseData;
   } catch (err) {
     pushProgress(progress, "failed", startedAt, counts());
     throw err;

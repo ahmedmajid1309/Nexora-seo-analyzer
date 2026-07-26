@@ -179,3 +179,14 @@
   - Fold rendered checks into SEO score immediately: Rejected because Phase 12 signals need calibration.
 - **Rationale**: Optional side-channel diagnostics preserve the static audit contract while adding useful JavaScript rendering evidence.
 - **Consequences**: Rendered diagnostics are nullable/unavailable when the worker is disabled or unhealthy; scoring remains unchanged.
+
+## D-018: Phase 13 AI Summaries Are Evidence-Bounded Side Channels
+
+- **Date**: 2026-07-26
+- **Decision**: Optional AI executive summaries run only after deterministic audit output exists and may reference only the minimized evidence pack.
+- **Context**: AI output can hallucinate findings, change severity, or overpromise rankings if given broad authority.
+- **Alternatives considered**:
+  - Let AI generate findings directly: Rejected because deterministic checks must remain authoritative.
+  - Let users select provider/model/prompt settings: Rejected because it expands security and privacy risk.
+- **Rationale**: Grounded summaries improve readability while preserving verified scores, findings, severities, confidence, and remediation.
+- **Consequences**: Provider output is discarded if it cannot be strictly parsed and grounded; deterministic fallback remains available with no provider keys.

@@ -1,3 +1,5 @@
+import type { AiExecutiveSummary } from "@/lib/ai-summary/types";
+
 export interface AuditRequest {
   url: string;
   keyword?: string;
@@ -178,6 +180,7 @@ export interface AuditResponseData {
   serpPreview: SerpPreviewData;
   socialPreview: SocialPreviewData;
   renderedDom?: RenderedDomAnalysisOutput | null;
+  executiveSummary?: AiExecutiveSummary;
   calculationVersion: string;
   snapshotSchemaVersion: string;
 }

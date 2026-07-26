@@ -7,6 +7,7 @@ import { runAll, getRuleCount } from "@/lib/rules";
 import type { RuleResult } from "@/lib/rules/types";
 import { calculateScores } from "@/lib/rules/scoring/engine";
 import { CALCULATION_VERSION, type ScoreBreakdown } from "@/lib/rules/scoring/types";
+import { buildQuickEvidencePack, generateAiExecutiveSummary } from "@/lib/ai-summary";
 import type { AuditResponseData } from "./types";
 
 function firstMetadata(snapshot: PageSnapshot, name: string): string | null {
@@ -195,6 +196,7 @@ export async function runQuickAudit(input: {
   fetchOptions?: Omit<SafeFetchOptions, "signal">;
   pagespeed?: boolean;
   renderedDom?: boolean;
+  executiveSummary?: boolean;
 }): Promise<{
   data: AuditResponseData;
   snapshot: PageSnapshot;
@@ -238,6 +240,12 @@ export async function runQuickAudit(input: {
     pagespeed,
     renderedDom,
   });
+
+  if (input.executiveSummary) {
+    const evidence = buildQuickEvidencePack(data);
+    const { summary } = await generateAiExecutiveSummary(evidence);
+    data.executiveSummary = summary;
+  }
 
   return { data, snapshot, results: runResult.results, scores };
 }

@@ -121,6 +121,28 @@
 - **Residual risk**: Low for Phase 12 scope
 - **Status**: MITIGATED FOR PHASE 12 SCOPE
 
+## R-018: AI Summary Hallucinated Findings Or Score Changes
+
+- **Severity**: HIGH
+- **Category**: Accuracy / Trust
+- **Description**: An AI provider could invent findings, alter severity, or imply score changes not present in deterministic audit data.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Phase 13 uses minimized evidence packs, strict JSON schema validation, grounding against known finding IDs/URLs, deterministic fallback, and no mutation path back into scores or findings.
+- **Residual risk**: Low for Phase 13 scope
+- **Status**: MITIGATED FOR PHASE 13 SCOPE
+
+## R-019: AI Prompt Injection Through Audited Content
+
+- **Severity**: HIGH
+- **Category**: Security / Accuracy
+- **Description**: Audited page content may contain instructions attempting to override model behavior, reveal prompts, or exfiltrate secrets.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Sanitized evidence strings, prompt-level untrusted-data framing, no raw HTML sent, strict output grounding, server-only credentials, and no public model/prompt controls.
+- **Residual risk**: Low for Phase 13 scope
+- **Status**: MITIGATED FOR PHASE 13 SCOPE
+
 ## R-011: Third-Party API Provider Discontinuation
 
 - **Severity**: LOW
@@ -208,3 +230,5 @@
 | R-015 | HIGH     | MITIGATED FOR PHASE 11 SCOPE                        | Phase 11         |
 | R-016 | MEDIUM   | MITIGATED BY LABELING AND CONFIDENCE                | Phase 11         |
 | R-017 | CRITICAL | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |
+| R-018 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |
+| R-019 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |

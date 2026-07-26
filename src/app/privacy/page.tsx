@@ -57,6 +57,13 @@ export default function PrivacyPage() {
               </a>
               . This feature is optional and does not affect the core static audit functionality.
             </p>
+            <p className="mt-3 text-text-secondary">
+              Optional AI executive summaries are disabled by default. If enabled with server-side
+              Gemini or Groq credentials, Nexora sends a minimized evidence pack containing verified
+              audit findings, scores, affected URLs, and remediation summaries to the configured
+              provider. Raw HTML is not sent for summaries, provider secrets are never exposed to
+              the browser, and AI summaries do not change deterministic scores or findings.
+            </p>
           </div>
 
           <div>
@@ -73,8 +80,10 @@ export default function PrivacyPage() {
             <p className="mt-2 text-text-secondary">
               When you submit a URL for analysis, Nexora fetches the page content server-side to
               perform static SEO analysis. If a PageSpeed Insights API key is configured, the URL is
-              also sent to the Google PageSpeed Insights API for performance metrics. No audit data
-              is stored server-side, and no reports are persisted at this stage.
+              also sent to the Google PageSpeed Insights API for performance metrics. If optional AI
+              summaries are enabled, the verified audit evidence pack may be sent to the configured
+              AI provider. No audit data is stored server-side, and no reports are persisted at this
+              stage.
             </p>
           </div>
 

@@ -30,6 +30,21 @@ RENDER_WORKER_SECRET=replace-with-local-secret
 RENDER_WORKER_TIMEOUT_MS=8000
 ```
 
+AI executive summaries are optional and disabled by default. With no provider keys, audits still return a deterministic evidence-bounded summary when the summary path is requested.
+
+```bash
+AI_SUMMARY_ENABLED=false
+AI_SUMMARY_PROVIDER_ORDER=gemini,groq
+AI_SUMMARY_TIMEOUT_MS=12000
+AI_SUMMARY_MAX_INPUT_CHARS=24000
+AI_SUMMARY_MAX_OUTPUT_TOKENS=1200
+AI_SUMMARY_CACHE_TTL_MS=900000
+AI_SUMMARY_CACHE_MAX_ENTRIES=100
+AI_SUMMARY_PROVIDER_MAX_ATTEMPTS=1
+```
+
+To test provider calls locally, set `AI_SUMMARY_ENABLED=true` and configure server-only credentials such as `GEMINI_API_KEY` or `GROQ_API_KEY`. Do not use `NEXT_PUBLIC_` for AI provider secrets. Users cannot choose provider endpoints, models, prompts, or generation parameters from public requests.
+
 ## Development
 
 ```bash
@@ -126,6 +141,8 @@ Required environment variables:
 - `NEXT_PUBLIC_SITE_URL` — Production URL (e.g., `https://nexora-seo-analyzer.vercel.app`)
 - `NODE_ENV=production`
 - `PAGESPEED_API_KEY` (optional — enables CrUX/field data)
+- `AI_SUMMARY_ENABLED=false` by default; set to `true` only when a configured AI provider may receive minimized audit evidence packs
+- `GEMINI_API_KEY` / `GROQ_API_KEY` (optional, server-only)
 - `RENDER_WORKER_ENABLED=false` by default; set to `true` only when an isolated worker is deployed
 - `RENDER_WORKER_URL` and `RENDER_WORKER_SECRET` for the optional Phase 12 render worker
 
@@ -147,7 +164,6 @@ The first release (Phases 1-10) is verified ready. See `docs/project-memory/40-f
 
 The following features are excluded from the first release and will be built in later phases:
 
-- AI summaries (Gemini/Groq) — Phase 13
 - Playwright browser auditing — Phase 12
 - Databases (PostgreSQL, Redis, S3/R2) — Phases 14-15
 - User accounts and authentication — Phase 14
