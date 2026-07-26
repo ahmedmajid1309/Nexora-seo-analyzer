@@ -277,3 +277,22 @@
 **Excluded**: Features from earlier post-launch phases.
 
 **Completion artifacts**: See `74-phase-15-precheck.md`, `75-phase-15-infrastructure-architecture.md`, `76-phase-15-operations-contract.md`, and `77-phase-15-implementation-report.md`.
+
+---
+
+## Phase 16: Final V2 Release Audit
+
+**Objective**: Verify Phase 15 distributed infrastructure, finish route/UX/security/accessibility/performance release audit, and confirm final V2 readiness without merging or deploying production.
+**Status**: COMPLETE LOCALLY
+
+| Entry Criteria          | Deliverables                                             | Exit Criteria                                |
+| ----------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| Phase 15 complete       | Hard verification of distributed jobs, Redis, and MinIO  | Runtime quick and site jobs pass locally     |
+| Feature branch isolated | Final route inventory, sitemap, FAQ, and contact routes  | Build and E2E pass                           |
+| Docker stack available  | Honest loading UX without fake percentages               | Responsive visual checks pass                |
+|                         | Security, accessibility, performance, recovery audits    | All final local verification gates pass      |
+|                         | V2 release-readiness report with actual verified results | Production `main` remains unchanged/unmerged |
+
+**Excluded**: Merge to `main`, production deployment, branch deletion, billing/subscriptions, and fake progress indicators.
+
+**Completion artifacts**: See `83-phase-16-precheck.md` through `92-v2-release-readiness-report.md`.

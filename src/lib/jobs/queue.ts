@@ -2,7 +2,7 @@ import { Queue, type JobsOptions } from "bullmq";
 import IORedis from "ioredis";
 import { env } from "@/config/env";
 import type { AuditJobPayload } from "./types";
-import { createOpaqueId, hashSecret } from "@/lib/reports/tokens";
+import { createOpaqueId, createSecretToken, hashSecret, safeEqualHash } from "@/lib/reports/tokens";
 
 let connection: IORedis | null = null;
 let queue: Queue<AuditJobPayload> | null = null;
@@ -23,14 +23,16 @@ export function getAuditQueue(): Queue<AuditJobPayload> {
 }
 
 export async function enqueueAuditJob(
-  payload: Omit<AuditJobPayload, "requestId">,
-): Promise<{ jobId: string; cacheHit: boolean }> {
+  payload: Omit<AuditJobPayload, "requestId" | "accessTokenHash">,
+): Promise<{ jobId: string; accessToken: string; cacheHit: boolean }> {
   if (!env.AUDIT_QUEUE_ENABLED || !isQueueConfigured())
     throw new Error("Audit queue is not configured");
   const requestId = createOpaqueId("job");
   const jobId = payload.idempotencyKey
     ? `job_${hashSecret(payload.idempotencyKey).slice(0, 32)}`
     : requestId;
+  const accessToken = createSecretToken("jta");
+  const accessTokenHash = hashSecret(accessToken);
   const options: JobsOptions = {
     jobId,
     attempts: 3,
@@ -39,14 +41,41 @@ export async function enqueueAuditJob(
     removeOnFail: { age: 86_400, count: 1000 },
   };
   const existing = await getAuditQueue().getJob(jobId);
-  if (existing && (await existing.getState()) === "completed") return { jobId, cacheHit: true };
-  await getAuditQueue().add(payload.jobType, { ...payload, requestId }, options);
-  return { jobId, cacheHit: false };
+  if (existing) {
+    const existingHashes = [
+      existing.data.accessTokenHash,
+      ...(existing.data.accessTokenHashes ?? []),
+      accessTokenHash,
+    ].filter(Boolean);
+    await existing.updateData({
+      ...existing.data,
+      accessTokenHashes: Array.from(new Set(existingHashes)),
+    });
+    return { jobId, accessToken, cacheHit: (await existing.getState()) === "completed" };
+  }
+  await getAuditQueue().add(
+    payload.jobType,
+    { ...payload, requestId, accessTokenHash, accessTokenHashes: [accessTokenHash] },
+    options,
+  );
+  return { jobId, accessToken, cacheHit: false };
 }
 
-export async function getAuditJobStatus(jobId: string) {
+export async function verifyAuditJobAccess(
+  jobId: string,
+  accessToken: string | null,
+): Promise<boolean> {
+  if (!accessToken) return false;
+  const job = await getAuditQueue().getJob(jobId);
+  if (!job?.data.accessTokenHash) return false;
+  const hashes = [job.data.accessTokenHash, ...(job.data.accessTokenHashes ?? [])];
+  return hashes.some((hash) => safeEqualHash(accessToken, hash));
+}
+
+export async function getAuditJobStatus(jobId: string, accessToken?: string | null) {
   const job = await getAuditQueue().getJob(jobId);
   if (!job) return null;
+  if (accessToken !== undefined && !(await verifyAuditJobAccess(jobId, accessToken))) return null;
   return {
     jobId,
     state: await job.getState(),
@@ -57,9 +86,10 @@ export async function getAuditJobStatus(jobId: string) {
   };
 }
 
-export async function cancelAuditJob(jobId: string): Promise<boolean> {
+export async function cancelAuditJob(jobId: string, accessToken?: string | null): Promise<boolean> {
   const job = await getAuditQueue().getJob(jobId);
   if (!job) return false;
+  if (accessToken !== undefined && !(await verifyAuditJobAccess(jobId, accessToken))) return false;
   await job.remove();
   return true;
 }

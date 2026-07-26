@@ -7,6 +7,7 @@ describe("audit worker payload contract", () => {
       jobType: "quick-audit",
       url: "https://example.com",
       requestId: "job_test",
+      accessTokenHash: "a".repeat(64),
     } satisfies AuditJobPayload;
 
     expect(payload.jobType).toBe("quick-audit");
@@ -17,6 +18,7 @@ describe("audit worker payload contract", () => {
       jobType: "site-audit",
       url: "https://example.com",
       requestId: "job_test",
+      accessTokenHash: "a".repeat(64),
       pageLimit: 2,
       crawlMode: "links-only",
     } satisfies AuditJobPayload;

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { AuditScanExperience } from "@/components/audit-progress/AuditScanExperience";
 import type {
   SiteAuditResponse,
   SiteAuditResponseData,
@@ -157,19 +158,7 @@ function SiteResultContent() {
   }, [data, query, sort]);
 
   if (status === "loading") {
-    return (
-      <main className="py-28">
-        <Container>
-          <Card className="p-8 text-center">
-            <h1 className="font-display text-3xl text-text-primary">Running limited site audit</h1>
-            <p className="mt-3 text-text-secondary">
-              Validating domain, discovering URLs, crawling pages, and preparing a verified site
-              report.
-            </p>
-          </Card>
-        </Container>
-      </main>
-    );
+    return <AuditScanExperience mode="site" url={url} counters={{ selectedPages: pageLimit }} />;
   }
 
   if (status === "error" || !data) {

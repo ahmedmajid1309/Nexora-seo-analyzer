@@ -40,6 +40,18 @@ export function SiteFooter() {
             >
               Terms
             </Link>
+            <Link
+              href="/faq"
+              className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="/contact"
+              className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
+            >
+              Contact
+            </Link>
             <a
               href="https://nexoracreation.com/"
               target="_blank"

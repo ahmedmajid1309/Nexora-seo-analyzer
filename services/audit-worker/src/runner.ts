@@ -5,6 +5,15 @@ import { saveAuditReport } from "../../../src/lib/reports";
 import { putJsonObject, isObjectStorageConfigured } from "../../../src/lib/storage";
 import type { AuditJobPayload } from "../../../src/lib/jobs/types";
 
+async function putAuditArtifact(key: string, data: unknown): Promise<void> {
+  if (!isObjectStorageConfigured()) return;
+  try {
+    await putJsonObject(key, data);
+  } catch {
+    // Report persistence is authoritative; object artifacts are an optional copy.
+  }
+}
+
 export async function runAuditJob(payload: AuditJobPayload) {
   if (payload.jobType === "quick-audit") {
     const { data } = await runQuickAudit({
@@ -19,9 +28,7 @@ export async function runAuditJob(payload: AuditJobPayload) {
       data,
       idempotencyKey: payload.idempotencyKey ?? payload.requestId,
     });
-    if (isObjectStorageConfigured()) {
-      await putJsonObject(`audit-results/${payload.requestId}.json`, data);
-    }
+    await putAuditArtifact(`audit-results/${payload.requestId}.json`, data);
     return data;
   }
 
@@ -36,8 +43,6 @@ export async function runAuditJob(payload: AuditJobPayload) {
     data,
     idempotencyKey: payload.idempotencyKey ?? payload.requestId,
   });
-  if (isObjectStorageConfigured()) {
-    await putJsonObject(`audit-results/${payload.requestId}.json`, data);
-  }
+  await putAuditArtifact(`audit-results/${payload.requestId}.json`, data);
   return data;
 }

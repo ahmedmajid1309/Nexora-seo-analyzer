@@ -2,7 +2,6 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo, Suspense, useCallback } from "react";
-import { motion } from "motion/react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ScoreCard } from "@/components/report/ScoreCard";
@@ -12,6 +11,7 @@ import { FindingFilters } from "@/components/report/FindingFilters";
 import { PerformanceSection } from "@/components/report/PerformanceSection";
 import { SerpPreview } from "@/components/report/SerpPreview";
 import { SocialPreview } from "@/components/report/SocialPreview";
+import { AuditScanExperience } from "@/components/audit-progress/AuditScanExperience";
 import type { AuditResponse, AuditResponseData } from "@/lib/audit/types";
 
 const NAV_OFFSET = 48;
@@ -233,117 +233,8 @@ function ResultContent() {
     return () => observers.forEach((o) => o.disconnect());
   }, [status]);
 
-  const [stageIdx, setStageIdx] = useState(0);
-  const loadStages = [
-    "Securing the website connection",
-    "Reading the page structure",
-    "Running verified SEO checks",
-    "Calculating scores",
-    "Requesting optional Performance diagnostics",
-    "Preparing the report",
-  ];
-
-  useEffect(() => {
-    if (status !== "loading") return;
-    const t = setInterval(() => setStageIdx((i) => Math.min(i + 1, loadStages.length - 1)), 3000);
-    return () => clearInterval(t);
-  }, [status, loadStages.length]);
-
   if (status === "loading") {
-    return (
-      <div
-        className="mx-auto w-full max-w-6xl px-4 py-20 text-center sm:px-6 lg:px-8"
-        role="status"
-        aria-live="polite"
-        aria-label="Audit in progress"
-        style={{ paddingTop: `${HEADER_OFFSET + 80}px` }}
-      >
-        <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-          <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-brand/5 blur-[120px]" />
-          <div className="absolute -right-32 bottom-1/3 h-[400px] w-[400px] rounded-full bg-brand/3 blur-[100px]" />
-        </div>
-        <div className="mx-auto max-w-lg relative z-10">
-          <div className="flex justify-center">
-            <div className="relative h-16 w-16">
-              <svg className="h-16 w-16 -rotate-90" viewBox="0 0 64 64" aria-hidden="true">
-                <circle
-                  cx="32"
-                  cy="32"
-                  r="28"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  className="text-zinc-800"
-                />
-                <motion.circle
-                  cx="32"
-                  cy="32"
-                  r="28"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  className="text-brand"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 28}
-                  animate={{ strokeDashoffset: [2 * Math.PI * 28 * 0.75, 2 * Math.PI * 28 * 0.25] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </svg>
-            </div>
-          </div>
-          <h1 className="mt-6 text-2xl font-bold text-text-primary">Analyzing your website</h1>
-          <p className="mt-2 text-sm text-text-secondary break-all">{url}</p>
-          <div className="mt-8 space-y-3 text-left max-w-sm mx-auto">
-            {loadStages.map((stage, i) => {
-              const isActive = i === stageIdx;
-              const isDone = i < stageIdx;
-              return (
-                <div
-                  key={stage}
-                  className={`flex items-center gap-3 transition-all duration-300 ${
-                    isActive ? "opacity-100" : isDone ? "opacity-60" : "opacity-30"
-                  }`}
-                >
-                  <div
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
-                      isDone
-                        ? "bg-success/20 text-success"
-                        : isActive
-                          ? "bg-brand/20 text-brand"
-                          : "bg-zinc-800 text-text-tertiary"
-                    }`}
-                  >
-                    {isDone ? (
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <span className="h-2 w-2 rounded-full bg-current" aria-hidden="true" />
-                    )}
-                  </div>
-                  <span
-                    className={`text-sm ${isActive ? "text-text-primary font-medium" : "text-text-tertiary"}`}
-                  >
-                    {stage}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-8 text-[13px] text-text-tertiary">
-            The report appears as soon as the API response is ready.
-          </p>
-        </div>
-      </div>
-    );
+    return <AuditScanExperience mode="quick" url={url} />;
   }
 
   if (status === "error") {

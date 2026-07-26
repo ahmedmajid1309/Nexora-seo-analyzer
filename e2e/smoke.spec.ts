@@ -38,7 +38,7 @@ test.describe("Smoke tests", () => {
   });
 
   test("site result route shows loading shell", async ({ page }) => {
-    await page.route("/api/audit/site", async (route) => {
+    await page.route("**/api/audit/site", async (route) => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",

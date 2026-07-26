@@ -5,6 +5,8 @@ export interface AuditJobPayload {
   jobType: AuditJobType;
   url: string;
   requestId: string;
+  accessTokenHash: string;
+  accessTokenHashes?: string[];
   pageLimit?: number;
   crawlMode?: "links-and-sitemap" | "links-only" | "sitemap-first";
   idempotencyKey?: string;
