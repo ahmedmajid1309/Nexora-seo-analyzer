@@ -7,6 +7,7 @@ import {
   getAiSummaryCircuitState,
   getAiSummaryReadiness,
 } from "@/lib/ai-summary";
+import { checkDatabaseHealth } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,7 @@ export async function GET(): Promise<NextResponse> {
     cacheSize: getAiSummaryCacheSize(),
     circuits: getAiSummaryCircuitState(),
   };
+  const database = await checkDatabaseHealth();
 
   return NextResponse.json(
     {
@@ -30,6 +32,7 @@ export async function GET(): Promise<NextResponse> {
       concurrentAudits: getConcurrentCount(),
       renderedDom,
       aiSummary,
+      database,
     },
     {
       status: 200,

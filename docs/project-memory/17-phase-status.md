@@ -19,7 +19,7 @@
 | 11 | Limited Full-Site Audit | COMPLETE |
 | 12 | Rendered DOM Worker | COMPLETE |
 | 13 | Optional Gemini/Groq Summaries | COMPLETE |
-| 14 | Report History and User Accounts | PENDING |
+| 14 | Report History and User Accounts | COMPLETE |
 | 15 | Advanced Infrastructure | PENDING |
 | **Post-Launch** | (Phases 11-15) | — |
 

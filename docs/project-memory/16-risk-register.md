@@ -143,6 +143,17 @@
 - **Residual risk**: Low for Phase 13 scope
 - **Status**: MITIGATED FOR PHASE 13 SCOPE
 
+## R-020: Report Token Disclosure
+
+- **Severity**: HIGH
+- **Category**: Privacy / Security
+- **Description**: Anonymous owner tokens or share tokens could grant access to private reports if leaked.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Store only token hashes, use high-entropy random tokens, keep report routes noindex, and separate owner from share permissions.
+- **Residual risk**: Medium because users can still disclose URLs.
+- **Status**: MITIGATED FOR PHASE 14 SCOPE
+
 ## R-011: Third-Party API Provider Discontinuation
 
 - **Severity**: LOW
@@ -232,3 +243,4 @@
 | R-017 | CRITICAL | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |
 | R-018 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |
 | R-019 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |
+| R-020 | HIGH     | MITIGATED FOR PHASE 14 SCOPE                        | Phase 14         |

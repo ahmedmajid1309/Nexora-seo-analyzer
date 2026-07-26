@@ -33,10 +33,9 @@ export default function PrivacyPage() {
           <div>
             <h3 className="text-lg font-semibold text-text-primary">Report privacy</h3>
             <p className="mt-2 text-text-secondary">
-              When report functionality is later implemented, all user-generated audit reports will
-              be <strong>unlisted</strong> (accessible only via the generated URL, not listed or
-              discoverable) and will include a <strong>noindex</strong> robots meta tag. Only
-              curated Nexora-created example reports may be indexed and discoverable.
+              Saved user-generated audit reports are <strong>unlisted</strong> and include noindex
+              controls. Private report IDs are random and do not reveal database or user IDs. Public
+              share links are read-only, may expire, and can be revoked by the owner.
             </p>
           </div>
 
@@ -69,9 +68,10 @@ export default function PrivacyPage() {
           <div>
             <h3 className="text-lg font-semibold text-text-primary">Data retention</h3>
             <p className="mt-2 text-text-secondary">
-              Raw HTML snapshots will not be retained by default. Audit results may be stored
-              temporarily to enable report sharing. Retention periods will be clearly documented
-              when storage is implemented.
+              Raw HTML snapshots are not retained by default. Anonymous reports use a short default
+              retention period, signed-in account reports use a longer configurable retention
+              period, and deleted or expired reports are hidden from history and share views before
+              permanent cleanup.
             </p>
           </div>
 
@@ -82,8 +82,8 @@ export default function PrivacyPage() {
               perform static SEO analysis. If a PageSpeed Insights API key is configured, the URL is
               also sent to the Google PageSpeed Insights API for performance metrics. If optional AI
               summaries are enabled, the verified audit evidence pack may be sent to the configured
-              AI provider. No audit data is stored server-side, and no reports are persisted at this
-              stage.
+              AI provider. If report storage is enabled, deterministic audit results can be saved to
+              PostgreSQL for private history and sharing.
             </p>
           </div>
 

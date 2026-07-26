@@ -247,6 +247,7 @@
 ## Phase 14: Report History and User Accounts (Post-Launch)
 
 **Objective**: Add persistent report storage, history, and optional user accounts. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria    | Deliverables                                               | Exit Criteria                       |
 | ----------------- | ---------------------------------------------------------- | ----------------------------------- |
@@ -256,6 +257,8 @@
 |                   | Long-term report retention with expiry                     |                                     |
 
 **Excluded**: Billing, subscriptions, advanced analytics.
+
+**Completion artifacts**: See `66-phase-14-precheck.md` through `73-phase-14-implementation-report.md`.
 
 ---
 

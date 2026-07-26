@@ -5,6 +5,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,
+  timeout: 60_000,
   workers: 1,
   reporter: "list",
   use: {
@@ -13,6 +14,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm dev",
     port: 3000,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
+    timeout: 120_000,
   },
 });

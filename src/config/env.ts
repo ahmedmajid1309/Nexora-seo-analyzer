@@ -22,6 +22,20 @@ export const envSchema = z.object({
   AI_SUMMARY_CACHE_TTL_MS: z.coerce.number().int().positive().max(3_600_000).default(900_000),
   AI_SUMMARY_CACHE_MAX_ENTRIES: z.coerce.number().int().positive().max(1_000).default(100),
   AI_SUMMARY_PROVIDER_MAX_ATTEMPTS: z.coerce.number().int().positive().max(3).default(1),
+  DATABASE_URL: z.string().url().optional(),
+  AUTH_SECRET: z.string().min(32).optional(),
+  AUTH_TRUST_HOST: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  REPORT_STORAGE_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  REPORT_ANONYMOUS_RETENTION_DAYS: z.coerce.number().int().positive().max(365).default(7),
+  REPORT_AUTHENTICATED_RETENTION_DAYS: z.coerce.number().int().positive().max(3650).default(90),
+  REPORT_DELETION_GRACE_DAYS: z.coerce.number().int().positive().max(365).default(7),
+  INTERNAL_CLEANUP_SECRET: z.string().min(32).optional(),
   RENDER_WORKER_URL: z.string().url().optional(),
   RENDER_WORKER_SECRET: z.string().optional(),
   RENDER_WORKER_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),

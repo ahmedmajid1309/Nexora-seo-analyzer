@@ -146,6 +146,13 @@ export interface SiteAuditResponseData {
   };
   executiveSummary?: AiExecutiveSummary;
   aiSummaryProgress?: AiSummaryProgressEvent[];
+  reportStorage?: {
+    stored: boolean;
+    reason: string | null;
+    reportId?: string;
+    ownerToken?: string;
+    expiresAt?: string;
+  };
 }
 
 export interface SiteAuditResponse {

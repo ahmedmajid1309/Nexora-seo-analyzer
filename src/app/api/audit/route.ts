@@ -18,6 +18,7 @@ import {
   captureError,
 } from "@/lib/monitoring";
 import { auditLogger } from "@/lib/logging";
+import { saveAuditReport } from "@/lib/reports";
 
 export const runtime = "nodejs";
 
@@ -115,6 +116,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         pagespeed: true,
         renderedDom: true,
         executiveSummary: true,
+      });
+      data.reportStorage = await saveAuditReport({
+        reportType: "quick",
+        data,
+        idempotencyKey: request.headers.get("idempotency-key") ?? requestId,
       });
       clearTimeout(timeout);
 

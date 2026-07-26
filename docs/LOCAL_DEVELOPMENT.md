@@ -45,6 +45,25 @@ AI_SUMMARY_PROVIDER_MAX_ATTEMPTS=1
 
 To test provider calls locally, set `AI_SUMMARY_ENABLED=true` and configure server-only credentials such as `GEMINI_API_KEY` or `GROQ_API_KEY`. Do not use `NEXT_PUBLIC_` for AI provider secrets. Users cannot choose provider endpoints, models, prompts, or generation parameters from public requests.
 
+Report storage is optional and disabled by default. Start local PostgreSQL and run migrations with:
+
+```bash
+docker compose up -d postgres
+pnpm db:migrate
+```
+
+Use local-only placeholders in `.env`:
+
+```bash
+DATABASE_URL=postgres://nexora:nexora_local_password@localhost:5432/nexora
+AUTH_SECRET=replace-with-at-least-32-random-characters
+REPORT_STORAGE_ENABLED=true
+REPORT_ANONYMOUS_RETENTION_DAYS=7
+REPORT_AUTHENTICATED_RETENTION_DAYS=90
+REPORT_DELETION_GRACE_DAYS=7
+INTERNAL_CLEANUP_SECRET=replace-with-at-least-32-random-characters
+```
+
 ## Development
 
 ```bash
@@ -65,6 +84,9 @@ pnpm test:e2e
 
 # Render worker unit tests
 pnpm test:render-worker
+
+# Database/report tests (requires local PostgreSQL)
+pnpm test:db
 ```
 
 ## Render Worker

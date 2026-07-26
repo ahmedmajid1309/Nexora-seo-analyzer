@@ -190,3 +190,11 @@
   - Let users select provider/model/prompt settings: Rejected because it expands security and privacy risk.
 - **Rationale**: Grounded summaries improve readability while preserving verified scores, findings, severities, confidence, and remediation.
 - **Consequences**: Provider output is discarded if it cannot be strictly parsed and grounded; deterministic fallback remains available with no provider keys.
+
+## D-019: Phase 14 Report Storage Is Optional And Post-Audit
+
+- **Date**: 2026-07-27
+- **Decision**: Persist reports only after deterministic audit completion and keep storage disabled by default.
+- **Context**: Storage failures must not turn successful audits into failures.
+- **Rationale**: The audit result is authoritative before persistence. Storage adds history/shareability without changing scoring.
+- **Consequences**: Public API responses include honest storage status when persistence is unavailable.

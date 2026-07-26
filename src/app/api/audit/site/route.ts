@@ -16,6 +16,7 @@ import {
   trackRateLimitHit,
 } from "@/lib/monitoring";
 import { auditLogger } from "@/lib/logging";
+import { saveAuditReport } from "@/lib/reports";
 
 export const runtime = "nodejs";
 
@@ -102,6 +103,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     try {
       const data = await runSiteAudit({ requestId, url, pageLimit, crawlMode });
+      data.reportStorage = await saveAuditReport({
+        reportType: "site",
+        data,
+        idempotencyKey: request.headers.get("idempotency-key") ?? requestId,
+      });
       return NextResponse.json({ success: true, requestId, data } satisfies SiteAuditResponse, {
         status: 200,
       });

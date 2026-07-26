@@ -181,6 +181,13 @@ export interface AuditResponseData {
   socialPreview: SocialPreviewData;
   renderedDom?: RenderedDomAnalysisOutput | null;
   executiveSummary?: AiExecutiveSummary;
+  reportStorage?: {
+    stored: boolean;
+    reason: string | null;
+    reportId?: string;
+    ownerToken?: string;
+    expiresAt?: string;
+  };
   calculationVersion: string;
   snapshotSchemaVersion: string;
 }
