@@ -8,6 +8,8 @@ import {
   getAiSummaryReadiness,
 } from "@/lib/ai-summary";
 import { checkDatabaseHealth } from "@/lib/db";
+import { getQueueHealth } from "@/lib/jobs/queue";
+import { checkObjectStorageHealth } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -21,6 +23,7 @@ export async function GET(): Promise<NextResponse> {
     circuits: getAiSummaryCircuitState(),
   };
   const database = await checkDatabaseHealth();
+  const [queue, objectStorage] = await Promise.all([getQueueHealth(), checkObjectStorageHealth()]);
 
   return NextResponse.json(
     {
@@ -33,6 +36,8 @@ export async function GET(): Promise<NextResponse> {
       renderedDom,
       aiSummary,
       database,
+      queue,
+      objectStorage,
     },
     {
       status: 200,

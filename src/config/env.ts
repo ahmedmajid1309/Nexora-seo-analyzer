@@ -36,6 +36,28 @@ export const envSchema = z.object({
   REPORT_AUTHENTICATED_RETENTION_DAYS: z.coerce.number().int().positive().max(3650).default(90),
   REPORT_DELETION_GRACE_DAYS: z.coerce.number().int().positive().max(365).default(7),
   INTERNAL_CLEANUP_SECRET: z.string().min(32).optional(),
+  REDIS_URL: z.string().url().optional(),
+  AUDIT_QUEUE_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  AUDIT_WORKER_CONCURRENCY: z.coerce.number().int().positive().max(10).default(1),
+  AUDIT_JOB_TIMEOUT_MS: z.coerce.number().int().positive().max(300_000).default(120_000),
+  AUDIT_CACHE_TTL_MS: z.coerce.number().int().positive().max(3_600_000).default(300_000),
+  OBJECT_STORAGE_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_REGION: z.string().default("us-east-1"),
+  S3_BUCKET: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_FORCE_PATH_STYLE: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((value) => value === "true"),
+  S3_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().max(3600).default(300),
   RENDER_WORKER_URL: z.string().url().optional(),
   RENDER_WORKER_SECRET: z.string().optional(),
   RENDER_WORKER_TIMEOUT_MS: z.coerce.number().int().positive().max(30_000).default(8_000),

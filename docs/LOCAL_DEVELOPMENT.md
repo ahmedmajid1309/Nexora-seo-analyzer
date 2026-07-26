@@ -25,7 +25,7 @@ Rendered DOM analysis is optional and disabled by default. To test it locally, r
 
 ```bash
 RENDER_WORKER_ENABLED=true
-RENDER_WORKER_URL=http://localhost:3001
+RENDER_WORKER_URL=http://localhost:3001/render
 RENDER_WORKER_SECRET=replace-with-local-secret
 RENDER_WORKER_TIMEOUT_MS=8000
 ```
@@ -64,6 +64,29 @@ REPORT_DELETION_GRACE_DAYS=7
 INTERNAL_CLEANUP_SECRET=replace-with-at-least-32-random-characters
 ```
 
+Distributed audit jobs are optional and disabled by default. Start the local low-memory stack with:
+
+```bash
+docker compose up -d postgres redis minio render-worker audit-worker
+pnpm db:migrate
+```
+
+Use these local placeholders when testing queued jobs:
+
+```bash
+REDIS_URL=redis://localhost:6379
+AUDIT_QUEUE_ENABLED=true
+AUDIT_WORKER_CONCURRENCY=1
+AUDIT_JOB_TIMEOUT_MS=120000
+OBJECT_STORAGE_ENABLED=false
+S3_ENDPOINT=http://localhost:9000
+S3_BUCKET=nexora-local
+S3_ACCESS_KEY_ID=nexora_minio
+S3_SECRET_ACCESS_KEY=nexora_minio_password
+```
+
+Queued audits are additive to the synchronous audit APIs. Submit jobs through `POST /api/jobs/audit`, poll `GET /api/jobs/{jobId}`, or subscribe to `GET /api/jobs/{jobId}/events` for server-sent progress events.
+
 ## Development
 
 ```bash
@@ -87,6 +110,9 @@ pnpm test:render-worker
 
 # Database/report tests (requires local PostgreSQL)
 pnpm test:db
+
+# Audit worker tests
+pnpm test:audit-worker
 ```
 
 ## Render Worker
@@ -167,6 +193,8 @@ Required environment variables:
 - `GEMINI_API_KEY` / `GROQ_API_KEY` (optional, server-only)
 - `RENDER_WORKER_ENABLED=false` by default; set to `true` only when an isolated worker is deployed
 - `RENDER_WORKER_URL` and `RENDER_WORKER_SECRET` for the optional Phase 12 render worker
+- `REDIS_URL` and `AUDIT_QUEUE_ENABLED=true` only when using the optional Phase 15 queue
+- `OBJECT_STORAGE_ENABLED=true` plus S3/R2 credentials only when object storage is deployed
 
 ### Docker
 
@@ -187,6 +215,4 @@ The first release (Phases 1-10) is verified ready. See `docs/project-memory/40-f
 The following features are excluded from the first release and will be built in later phases:
 
 - Playwright browser auditing — Phase 12
-- Databases (PostgreSQL, Redis, S3/R2) — Phases 14-15
-- User accounts and authentication — Phase 14
-- Report persistence and sharing — Phase 14
+- Distributed queues, Redis cache, and S3/R2 object storage — Phase 15

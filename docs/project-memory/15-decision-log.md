@@ -198,3 +198,11 @@
 - **Context**: Storage failures must not turn successful audits into failures.
 - **Rationale**: The audit result is authoritative before persistence. Storage adds history/shareability without changing scoring.
 - **Consequences**: Public API responses include honest storage status when persistence is unavailable.
+
+## D-020: Phase 15 Queue Is Additive To Synchronous APIs
+
+- **Date**: 2026-07-27
+- **Decision**: Introduce BullMQ/Redis job APIs without replacing existing synchronous audit endpoints.
+- **Context**: The product already has verified quick and site audit APIs. Distributed processing should reduce long-request pressure without creating a breaking migration.
+- **Rationale**: Additive queue routes allow controlled rollout, preserve existing UI behavior, and keep storage/worker failures isolated from core audit correctness.
+- **Consequences**: Clients can opt into `POST /api/jobs/audit`, polling, and SSE progress while `/api/audit` and `/api/audit/site` continue to work.
