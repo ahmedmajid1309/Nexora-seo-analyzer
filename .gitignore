@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/services/audit-worker/node_modules/
 /services/render-worker/node_modules/
 /.pnp
 .pnp.*
