@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/services/audit-worker/node_modules/
+/services/render-worker/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -19,6 +21,7 @@
 
 # production
 /build
+/services/render-worker/dist/
 
 # misc
 .DS_Store
@@ -32,6 +35,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel

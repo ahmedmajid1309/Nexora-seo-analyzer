@@ -10,6 +10,7 @@ type FilterValues = {
   category: string;
   severity: string;
   effort: string;
+  evidenceSource: string;
   search: string;
   sort: string;
 };
@@ -37,6 +38,7 @@ export function FindingFilters({
     filters.category !== "all",
     filters.severity !== "all",
     filters.effort !== "all",
+    filters.evidenceSource !== "all",
     filters.search !== "",
   ].filter(Boolean).length;
 
@@ -50,6 +52,7 @@ export function FindingFilters({
       category: "all",
       severity: "all",
       effort: "all",
+      evidenceSource: "all",
       search: "",
       sort: "priority",
     });
@@ -124,6 +127,20 @@ export function FindingFilters({
         <option value="impact">Sort: Impact</option>
         <option value="effort">Sort: Effort</option>
         <option value="category">Sort: Category</option>
+      </select>
+
+      <select
+        value={filters.evidenceSource}
+        onChange={(e) => update("evidenceSource", e.target.value)}
+        className={selectClass}
+        aria-label="Filter by evidence source"
+      >
+        <option value="all">All evidence</option>
+        <option value="url">URL</option>
+        <option value="response-header">Response header</option>
+        <option value="static-html">Static HTML</option>
+        <option value="rendered-dom">Rendered DOM</option>
+        <option value="pagespeed">PageSpeed</option>
       </select>
     </>
   );
@@ -256,15 +273,15 @@ export function FindingFilters({
                 </button>
               </div>
               <p className="mt-3 text-center text-xs text-text-tertiary">
-                Showing {filteredCount} of {totalCount} findings
+                Showing {filteredCount} of {totalCount} checks
               </p>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      <p className="hidden sm:block text-xs text-text-tertiary">
-        Showing {filteredCount} of {totalCount} findings
+      <p className="text-xs text-text-tertiary">
+        Showing {filteredCount} of {totalCount} checks
         {activeCount > 0 && (
           <span>
             {" "}

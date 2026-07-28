@@ -190,6 +190,7 @@
 ## Phase 11: Limited Full-Site Audit (Post-Launch)
 
 **Objective**: Implement controlled multi-page crawling and cross-page analysis. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria    | Deliverables                                            | Exit Criteria                                      |
 | ----------------- | ------------------------------------------------------- | -------------------------------------------------- |
@@ -201,27 +202,33 @@
 
 **Excluded**: Unlimited crawling, Playwright.
 
+**Completion artifacts**: See `45-phase-11-precheck.md`, `46-phase-11-crawl-architecture-spec.md`, `47-phase-11-cross-page-rule-register.md`, `48-phase-11-aggregate-scoring-spec.md`, `49-phase-11-security-verification-matrix.md`, and `50-phase-11-implementation-report.md`.
+
 ---
 
 ## Phase 12: Rendered DOM Worker (Post-Launch)
 
 **Objective**: Build the isolated Playwright worker for CWV measurement and JS rendering analysis. Not required for first release.
+**Status**: COMPLETE
 
-| Entry Criteria    | Deliverables                            | Exit Criteria                                         |
-| ----------------- | --------------------------------------- | ----------------------------------------------------- |
-| Phase 10 complete | Isolated Playwright container/service   | CWV metrics match expected lab values                 |
-|                   | CWV measurement via PerformanceObserver | JS rendering checks detect raw-vs-rendered mismatches |
-|                   | Rendered DOM capture                    | Worker timeout and error handling works               |
-|                   | JS rendering rule category              |                                                       |
-|                   | Integration with audit pipeline         |                                                       |
+| Entry Criteria    | Deliverables                          | Exit Criteria                                         |
+| ----------------- | ------------------------------------- | ----------------------------------------------------- |
+| Phase 11 complete | Isolated Playwright container/service | Rendered-browser lab observations are source-labeled  |
+|                   | PerformanceObserver lab observations  | JS rendering checks detect raw-vs-rendered mismatches |
+|                   | Rendered DOM capture                  | Worker timeout and error handling works               |
+|                   | JS rendering rule category            |                                                       |
+|                   | Integration with audit pipeline       |                                                       |
 
 **Excluded**: AI features, real-user CWV (handled by Phase 7 PSI).
+
+**Completion artifacts**: See `51-phase-12-precheck.md` through `57-phase-12-implementation-report.md`.
 
 ---
 
 ## Phase 13: Optional Gemini/Groq Summaries (Post-Launch)
 
 **Objective**: Integrate optional AI-powered executive summaries. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria   | Deliverables                      | Exit Criteria                                |
 | ---------------- | --------------------------------- | -------------------------------------------- |
@@ -233,11 +240,14 @@
 
 **Excluded**: AI-generated findings, AI score modification.
 
+**Completion artifacts**: See `58-phase-13-precheck.md` through `65-phase-13-implementation-report.md`.
+
 ---
 
 ## Phase 14: Report History and User Accounts (Post-Launch)
 
 **Objective**: Add persistent report storage, history, and optional user accounts. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria    | Deliverables                                               | Exit Criteria                       |
 | ----------------- | ---------------------------------------------------------- | ----------------------------------- |
@@ -248,11 +258,14 @@
 
 **Excluded**: Billing, subscriptions, advanced analytics.
 
+**Completion artifacts**: See `66-phase-14-precheck.md` through `73-phase-14-implementation-report.md`.
+
 ---
 
 ## Phase 15: Advanced Infrastructure (Post-Launch)
 
 **Objective**: Add distributed job queues, Redis caching, S3/R2 storage, and multi-worker scaling. Not required for first release.
+**Status**: COMPLETE
 
 | Entry Criteria    | Deliverables                                     | Exit Criteria                    |
 | ----------------- | ------------------------------------------------ | -------------------------------- |
@@ -262,3 +275,24 @@
 |                   | Cache-aside pattern with Redis for frequent URLs | Cache hits return in <50ms       |
 
 **Excluded**: Features from earlier post-launch phases.
+
+**Completion artifacts**: See `74-phase-15-precheck.md`, `75-phase-15-infrastructure-architecture.md`, `76-phase-15-operations-contract.md`, and `77-phase-15-implementation-report.md`.
+
+---
+
+## Phase 16: Final V2 Release Audit
+
+**Objective**: Verify Phase 15 distributed infrastructure, finish route/UX/security/accessibility/performance release audit, and confirm final V2 readiness without merging or deploying production.
+**Status**: COMPLETE LOCALLY
+
+| Entry Criteria          | Deliverables                                             | Exit Criteria                                |
+| ----------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| Phase 15 complete       | Hard verification of distributed jobs, Redis, and MinIO  | Runtime quick and site jobs pass locally     |
+| Feature branch isolated | Final route inventory, sitemap, FAQ, and contact routes  | Build and E2E pass                           |
+| Docker stack available  | Honest loading UX without fake percentages               | Responsive visual checks pass                |
+|                         | Security, accessibility, performance, recovery audits    | All final local verification gates pass      |
+|                         | V2 release-readiness report with actual verified results | Production `main` remains unchanged/unmerged |
+
+**Excluded**: Merge to `main`, production deployment, branch deletion, billing/subscriptions, and fake progress indicators.
+
+**Completion artifacts**: See `83-phase-16-precheck.md` through `92-v2-release-readiness-report.md`.

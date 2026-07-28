@@ -2,10 +2,27 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import type { FindingEvidence, FindingPageContext } from "@/lib/audit/types";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
+function sanitizeDisplayUrl(value: string) {
+  try {
+    const url = new URL(value);
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
+function normalizeCopy(value: string | null | undefined) {
+  return (value ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
 type FindingCardProps = {
+  id?: string;
   state: string;
   severity: string;
   checkId: string;
@@ -16,7 +33,8 @@ type FindingCardProps = {
   remediationSteps: string[];
   responsible: string | null;
   effort: string | null;
-  evidenceValue: string | number | boolean | null;
+  page: FindingPageContext;
+  evidence: FindingEvidence;
   scored: boolean;
   confidence?: number;
   applicabilityReason?: string;
@@ -24,6 +42,7 @@ type FindingCardProps = {
 };
 
 export function FindingCard({
+  id,
   state,
   severity,
   checkId,
@@ -34,7 +53,8 @@ export function FindingCard({
   remediationSteps,
   responsible,
   effort,
-  evidenceValue,
+  page,
+  evidence,
   scored,
   confidence,
   applicabilityReason,
@@ -61,9 +81,31 @@ export function FindingCard({
 
   const borderClass = stateColors[state] || "border-l-zinc-600 bg-zinc-800/20";
   const badgeClass = stateBadge[state] || "bg-zinc-700/50 text-text-tertiary";
+  const observedValue = Array.isArray(evidence.observedValue)
+    ? evidence.observedValue.join(", ")
+    : evidence.observedValue;
+  const fixText = [remediationSummary, ...remediationSteps].filter(Boolean).join("\n");
+  const sanitizedFinalUrl = sanitizeDisplayUrl(page.finalUrl);
+  const remediationDuplicatesImpact =
+    normalizeCopy(remediationSummary) !== "" &&
+    normalizeCopy(remediationSummary) === normalizeCopy(impact);
+
+  async function copyText(value: string) {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      }
+    } catch {
+      // Clipboard permission can be denied in automated or locked-down browsers.
+    }
+  }
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-zinc-800 border-l-4 ${borderClass}`}>
+    <div
+      id={id}
+      tabIndex={id ? -1 : undefined}
+      className={`overflow-hidden rounded-2xl border border-zinc-800 border-l-4 ${borderClass}`}
+    >
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
@@ -97,7 +139,7 @@ export function FindingCard({
           <p className="mt-2 break-words text-base font-semibold text-text-primary">{summary}</p>
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-medium uppercase tracking-[0.11em] text-text-secondary">
             <span>{category}</span>
-            {impact && <span>Impact: {impact}</span>}
+            <span className="normal-case tracking-normal">Page: {page.pathname}</span>
             {effort && <span>Effort: {effort}</span>}
             {responsible && <span>Role: {responsible}</span>}
           </div>
@@ -121,7 +163,73 @@ export function FindingCard({
             transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
             style={{ overflow: "hidden" }}
           >
-            <div className="border-t border-zinc-800 px-4 pb-5 pt-4 sm:px-5">
+            <div className="border-t border-zinc-800 px-3 pb-5 pt-3 sm:px-5 sm:pt-4">
+              <div className="grid gap-2 sm:grid-cols-3">
+                <div className="rounded-xl border border-zinc-800 bg-bg-primary/60 p-3">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-text-tertiary">
+                    Affected Page
+                  </p>
+                  <div className="mt-1.5 space-y-1 text-sm leading-5 text-text-secondary">
+                    <p className="break-words">{page.pageTitle || "Unavailable"}</p>
+                    <p>Pathname: {page.pathname}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-zinc-800 bg-bg-primary/60 p-3">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-text-tertiary">
+                    Observed
+                  </p>
+                  <p className="mt-1.5 text-sm leading-5 text-text-secondary">
+                    {observedValue !== null && observedValue !== undefined
+                      ? String(observedValue)
+                      : evidence.unavailableReason
+                        ? `Unavailable (${evidence.unavailableReason})`
+                        : "Unavailable"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-800 bg-bg-primary/60 p-3">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-text-tertiary">
+                    Expected State
+                  </p>
+                  <p className="mt-1.5 text-sm leading-5 text-text-secondary">
+                    {evidence.expectedValue || "Meet the documented rule expectation."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="my-3 rounded-xl border border-zinc-800 bg-bg-primary/60 p-3">
+                <p className="text-[12px] font-semibold uppercase tracking-wider text-text-tertiary">
+                  Actions
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    href={page.finalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-9 items-center justify-center rounded-xl border border-zinc-700 px-3 py-1.5 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-hover"
+                  >
+                    Open Page
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => void copyText(page.finalUrl)}
+                    className="inline-flex min-h-9 items-center justify-center rounded-xl border border-zinc-700 px-3 py-1.5 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-hover"
+                  >
+                    Copy URL
+                  </button>
+                  {fixText && (
+                    <button
+                      type="button"
+                      onClick={() => void copyText(fixText)}
+                      className="inline-flex min-h-9 items-center justify-center rounded-xl bg-brand px-3 py-1.5 text-sm font-semibold text-black transition-colors hover:bg-brand-hover"
+                    >
+                      Copy Fix
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {impact && (
                 <div className="mb-4">
                   <p className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
@@ -131,10 +239,10 @@ export function FindingCard({
                 </div>
               )}
 
-              {remediationSummary && (
+              {remediationSummary && !remediationDuplicatesImpact && (
                 <div className="mb-4">
                   <p className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
-                    Remediation summary
+                    Remediation
                   </p>
                   <p className="mt-1 text-base leading-relaxed text-text-secondary">
                     {remediationSummary}
@@ -155,39 +263,54 @@ export function FindingCard({
                 </div>
               )}
 
-              {(applicabilityReason || unavailableReason || evidenceValue !== null) && (
-                <div className="mb-4 rounded-xl border border-zinc-800 bg-bg-primary/60 p-4">
-                  <p className="text-[13px] font-semibold uppercase tracking-wider text-text-tertiary">
-                    Evidence and applicability
-                  </p>
-                  <div className="mt-2 space-y-1 text-[15px] leading-relaxed text-text-secondary">
-                    {evidenceValue !== null && evidenceValue !== undefined && (
-                      <p className="technical-value">Observed value: {String(evidenceValue)}</p>
-                    )}
-                    {applicabilityReason && <p>{applicabilityReason}</p>}
-                    {unavailableReason && <p>{unavailableReason}</p>}
-                  </div>
+              {(applicabilityReason || unavailableReason) && (
+                <div className="mb-4 text-[15px] leading-relaxed text-text-secondary">
+                  {applicabilityReason && <p>{applicabilityReason}</p>}
+                  {unavailableReason && <p>{unavailableReason}</p>}
                 </div>
               )}
 
-              <div className="mt-3 flex flex-wrap gap-3 text-[13px] text-text-tertiary">
-                {responsible && (
-                  <span>
-                    <span className="font-medium text-text-tertiary">Responsible:</span>{" "}
-                    {responsible}
-                  </span>
-                )}
-                {effort && (
-                  <span>
-                    <span className="font-medium text-text-tertiary">Effort:</span> {effort}
-                  </span>
-                )}
-                {confidence !== undefined && <span>Confidence: {confidence}%</span>}
-                <span>
-                  <span className="font-medium text-text-tertiary">Category:</span> {category}
-                </span>
-                {!scored && <span className="text-warning">Informational</span>}
-              </div>
+              <details className="mt-3 rounded-xl border border-zinc-800 bg-bg-primary/40 p-4">
+                <summary className="cursor-pointer text-[13px] font-semibold text-text-tertiary uppercase tracking-wider">
+                  Technical metadata
+                </summary>
+                <div className="mt-3 space-y-2 text-[13px] text-text-tertiary">
+                  <div className="flex flex-wrap gap-3">
+                    {responsible && (
+                      <span>
+                        <span className="font-medium text-text-tertiary">Responsible:</span>{" "}
+                        {responsible}
+                      </span>
+                    )}
+                    {effort && (
+                      <span>
+                        <span className="font-medium text-text-tertiary">Effort:</span> {effort}
+                      </span>
+                    )}
+                    {confidence !== undefined && <span>Confidence: {confidence}%</span>}
+                    <span>
+                      <span className="font-medium text-text-tertiary">Category:</span> {category}
+                    </span>
+                    <span>
+                      <span className="font-medium text-text-tertiary">Source:</span>{" "}
+                      {evidence.source}
+                    </span>
+                    {!scored && <span className="text-warning">Informational</span>}
+                  </div>
+                  <p className="break-all">Final URL: {sanitizedFinalUrl}</p>
+                  {page.requestedUrl !== page.finalUrl && (
+                    <p className="break-all">Requested URL: {page.requestedUrl}</p>
+                  )}
+                  {evidence.selector && (
+                    <p className="font-mono break-all">Selector: {evidence.selector}</p>
+                  )}
+                  {evidence.elementSnippet && (
+                    <p className="font-mono break-words">
+                      Snippet: {String(evidence.elementSnippet).slice(0, 240)}
+                    </p>
+                  )}
+                </div>
+              </details>
             </div>
           </motion.div>
         )}

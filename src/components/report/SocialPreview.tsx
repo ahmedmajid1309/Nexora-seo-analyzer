@@ -1,3 +1,6 @@
+import Image from "next/image";
+import { useState } from "react";
+
 type SocialPreviewProps = {
   ogTitle: string | null;
   ogDescription: string | null;
@@ -24,7 +27,10 @@ export function SocialPreview({
   const resolvedTitle = ogTitle || twitterTitle;
   const resolvedDescription = ogDescription || twitterDescription;
   const resolvedImage = ogImage || twitterImage;
+  const [imageFailed, setImageFailed] = useState(false);
   const hasAny = resolvedTitle || resolvedDescription || resolvedImage || ogUrl || ogType;
+  const showImage = Boolean(resolvedImage) && !imageFailed;
+  const imageSrc = showImage ? resolvedImage : null;
 
   return (
     <div className="h-full space-y-4">
@@ -37,17 +43,27 @@ export function SocialPreview({
         {hasAny ? (
           <div className="overflow-hidden rounded-xl border border-zinc-700 bg-black/20">
             <div className="aspect-[1.91/1] w-full overflow-hidden bg-bg-elevated">
-              {resolvedImage ? (
-                <div className="flex h-full w-full items-center justify-center px-4 text-center">
-                  <span className="max-w-full truncate text-[13px] text-text-tertiary">
-                    Image: {resolvedImage}
-                  </span>
-                </div>
+              {imageSrc ? (
+                // The image URL is extracted from the audited page; keep it visually bounded.
+                <Image
+                  src={imageSrc}
+                  alt="Extracted social preview image"
+                  width={1200}
+                  height={630}
+                  className="h-full w-full object-cover"
+                  unoptimized
+                  onError={() => setImageFailed(true)}
+                />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand/15 via-bg-card to-bg-primary px-6 text-center">
-                  <div>
-                    <p className="text-xl font-bold text-brand">Nexora</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">No social image found</p>
+                <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(254,199,0,0.28),transparent_34%),linear-gradient(135deg,#151515,#050505)] px-6 text-center">
+                  <div className="rounded-2xl border border-brand/30 bg-black/35 px-6 py-5 shadow-2xl shadow-brand/10">
+                    <p className="text-3xl font-black tracking-tight text-brand">Nexora</p>
+                    <p className="mt-1 text-sm font-semibold text-text-primary">SEO Analyzer</p>
+                    <p className="mt-2 text-[13px] text-text-secondary">
+                      {resolvedImage
+                        ? "Social image could not be rendered"
+                        : "No social image found"}
+                    </p>
                   </div>
                 </div>
               )}

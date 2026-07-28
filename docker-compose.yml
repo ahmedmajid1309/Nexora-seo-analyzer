@@ -1,0 +1,132 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: nexora-postgres
+    environment:
+      POSTGRES_DB: nexora
+      POSTGRES_USER: nexora
+      POSTGRES_PASSWORD: nexora_local_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - nexora_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexora -d nexora"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  redis:
+    image: redis:7-alpine
+    container_name: nexora-redis
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  minio:
+    image: minio/minio:latest
+    container_name: nexora-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: nexora_minio
+      MINIO_ROOT_PASSWORD: nexora_minio_password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - nexora_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  render-worker:
+    build:
+      context: services/render-worker
+      dockerfile: Dockerfile
+    container_name: nexora-render-worker
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      RENDER_WORKER_SECRET: local-render-worker-secret-32-characters
+      RENDER_WORKER_MAX_CONCURRENT: "1"
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  audit-worker:
+    build:
+      context: .
+      dockerfile: services/audit-worker/Dockerfile
+    container_name: nexora-audit-worker
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://nexora:nexora_local_password@postgres:5432/nexora
+      REDIS_URL: redis://redis:6379
+      AUDIT_QUEUE_ENABLED: "true"
+      REPORT_STORAGE_ENABLED: "true"
+      AUTH_SECRET: local-compose-auth-secret-32-characters
+      INTERNAL_CLEANUP_SECRET: local-compose-cleanup-secret-32-characters
+      AUDIT_WORKER_CONCURRENCY: "1"
+      OBJECT_STORAGE_ENABLED: "true"
+      S3_ENDPOINT: http://minio:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: nexora-local
+      S3_ACCESS_KEY_ID: nexora_minio
+      S3_SECRET_ACCESS_KEY: nexora_minio_password
+      S3_FORCE_PATH_STYLE: "true"
+      RENDER_WORKER_ENABLED: "true"
+      RENDER_WORKER_URL: http://render-worker:3001/render
+      RENDER_WORKER_SECRET: local-render-worker-secret-32-characters
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      render-worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pnpm", "exec", "tsx", "services/audit-worker/src/health.ts"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+
+volumes:
+  nexora_postgres_data:
+  nexora_minio_data:

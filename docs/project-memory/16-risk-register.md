@@ -108,7 +108,51 @@
 - **Impact**: Medium (cost, latency)
 - **Mitigation**: Dedicated worker pool for rendered DOM. Browser binary caching. Warm container pool. Separate queue from static audits. Deferred to Phase 12.
 - **Residual risk**: Medium — cost depends on usage volume
-- **Status**: **DEFERRED** — Phase 12 (post-launch). First release uses static analysis only.
+- **Status**: **MITIGATED FOR PHASE 12 SCOPE** — isolated worker, request caps, circuit breaker, and optional rendering.
+
+## R-017: Render Worker SSRF Through Browser Requests
+
+- **Severity**: CRITICAL
+- **Category**: Security
+- **Description**: A rendered page could redirect or load subresources from localhost, cloud metadata, or private services.
+- **Likelihood**: Medium
+- **Impact**: Critical
+- **Mitigation**: Worker validates initial navigation, redirects, and every subresource URL/resolved address; blocks private/reserved destinations and mixed DNS answers.
+- **Residual risk**: Low for Phase 12 scope
+- **Status**: MITIGATED FOR PHASE 12 SCOPE
+
+## R-018: AI Summary Hallucinated Findings Or Score Changes
+
+- **Severity**: HIGH
+- **Category**: Accuracy / Trust
+- **Description**: An AI provider could invent findings, alter severity, or imply score changes not present in deterministic audit data.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Phase 13 uses minimized evidence packs, strict JSON schema validation, grounding against known finding IDs/URLs, deterministic fallback, and no mutation path back into scores or findings.
+- **Residual risk**: Low for Phase 13 scope
+- **Status**: MITIGATED FOR PHASE 13 SCOPE
+
+## R-019: AI Prompt Injection Through Audited Content
+
+- **Severity**: HIGH
+- **Category**: Security / Accuracy
+- **Description**: Audited page content may contain instructions attempting to override model behavior, reveal prompts, or exfiltrate secrets.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Sanitized evidence strings, prompt-level untrusted-data framing, no raw HTML sent, strict output grounding, server-only credentials, and no public model/prompt controls.
+- **Residual risk**: Low for Phase 13 scope
+- **Status**: MITIGATED FOR PHASE 13 SCOPE
+
+## R-020: Report Token Disclosure
+
+- **Severity**: HIGH
+- **Category**: Privacy / Security
+- **Description**: Anonymous owner tokens or share tokens could grant access to private reports if leaked.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Store only token hashes, use high-entropy random tokens, keep report routes noindex, and separate owner from share permissions.
+- **Residual risk**: Medium because users can still disclose URLs.
+- **Status**: MITIGATED FOR PHASE 14 SCOPE
 
 ## R-011: Third-Party API Provider Discontinuation
 
@@ -154,6 +198,28 @@
 - **Residual risk**: Low
 - **Status**: Accepted for first release
 
+## R-015: Public Site Crawl Resource Exhaustion
+
+- **Severity**: HIGH
+- **Category**: Security / Operations
+- **Description**: A public full-site audit could be abused to crawl too many pages or exhaust worker resources.
+- **Likelihood**: Medium
+- **Impact**: High
+- **Mitigation**: Phase 11 caps selected pages at 25, uses same-origin crawling, default concurrency 3, total deadline 45s, per-host cooldown, existing IP rate limits, existing host cooldown, and existing concurrent slot limits.
+- **Residual risk**: Medium until distributed rate limiting and queue isolation arrive in Phase 15.
+- **Status**: MITIGATED FOR PHASE 11 SCOPE
+
+## R-016: Site Audit False Orphan Classification
+
+- **Severity**: MEDIUM
+- **Category**: Accuracy
+- **Description**: A 25-page crawl can miss legitimate internal links and incorrectly imply a page is orphaned.
+- **Likelihood**: Medium
+- **Impact**: Medium
+- **Mitigation**: Orphan results are labeled as candidates unless evidence is sufficient. Confidence is reduced for candidate findings.
+- **Residual risk**: Low
+- **Status**: MITIGATED BY LABELING AND CONFIDENCE
+
 ## Risk Summary
 
 | ID    | Severity | Status                                              | Mitigation Phase |
@@ -167,8 +233,14 @@
 | R-007 | MEDIUM   | MITIGATED — Phase 4 completed                       | Phase 4          |
 | R-008 | MEDIUM   | MITIGATED — Phase 5 completed                       | Phase 5          |
 | R-009 | MEDIUM   | Mitigated by documentation                          | N/A              |
-| R-010 | MEDIUM   | DEFERRED — Phase 12 (post-launch)                   | Phase 12         |
+| R-010 | MEDIUM   | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |
 | R-011 | LOW      | Mitigated by architecture                           | N/A              |
 | R-012 | LOW      | Mitigated by documentation                          | N/A              |
 | R-013 | LOW      | Mitigated — platform-independent path handling used | Phase 1          |
 | R-014 | LOW      | Accepted for first release                          | Phase 15         |
+| R-015 | HIGH     | MITIGATED FOR PHASE 11 SCOPE                        | Phase 11         |
+| R-016 | MEDIUM   | MITIGATED BY LABELING AND CONFIDENCE                | Phase 11         |
+| R-017 | CRITICAL | MITIGATED FOR PHASE 12 SCOPE                        | Phase 12         |
+| R-018 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |
+| R-019 | HIGH     | MITIGATED FOR PHASE 13 SCOPE                        | Phase 13         |
+| R-020 | HIGH     | MITIGATED FOR PHASE 14 SCOPE                        | Phase 14         |

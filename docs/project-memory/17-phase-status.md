@@ -16,11 +16,12 @@
 | 9 | Rate Limiting and Deployment Hardening | COMPLETE |
 | 10 | Production Verification | COMPLETE |
 | **First Release Complete** | (Phases 1-10) | — |
-| 11 | Limited Full-Site Audit | PENDING |
-| 12 | Rendered DOM Worker | PENDING |
-| 13 | Optional Gemini/Groq Summaries | PENDING |
-| 14 | Report History and User Accounts | PENDING |
-| 15 | Advanced Infrastructure | PENDING |
+| 11 | Limited Full-Site Audit | COMPLETE |
+| 12 | Rendered DOM Worker | COMPLETE |
+| 13 | Optional Gemini/Groq Summaries | COMPLETE |
+| 14 | Report History and User Accounts | COMPLETE |
+| 15 | Advanced Infrastructure | COMPLETE |
+| 16 | Final V2 Release Audit | COMPLETE LOCALLY |
 | **Post-Launch** | (Phases 11-15) | — |
 
 ## Phase 0 Detail
@@ -278,6 +279,41 @@
 | docs/project-memory/38-phase-10-release-checklist.md       | CREATED  |
 | docs/project-memory/39-phase-10-implementation-report.md   | CREATED  |
 | docs/project-memory/40-first-release-readiness-report.md   | CREATED  |
+
+## Phase 11 Detail
+
+| Item                                          | Status  |
+| --------------------------------------------- | ------- |
+| Site audit API route (`POST /api/audit/site`) | CREATED |
+| Shared quick-audit helper                     | CREATED |
+| Bounded in-process crawl coordinator          | CREATED |
+| Same-origin URL discovery and normalization   | CREATED |
+| Robots and sitemap discovery                  | CREATED |
+| Cross-page rule engine                        | CREATED |
+| Aggregate site scoring                        | CREATED |
+| Progress-state contract                       | CREATED |
+| Site audit launcher route (`/site-audit`)     | CREATED |
+| Site report route (`/site-result`)            | CREATED |
+| Phase 11 documentation set                    | CREATED |
+| Phase 11 tests                                | CREATED |
+
+## Phase 12 Detail
+
+| Item                                                        | Status   |
+| ----------------------------------------------------------- | -------- |
+| Isolated render worker (`services/render-worker`)           | CREATED  |
+| Signed `POST /render` and `GET /health`                     | CREATED  |
+| Worker SSRF and browser safety controls                     | VERIFIED |
+| Bounded rendered snapshot contract                          | CREATED  |
+| Rendered-browser lab observations                           | CREATED  |
+| App-side rendered DOM client and circuit breaker            | CREATED  |
+| JS-001 through JS-014 diagnostic rule set                   | CREATED  |
+| Quick audit optional rendered DOM integration               | CREATED  |
+| Site audit max-3 rendered page integration                  | CREATED  |
+| Result and site-result rendered DOM summaries               | CREATED  |
+| Health endpoint rendered readiness state                    | CREATED  |
+| Phase 12 documentation set                                  | CREATED  |
+| Rendered analysis remains optional, graceful, and non-score | VERIFIED |
 
 ## Phase Entry Criteria
 

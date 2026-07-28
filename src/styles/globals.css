@@ -71,7 +71,7 @@
 
   html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -94,7 +94,7 @@
     font-family: var(--font-body), "Manrope", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1,
@@ -203,6 +203,18 @@
     100% {
       transform: scaleX(1);
       transform-origin: left;
+    }
+  }
+
+  @keyframes scan-x {
+    0%,
+    100% {
+      transform: translateX(-85%);
+      opacity: 0.25;
+    }
+    50% {
+      transform: translateX(240%);
+      opacity: 0.55;
     }
   }
 

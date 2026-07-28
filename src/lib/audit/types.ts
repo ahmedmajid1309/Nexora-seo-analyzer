@@ -1,7 +1,25 @@
+import type { AiExecutiveSummary } from "@/lib/ai-summary/types";
+
 export interface AuditRequest {
   url: string;
   keyword?: string;
   expectIndexable?: boolean;
+}
+
+export interface FindingPageContext {
+  requestedUrl: string;
+  finalUrl: string;
+  pathname: string;
+  pageTitle: string | null;
+}
+
+export interface FindingEvidence {
+  source: "url" | "response-header" | "static-html" | "rendered-dom" | "pagespeed";
+  observedValue: string | number | boolean | string[] | null;
+  expectedValue: string | null;
+  selector: string | null;
+  elementSnippet: string | null;
+  unavailableReason: string | null;
 }
 
 export interface AuditFinding {
@@ -17,6 +35,8 @@ export interface AuditFinding {
   remediationSteps: string[];
   responsible: string;
   confidence: number;
+  page: FindingPageContext;
+  evidence: FindingEvidence;
   applicabilityReason?: string;
   unavailableReason?: string;
 }
@@ -35,6 +55,7 @@ export interface CategoryBreakdown {
 
 export interface ScoreCap {
   capId: string;
+  triggerCheckIds?: string[];
   reason: string;
   maxScore: number;
   applied: boolean;
@@ -104,6 +125,51 @@ export interface SocialPreviewData {
   twitterImage: string | null;
 }
 
+export interface RenderedDomFindingOutput {
+  checkId: string;
+  state: "passed" | "warning" | "failed" | "unavailable";
+  severity: "high" | "medium" | "low" | "informational";
+  summary: string;
+  evidence: string;
+  impact: string;
+  remediation: string;
+  responsible: "owner" | "seo" | "developer" | "content-editor" | "designer";
+  effort: "low" | "medium" | "high";
+  applicability: string;
+  staticValue: string | number | null;
+  renderedValue: string | number | null;
+  confidence: number;
+}
+
+export interface RenderedDomLabOutput {
+  source: "Rendered browser lab observation";
+  navigationTtfbMs: number | null;
+  fcpMs: number | null;
+  observedLcpMs: number | null;
+  observedCls: number | null;
+  longTaskCount: number | null;
+  totalLongTaskDurationMs: number | null;
+  domContentLoadedMs: number | null;
+  loadMs: number | null;
+  resourceCount: number | null;
+  transferredBytesEstimate: number | null;
+}
+
+export interface RenderedDomAnalysisOutput {
+  status: "disabled" | "available" | "unavailable";
+  workerStatus: "not-configured" | "healthy" | "unreachable" | "error" | "circuit-open";
+  renderedUrl: string | null;
+  durationMs: number | null;
+  domNodeDelta: number | null;
+  visibleTextDelta: number | null;
+  consoleErrorCount: number | null;
+  requestFailedCount: number | null;
+  lab: RenderedDomLabOutput | null;
+  findings: RenderedDomFindingOutput[];
+  unavailableReason: string | null;
+  schemaVersion: string;
+}
+
 export interface AuditResponseData {
   requestId: string;
   requestedUrl: string;
@@ -132,6 +198,15 @@ export interface AuditResponseData {
   performanceDesktop: PageSpeedSideData | null;
   serpPreview: SerpPreviewData;
   socialPreview: SocialPreviewData;
+  renderedDom?: RenderedDomAnalysisOutput | null;
+  executiveSummary?: AiExecutiveSummary;
+  reportStorage?: {
+    stored: boolean;
+    reason: string | null;
+    reportId?: string;
+    ownerToken?: string;
+    expiresAt?: string;
+  };
   calculationVersion: string;
   snapshotSchemaVersion: string;
 }

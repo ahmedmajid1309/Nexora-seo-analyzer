@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AuditRequestSchema } from "@/lib/audit/schemas";
-import type { AuditResponse, AuditResponseData } from "@/lib/audit/types";
-import { safeFetch } from "@/lib/network";
+import type { AuditResponse } from "@/lib/audit/types";
 import { isNexoraError } from "@/lib/errors";
-import { buildPageSnapshot } from "@/lib/extraction";
-import { runAll, getRuleCount } from "@/lib/rules";
-import { calculateScores } from "@/lib/rules/scoring/engine";
+import { runQuickAudit } from "@/lib/audit/quick-audit";
 import {
   checkRateLimit,
   checkHostCooldown,
@@ -14,8 +11,6 @@ import {
   releaseConcurrentSlot,
   getExecutionDeadline,
 } from "@/lib/audit/abuse-protection";
-import { CALCULATION_VERSION } from "@/lib/rules/scoring/types";
-import type { PageSpeedOutput } from "@/lib/pagespeed/types";
 import {
   trackAuditRequest,
   trackAuditError,
@@ -23,79 +18,9 @@ import {
   captureError,
 } from "@/lib/monitoring";
 import { auditLogger } from "@/lib/logging";
-import type { PageSnapshot } from "@/lib/extraction/types";
+import { saveAuditReport } from "@/lib/reports";
 
 export const runtime = "nodejs";
-
-function firstMetadata(snapshot: PageSnapshot, name: string): string | null {
-  const entry = snapshot.metadata.find((m) => m.name.toLowerCase() === name.toLowerCase());
-  return entry?.normalizedValue?.trim() || entry?.rawValue?.trim() || null;
-}
-
-function firstOpenGraph(snapshot: PageSnapshot, property: string): string | null {
-  return (
-    snapshot.social.openGraph
-      .find((entry) => entry.property.toLowerCase() === property.toLowerCase())
-      ?.content.trim() || null
-  );
-}
-
-function firstTwitter(snapshot: PageSnapshot, name: string): string | null {
-  return (
-    snapshot.social.twitter
-      .find((entry) => entry.name.toLowerCase() === name.toLowerCase())
-      ?.content.trim() || null
-  );
-}
-
-function resolveAgainstFinalUrl(value: string | null, finalUrl: string): string | null {
-  if (!value) return null;
-  try {
-    return new URL(value, finalUrl).toString();
-  } catch {
-    return null;
-  }
-}
-
-function buildPreviewData(
-  snapshot: PageSnapshot,
-): Pick<AuditResponseData, "serpPreview" | "socialPreview"> {
-  const metaDescription = firstMetadata(snapshot, "description");
-  const canonicalUrl = resolveAgainstFinalUrl(
-    firstMetadata(snapshot, "canonical"),
-    snapshot.finalUrl,
-  );
-  const ogTitle = firstOpenGraph(snapshot, "og:title");
-  const ogDescription = firstOpenGraph(snapshot, "og:description");
-  const ogImage = resolveAgainstFinalUrl(firstOpenGraph(snapshot, "og:image"), snapshot.finalUrl);
-  const ogUrl = resolveAgainstFinalUrl(firstOpenGraph(snapshot, "og:url"), snapshot.finalUrl);
-  const twitterTitle = firstTwitter(snapshot, "twitter:title");
-  const twitterDescription = firstTwitter(snapshot, "twitter:description");
-  const twitterImage = resolveAgainstFinalUrl(
-    firstTwitter(snapshot, "twitter:image"),
-    snapshot.finalUrl,
-  );
-
-  return {
-    serpPreview: {
-      title: snapshot.document.title || ogTitle || null,
-      description: metaDescription || ogDescription || null,
-      canonicalUrl,
-      displayUrl: canonicalUrl || snapshot.finalUrl,
-    },
-    socialPreview: {
-      ogTitle,
-      ogDescription,
-      ogImage,
-      ogUrl,
-      ogType: firstOpenGraph(snapshot, "og:type"),
-      twitterCard: firstTwitter(snapshot, "twitter:card"),
-      twitterTitle,
-      twitterDescription,
-      twitterImage,
-    },
-  };
-}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
@@ -184,124 +109,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const timeout = setTimeout(() => controller.abort(), deadline);
 
     try {
-      const fetchResult = await safeFetch(url, { signal: controller.signal });
-      clearTimeout(timeout);
-
-      const snapshot = buildPageSnapshot(fetchResult);
-      const runResult = runAll(snapshot);
-
-      let pagespeed: PageSpeedOutput | undefined;
-      try {
-        const { fetchPageSpeedBoth } = await import("@/lib/pagespeed/parser");
-        pagespeed = await fetchPageSpeedBoth({ url, timeoutMs: 15000 });
-      } catch {
-        // PageSpeed is optional — continue without it
-      }
-
-      const scores = calculateScores({ results: runResult.results, snapshot, pagespeed });
-
-      const stateCounts: Record<string, number> = {};
-      const findings: AuditResponseData["findings"] = [];
-
-      for (const r of runResult.results) {
-        stateCounts[r.state] = (stateCounts[r.state] ?? 0) + 1;
-
-        if (r.state === "failed" || r.state === "warning" || r.state === "passed") {
-          findings.push({
-            checkId: r.checkId,
-            state: r.state,
-            category: r.category,
-            severity: r.severity,
-            scored: r.scored,
-            summary:
-              r.evidence.summary.length > 200
-                ? r.evidence.summary.slice(0, 200) + "..."
-                : r.evidence.summary,
-            impact: r.impact,
-            effort: r.effort,
-            remediationSummary: r.remediation.summary,
-            remediationSteps: r.remediation.steps,
-            responsible: r.remediation.responsible,
-            confidence: r.confidence,
-            applicabilityReason: r.applicabilityReason,
-            unavailableReason: r.unavailableReason,
-          });
-        }
-      }
-
-      const categoryBreakdowns: AuditResponseData["categoryBreakdowns"] =
-        scores.categoryContributions.map((c) => ({
-          category: c.category,
-          rawScore: c.rawScore,
-          cappedScore: c.cappedScore,
-          passed: c.passedCount,
-          warning: c.warningCount,
-          failed: c.failedCount,
-          notApplicable: c.notApplicableCount,
-          unavailable: c.unavailableCount,
-          informational: c.informationalCount,
-        }));
-
-      const scoreFamilies: AuditResponseData["scoreFamilies"] = scores.scoreFamilies.map((f) => ({
-        family: f.family,
-        name: f.name,
-        rawScore: f.rawScore,
-        cappedScore: f.cappedScore,
-        confidence: f.confidence,
-      }));
-
-      const psMobile = pagespeed?.mobile ?? null;
-      const psDesktop = pagespeed?.desktop ?? null;
-      const previews = buildPreviewData(snapshot);
-
-      const data: AuditResponseData = {
+      const { data } = await runQuickAudit({
+        url,
         requestId,
-        requestedUrl: snapshot.requestedUrl,
-        finalUrl: snapshot.finalUrl,
-        responseStatus: snapshot.response.status,
-        contentType: snapshot.response.contentType,
-        byteLength: snapshot.response.byteLength,
-        durationMs: runResult.durationMs,
-        totalRules: getRuleCount(),
-        stateCounts,
-        findings: findings.slice(0, 200),
-        findingsTruncated: findings.length > 200,
-        categoryBreakdowns,
-        scoreFamilies,
-        confidence: scores.confidence,
-        appliedCaps: scores.appliedCaps.map((c) => ({
-          capId: c.capId,
-          reason: c.reason,
-          maxScore: c.maxScore,
-          applied: c.applied,
-        })),
-        extractionWarnings: snapshot.extractionWarnings.map((w) => w.message).slice(0, 20),
-        partialStage: runResult.errorCount > 0 ? "rule-execution" : null,
-        unavailableStage: null,
-        performanceScore: scores.performanceScore,
-        performanceStatus: scores.performanceStatus,
-        performanceSource: scores.performanceSource,
-        performanceConfidence: scores.performanceConfidence,
-        performanceExplanation: scores.performanceExplanation,
-        performanceMobile: psMobile
-          ? {
-              labMetrics: psMobile.labMetrics,
-              fieldData: psMobile.fieldData,
-              opportunities: psMobile.opportunities.slice(0, 10),
-            }
-          : null,
-        performanceDesktop: psDesktop
-          ? {
-              labMetrics: psDesktop.labMetrics,
-              fieldData: psDesktop.fieldData,
-              opportunities: psDesktop.opportunities.slice(0, 10),
-            }
-          : null,
-        serpPreview: previews.serpPreview,
-        socialPreview: previews.socialPreview,
-        calculationVersion: CALCULATION_VERSION,
-        snapshotSchemaVersion: snapshot.schemaVersion,
-      };
+        signal: controller.signal,
+        pagespeed: true,
+        renderedDom: true,
+        executiveSummary: true,
+      });
+      data.reportStorage = await saveAuditReport({
+        reportType: "quick",
+        data,
+        idempotencyKey: request.headers.get("idempotency-key") ?? requestId,
+      });
+      clearTimeout(timeout);
 
       return NextResponse.json({ success: true, requestId, data } satisfies AuditResponse, {
         status: 200,

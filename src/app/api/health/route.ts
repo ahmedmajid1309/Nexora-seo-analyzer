@@ -1,12 +1,29 @@
 import { NextResponse } from "next/server";
 import { getHealthStatus, trackHealthCheck } from "@/lib/monitoring";
 import { getConcurrentCount } from "@/lib/audit/abuse-protection";
+import { getRenderedDomReadiness } from "@/lib/rendered-dom";
+import {
+  getAiSummaryCacheSize,
+  getAiSummaryCircuitState,
+  getAiSummaryReadiness,
+} from "@/lib/ai-summary";
+import { checkDatabaseHealth } from "@/lib/db";
+import { getQueueHealth } from "@/lib/jobs/queue";
+import { checkObjectStorageHealth } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
 export async function GET(): Promise<NextResponse> {
   trackHealthCheck();
   const health = getHealthStatus();
+  const renderedDom = getRenderedDomReadiness();
+  const aiSummary = {
+    ...getAiSummaryReadiness(),
+    cacheSize: getAiSummaryCacheSize(),
+    circuits: getAiSummaryCircuitState(),
+  };
+  const database = await checkDatabaseHealth();
+  const [queue, objectStorage] = await Promise.all([getQueueHealth(), checkObjectStorageHealth()]);
 
   return NextResponse.json(
     {
@@ -16,6 +33,11 @@ export async function GET(): Promise<NextResponse> {
       environment: health.environment,
       timestamp: health.timestamp,
       concurrentAudits: getConcurrentCount(),
+      renderedDom,
+      aiSummary,
+      database,
+      queue,
+      objectStorage,
     },
     {
       status: 200,

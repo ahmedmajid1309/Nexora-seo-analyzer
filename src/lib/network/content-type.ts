@@ -57,6 +57,12 @@ export function classifyContentType(contentType: string | null): {
   return { isAllowed: false, detectedType: lower };
 }
 
+export function isAllowedContentType(contentType: string | null, allowedTypes: string[]): boolean {
+  if (!contentType) return false;
+  const lower = contentType.toLowerCase().split(";")[0]?.trim() ?? "";
+  return allowedTypes.includes(lower);
+}
+
 export function sniffIsHtml(buffer: Buffer): boolean {
   const text = buffer.toString("utf-8").slice(0, 4096).toLowerCase().trimStart();
 

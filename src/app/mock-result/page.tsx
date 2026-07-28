@@ -34,7 +34,7 @@ const capLabel: Record<string, string> = {
   "entity-topical-depth": "Entity Topical Depth",
 };
 
-const mockData: AuditResponseData = {
+const rawMockData = {
   requestId: "mock-req-001",
   requestedUrl: "https://example-nexora-site.com",
   finalUrl: "https://www.example-nexora-site.com",
@@ -643,6 +643,29 @@ const mockData: AuditResponseData = {
   },
 };
 
+const mockPage = {
+  requestedUrl: rawMockData.requestedUrl,
+  finalUrl: rawMockData.finalUrl,
+  pathname: "/",
+  pageTitle: rawMockData.serpPreview.title,
+};
+
+const mockData: AuditResponseData = {
+  ...rawMockData,
+  findings: rawMockData.findings.map((finding) => ({
+    ...finding,
+    page: mockPage,
+    evidence: {
+      source: "static-html" as const,
+      observedValue: finding.summary,
+      expectedValue: finding.remediationSummary,
+      selector: null,
+      elementSnippet: null,
+      unavailableReason: null,
+    },
+  })),
+} as AuditResponseData;
+
 function MockResultContent() {
   const [activeSection, setActiveSection] = useState<Section>("overview");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -663,6 +686,7 @@ function MockResultContent() {
     category: "all",
     severity: "all",
     effort: "all",
+    evidenceSource: "all",
     search: "",
     sort: "priority",
   });
@@ -1177,7 +1201,8 @@ function MockResultContent() {
                 remediationSteps={f.remediationSteps}
                 responsible={f.responsible}
                 effort={f.effort}
-                evidenceValue={null}
+                page={f.page}
+                evidence={f.evidence}
                 scored={f.scored}
               />
             ))}
@@ -1213,7 +1238,8 @@ function MockResultContent() {
                 remediationSteps={f.remediationSteps}
                 responsible={f.responsible}
                 effort={f.effort}
-                evidenceValue={null}
+                page={f.page}
+                evidence={f.evidence}
                 scored={f.scored}
               />
             ))}
@@ -1250,7 +1276,8 @@ function MockResultContent() {
                 remediationSteps={f.remediationSteps}
                 responsible={f.responsible}
                 effort={f.effort}
-                evidenceValue={null}
+                page={f.page}
+                evidence={f.evidence}
                 scored={f.scored}
               />
             ))}

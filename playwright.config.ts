@@ -5,14 +5,16 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,
+  timeout: 60_000,
   workers: 1,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://127.0.0.1:3000",
   },
   webServer: {
     command: "pnpm dev",
-    port: 3000,
-    reuseExistingServer: true,
+    url: "http://127.0.0.1:3000/",
+    reuseExistingServer: false,
+    timeout: 180_000,
   },
 });

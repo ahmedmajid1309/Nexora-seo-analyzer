@@ -11,7 +11,7 @@ export interface CapSpec {
 export const CAP_SPECS: CapSpec[] = [
   {
     capId: "CAP-NOINDEX",
-    triggerCheckIds: ["META-007"],
+    triggerCheckIds: ["META-011"],
     familyTarget: "seo-health",
     reason: "Page has noindex directive — search engines cannot index this page",
     maxScore: 40,
@@ -60,7 +60,7 @@ export function evaluateCaps(
       const state = resultMap.get(id);
       return (
         state === "failed" ||
-        (id === "META-007" && state === "failed" && !applicableContext.isIndexable)
+        (id === "META-011" && state === "warning" && !applicableContext.isIndexable)
       );
     });
 

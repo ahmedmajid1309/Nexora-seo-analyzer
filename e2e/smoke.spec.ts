@@ -31,6 +31,14 @@ test.describe("Smoke tests", () => {
     await expect(page.getByRole("heading", { name: "Terms of Service" })).toBeVisible();
   });
 
+  test("homepage navigation exposes only final public pages", async ({ page }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("link", { name: /site audit/i })).toHaveCount(0);
+    await expect(
+      page.getByLabel("Main navigation").getByRole("link", { name: /methodology/i }),
+    ).toBeVisible();
+  });
+
   test("not-found page shows for invalid URL", async ({ page }) => {
     await page.goto("/nonexistent-page");
     await expect(page.getByText("Page not found")).toBeVisible();

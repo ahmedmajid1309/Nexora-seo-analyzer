@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem, ScaleIn } from "@/components/ui/AnimatedPrimitives";
 import { CategoryTicker } from "@/components/landing/CategoryTicker";
+import { PAGE_TOP_OFFSET } from "@/lib/constants";
 import { motion } from "motion/react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
@@ -41,7 +42,8 @@ export default function HomePage() {
     <>
       {/* ── SECTION 1: HERO ── */}
       <section
-        className="relative overflow-hidden pt-28 pb-12 sm:pt-36 sm:pb-20 lg:pt-44 lg:pb-28"
+        className="relative overflow-hidden pb-12 sm:pb-20 lg:pb-28"
+        style={{ paddingTop: `${PAGE_TOP_OFFSET + 24}px` }}
         id="hero"
       >
         {/* Background accents */}

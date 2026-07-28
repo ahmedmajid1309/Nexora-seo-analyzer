@@ -20,3 +20,5 @@ playwright.config.ts
 eslint.config.mjs
 postcss.config.mjs
 .prettierrc
+!pnpm-lock.yaml
+!tsconfig.json

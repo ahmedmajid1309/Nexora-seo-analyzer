@@ -21,6 +21,72 @@ cp .env.example .env
 
 The default `NEXT_PUBLIC_SITE_URL=http://localhost:3000` works for local development. No external API keys are required.
 
+Rendered DOM analysis is optional and disabled by default. To test it locally, run the render worker separately and set:
+
+```bash
+RENDER_WORKER_ENABLED=true
+RENDER_WORKER_URL=http://localhost:3001/render
+RENDER_WORKER_SECRET=replace-with-local-secret
+RENDER_WORKER_TIMEOUT_MS=8000
+```
+
+AI executive summaries are optional and disabled by default. With no provider keys, audits still return a deterministic evidence-bounded summary when the summary path is requested.
+
+```bash
+AI_SUMMARY_ENABLED=false
+AI_SUMMARY_PROVIDER_ORDER=gemini,groq
+AI_SUMMARY_TIMEOUT_MS=12000
+AI_SUMMARY_MAX_INPUT_CHARS=24000
+AI_SUMMARY_MAX_OUTPUT_TOKENS=1200
+AI_SUMMARY_CACHE_TTL_MS=900000
+AI_SUMMARY_CACHE_MAX_ENTRIES=100
+AI_SUMMARY_PROVIDER_MAX_ATTEMPTS=1
+```
+
+To test provider calls locally, set `AI_SUMMARY_ENABLED=true` and configure server-only credentials such as `GEMINI_API_KEY` or `GROQ_API_KEY`. Do not use `NEXT_PUBLIC_` for AI provider secrets. Users cannot choose provider endpoints, models, prompts, or generation parameters from public requests.
+
+Report storage is optional and disabled by default. Start local PostgreSQL and run migrations with:
+
+```bash
+docker compose up -d postgres
+pnpm db:migrate
+```
+
+Use local-only placeholders in `.env`:
+
+```bash
+DATABASE_URL=postgres://nexora:nexora_local_password@localhost:5432/nexora
+AUTH_SECRET=replace-with-at-least-32-random-characters
+REPORT_STORAGE_ENABLED=true
+REPORT_ANONYMOUS_RETENTION_DAYS=7
+REPORT_AUTHENTICATED_RETENTION_DAYS=90
+REPORT_DELETION_GRACE_DAYS=7
+INTERNAL_CLEANUP_SECRET=replace-with-at-least-32-random-characters
+```
+
+Distributed audit jobs are optional and disabled by default. Start the local low-memory stack with:
+
+```bash
+docker compose up -d postgres redis minio render-worker audit-worker
+pnpm db:migrate
+```
+
+Use these local placeholders when testing queued jobs:
+
+```bash
+REDIS_URL=redis://localhost:6379
+AUDIT_QUEUE_ENABLED=true
+AUDIT_WORKER_CONCURRENCY=1
+AUDIT_JOB_TIMEOUT_MS=120000
+OBJECT_STORAGE_ENABLED=false
+S3_ENDPOINT=http://localhost:9000
+S3_BUCKET=nexora-local
+S3_ACCESS_KEY_ID=nexora_minio
+S3_SECRET_ACCESS_KEY=nexora_minio_password
+```
+
+Queued audits are additive to the synchronous audit APIs. Submit jobs through `POST /api/jobs/audit`, poll `GET /api/jobs/{jobId}`, or subscribe to `GET /api/jobs/{jobId}/events` for server-sent progress events.
+
 ## Development
 
 ```bash
@@ -38,6 +104,26 @@ pnpm test:watch
 
 # E2E tests (requires dev server)
 pnpm test:e2e
+
+# Render worker unit tests
+pnpm test:render-worker
+
+# Database/report tests (requires local PostgreSQL)
+pnpm test:db
+
+# Audit worker tests
+pnpm test:audit-worker
+```
+
+## Render Worker
+
+The Phase 12 rendered-DOM worker is isolated under `services/render-worker/`. It exposes `GET /health` and signed `POST /render`; the Next.js app never launches Playwright inside a public API route.
+
+```bash
+cd services/render-worker
+npm install
+npm run build
+RENDER_WORKER_SECRET=replace-with-local-secret npm start
 ```
 
 ## Quality Checks
@@ -103,6 +189,12 @@ Required environment variables:
 - `NEXT_PUBLIC_SITE_URL` — Production URL (e.g., `https://nexora-seo-analyzer.vercel.app`)
 - `NODE_ENV=production`
 - `PAGESPEED_API_KEY` (optional — enables CrUX/field data)
+- `AI_SUMMARY_ENABLED=false` by default; set to `true` only when a configured AI provider may receive minimized audit evidence packs
+- `GEMINI_API_KEY` / `GROQ_API_KEY` (optional, server-only)
+- `RENDER_WORKER_ENABLED=false` by default; set to `true` only when an isolated worker is deployed
+- `RENDER_WORKER_URL` and `RENDER_WORKER_SECRET` for the optional Phase 12 render worker
+- `REDIS_URL` and `AUDIT_QUEUE_ENABLED=true` only when using the optional Phase 15 queue
+- `OBJECT_STORAGE_ENABLED=true` plus S3/R2 credentials only when object storage is deployed
 
 ### Docker
 
@@ -122,8 +214,5 @@ The first release (Phases 1-10) is verified ready. See `docs/project-memory/40-f
 
 The following features are excluded from the first release and will be built in later phases:
 
-- AI summaries (Gemini/Groq) — Phase 13
 - Playwright browser auditing — Phase 12
-- Databases (PostgreSQL, Redis, S3/R2) — Phases 14-15
-- User accounts and authentication — Phase 14
-- Report persistence and sharing — Phase 14
+- Distributed queues, Redis cache, and S3/R2 object storage — Phase 15

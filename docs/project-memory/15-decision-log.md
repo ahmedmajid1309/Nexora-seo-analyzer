@@ -146,3 +146,63 @@
   - Numeric error codes: Rejected — string codes are self-documenting
 - **Rationale**: Duplicating the enum in a TypeScript union type is a small maintenance cost that avoids circular imports and keeps the types portable.
 - **Consequences**: Adding a new warning code requires updates in both `types.ts` and `schemas.ts`. Both files note this requirement.
+
+## D-015: Phase 11 Site Audit Remains In-Process and Bounded
+
+- **Date**: 2026-07-25
+- **Decision**: Implement limited full-site audit synchronously inside the existing Next.js application with strict caps.
+- **Context**: Phase 11 needs useful cross-page analysis without introducing Phase 15 infrastructure.
+- **Alternatives considered**:
+  - Redis/BullMQ job queue: Rejected for Phase 11 because it belongs to Phase 15.
+  - Unlimited crawler: Rejected because it violates the public safety contract.
+- **Rationale**: A 25-page, same-origin, deadline-bound coordinator provides meaningful site-level evidence while preserving first-release simplicity.
+- **Consequences**: Large websites receive partial, coverage-labeled reports rather than exhaustive crawls.
+
+## D-016: Site Score Separates Page Quality, Cross-Page Health, and Coverage
+
+- **Date**: 2026-07-25
+- **Decision**: Site health uses 65% audited-page SEO average, 25% cross-page health, and 10% crawl coverage.
+- **Context**: A naive average of every selected page would hide site architecture defects and unfairly treat failed pages as zero.
+- **Alternatives considered**:
+  - Flat average of all page scores: Rejected because unavailable pages must not auto-fail.
+  - Cross-page findings only: Rejected because page-level SEO quality remains important.
+- **Rationale**: The formula is deterministic, transparent, and preserves per-page scores while separately reporting coverage and confidence.
+- **Consequences**: Site audit scores are not directly comparable to quick page audit scores.
+
+## D-017: Phase 12 Browser Rendering Is Isolated and Non-Scoring
+
+- **Date**: 2026-07-25
+- **Decision**: Rendered DOM analysis runs only in an isolated worker and produces diagnostic findings that do not alter SEO Health scoring.
+- **Context**: Browser rendering expands attack surface and can be slow or unavailable. Static audit results must remain reliable even when rendering fails.
+- **Alternatives considered**:
+  - Launch Playwright inside Next.js API routes: Rejected because it couples public request handling to browser execution.
+  - Fold rendered checks into SEO score immediately: Rejected because Phase 12 signals need calibration.
+- **Rationale**: Optional side-channel diagnostics preserve the static audit contract while adding useful JavaScript rendering evidence.
+- **Consequences**: Rendered diagnostics are nullable/unavailable when the worker is disabled or unhealthy; scoring remains unchanged.
+
+## D-018: Phase 13 AI Summaries Are Evidence-Bounded Side Channels
+
+- **Date**: 2026-07-26
+- **Decision**: Optional AI executive summaries run only after deterministic audit output exists and may reference only the minimized evidence pack.
+- **Context**: AI output can hallucinate findings, change severity, or overpromise rankings if given broad authority.
+- **Alternatives considered**:
+  - Let AI generate findings directly: Rejected because deterministic checks must remain authoritative.
+  - Let users select provider/model/prompt settings: Rejected because it expands security and privacy risk.
+- **Rationale**: Grounded summaries improve readability while preserving verified scores, findings, severities, confidence, and remediation.
+- **Consequences**: Provider output is discarded if it cannot be strictly parsed and grounded; deterministic fallback remains available with no provider keys.
+
+## D-019: Phase 14 Report Storage Is Optional And Post-Audit
+
+- **Date**: 2026-07-27
+- **Decision**: Persist reports only after deterministic audit completion and keep storage disabled by default.
+- **Context**: Storage failures must not turn successful audits into failures.
+- **Rationale**: The audit result is authoritative before persistence. Storage adds history/shareability without changing scoring.
+- **Consequences**: Public API responses include honest storage status when persistence is unavailable.
+
+## D-020: Phase 15 Queue Is Additive To Synchronous APIs
+
+- **Date**: 2026-07-27
+- **Decision**: Introduce BullMQ/Redis job APIs without replacing existing synchronous audit endpoints.
+- **Context**: The product already has verified quick and site audit APIs. Distributed processing should reduce long-request pressure without creating a breaking migration.
+- **Rationale**: Additive queue routes allow controlled rollout, preserve existing UI behavior, and keep storage/worker failures isolated from core audit correctness.
+- **Consequences**: Clients can opt into `POST /api/jobs/audit`, polling, and SSE progress while `/api/audit` and `/api/audit/site` continue to work.
