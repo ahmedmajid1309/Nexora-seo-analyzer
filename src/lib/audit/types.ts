@@ -6,6 +6,22 @@ export interface AuditRequest {
   expectIndexable?: boolean;
 }
 
+export interface FindingPageContext {
+  requestedUrl: string;
+  finalUrl: string;
+  pathname: string;
+  pageTitle: string | null;
+}
+
+export interface FindingEvidence {
+  source: "url" | "response-header" | "static-html" | "rendered-dom" | "pagespeed";
+  observedValue: string | number | boolean | string[] | null;
+  expectedValue: string | null;
+  selector: string | null;
+  elementSnippet: string | null;
+  unavailableReason: string | null;
+}
+
 export interface AuditFinding {
   checkId: string;
   state: string;
@@ -19,6 +35,8 @@ export interface AuditFinding {
   remediationSteps: string[];
   responsible: string;
   confidence: number;
+  page: FindingPageContext;
+  evidence: FindingEvidence;
   applicabilityReason?: string;
   unavailableReason?: string;
 }
@@ -37,6 +55,7 @@ export interface CategoryBreakdown {
 
 export interface ScoreCap {
   capId: string;
+  triggerCheckIds?: string[];
   reason: string;
   maxScore: number;
   applied: boolean;

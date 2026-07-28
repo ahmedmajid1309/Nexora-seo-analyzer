@@ -304,8 +304,8 @@ describe("critical caps", () => {
         },
       ],
     });
-    const withoutMeta007 = PASS_ALL.filter((r) => r.checkId !== "META-007");
-    const results = [...withoutMeta007, makeResult("META-007", "failed", "metadata")];
+    const withoutMeta011 = PASS_ALL.filter((r) => r.checkId !== "META-011");
+    const results = [...withoutMeta011, makeResult("META-011", "warning", "metadata")];
     const result = calculateScores({ results, snapshot });
     const noindexCaps = result.appliedCaps.filter((c) => c.capId === "CAP-NOINDEX");
     expect(noindexCaps.length).toBeGreaterThan(0);
@@ -344,8 +344,8 @@ describe("critical caps", () => {
         },
       ],
     });
-    const withoutMeta007 = PASS_ALL.filter((r) => r.checkId !== "META-007");
-    const results = [...withoutMeta007, makeResult("META-007", "failed", "metadata")];
+    const withoutMeta011 = PASS_ALL.filter((r) => r.checkId !== "META-011");
+    const results = [...withoutMeta011, makeResult("META-011", "warning", "metadata")];
     const result = calculateScores({ results, snapshot });
     const noindexCaps = result.appliedCaps.filter((c) => c.capId === "CAP-NOINDEX");
     expect(noindexCaps.length).toBeGreaterThan(0);

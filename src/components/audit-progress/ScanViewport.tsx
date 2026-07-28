@@ -26,7 +26,7 @@ export function ScanViewport({ reduced = false }: { reduced?: boolean }) {
           </div>
         </div>
       </div>
-      <p className="relative z-10 mt-6 text-center text-sm text-text-secondary">
+      <p className="relative z-10 mt-5 text-center text-xs text-text-tertiary">
         Scanner viewport is illustrative; stages and counters are driven by observed audit state.
       </p>
     </div>

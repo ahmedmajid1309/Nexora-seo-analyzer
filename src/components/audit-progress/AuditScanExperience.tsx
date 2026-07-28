@@ -73,34 +73,34 @@ function defaultStages(mode: AuditProgressMode): AuditStageItem[] {
   return [
     {
       id: "request",
-      label: "Audit request sent",
+      label: "Request submitted",
       description: "The browser submitted the page-audit request to Nexora.",
       state: "complete",
     },
     {
       id: "server",
-      label: "Server-side audit running",
+      label: "Secure server analysis active",
       description:
         "The backend validates the target, fetches the page, extracts metadata, runs rules, and calculates scores.",
       state: "active",
     },
     {
       id: "pagespeed",
-      label: "PageSpeed diagnostics",
+      label: "Optional diagnostics",
       description: "PageSpeed data is requested only when a server-side API key is configured.",
       state: "pending",
       optional: true,
     },
     {
       id: "render",
-      label: "Rendered analysis",
+      label: "Optional diagnostics",
       description: "Rendered DOM comparison runs only when the isolated worker is enabled.",
       state: "pending",
       optional: true,
     },
     {
       id: "summary",
-      label: "Evidence summary",
+      label: "Preparing report",
       description:
         "AI summaries use verified evidence only when enabled; deterministic fallback remains available.",
       state: "pending",
@@ -151,6 +151,7 @@ export function AuditScanExperience({
   const reduced = useReducedMotion();
   const resolvedStages = stages ?? defaultStages(mode);
   const stateCopy = STATE_COPY[state];
+  const activeStage = resolvedStages.find((stage) => stage.state === "active") ?? resolvedStages[0];
   const resolvedActivity =
     activity ??
     ([
@@ -189,7 +190,36 @@ export function AuditScanExperience({
               <p className="mt-1 leading-6">{stateCopy.detail}</p>
             </section>
           ) : null}
-          <AuditCounters counters={counters} elapsedSeconds={elapsedSeconds} />
+          {mode === "site" ? (
+            <AuditCounters counters={counters} elapsedSeconds={elapsedSeconds} />
+          ) : (
+            <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-text-tertiary">Elapsed</p>
+              <p className="mt-1 font-mono text-lg font-semibold text-text-primary">
+                {elapsedSeconds}s
+              </p>
+              {activeStage ? (
+                <div className="mt-4 rounded-2xl border border-brand/25 bg-brand/10 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">
+                    Current stage
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
+                    {activeStage.label}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">
+                    {activeStage.description}
+                  </p>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-text-tertiary">
+                    Status: {activeStage.state}
+                    {activeStage.optional ? " optional" : ""}
+                  </p>
+                </div>
+              ) : null}
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
+                Auditing only the submitted page. No crawl totals or artificial progress are shown.
+              </p>
+            </div>
+          )}
           {requestId ? (
             <p className="break-all font-mono text-xs text-text-tertiary">
               Request ID: {requestId}

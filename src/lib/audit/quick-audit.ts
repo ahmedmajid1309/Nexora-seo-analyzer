@@ -10,6 +10,73 @@ import { CALCULATION_VERSION, type ScoreBreakdown } from "@/lib/rules/scoring/ty
 import { buildQuickEvidencePack, generateAiExecutiveSummary } from "@/lib/ai-summary";
 import type { AuditResponseData } from "./types";
 
+function sourceForRule(
+  result: RuleResult,
+): AuditResponseData["findings"][number]["evidence"]["source"] {
+  if (result.source === "http-response") return "response-header";
+  if (result.source === "rendered-dom") return "rendered-dom";
+  if (result.source === "external-api") return "pagespeed";
+  if (result.category === "url") return "url";
+  return "static-html";
+}
+
+function pageContext(snapshot: PageSnapshot): AuditResponseData["findings"][number]["page"] {
+  let pathname = "/";
+  try {
+    pathname = new URL(snapshot.finalUrl).pathname || "/";
+  } catch {}
+  return {
+    requestedUrl: snapshot.requestedUrl,
+    finalUrl: snapshot.finalUrl,
+    pathname,
+    pageTitle: snapshot.document.title,
+  };
+}
+
+function stringifyExpected(result: RuleResult): string | null {
+  const value = result.evidence.expectedValue;
+  if (value === null || value === undefined) return null;
+  return String(value);
+}
+
+function observedValueFor(result: RuleResult): string | number | boolean | string[] | null {
+  if (result.checkId === "META-007" && result.state === "failed")
+    return "Canonical tag is missing.";
+  if (result.evidence.observedValue !== null && result.evidence.observedValue !== undefined)
+    return result.evidence.observedValue;
+  if (result.evidence.samples?.length) return result.evidence.samples.slice(0, 5);
+  return null;
+}
+
+function elementSnippetFor(result: RuleResult): string | null {
+  if (result.evidence.samples?.length) return result.evidence.samples.slice(0, 3).join(" | ");
+  return null;
+}
+
+function unavailableReasonFor(result: RuleResult): string | null {
+  if (result.unavailableReason) return result.unavailableReason;
+  const observed = observedValueFor(result);
+  if ((result.state === "failed" || result.state === "warning") && observed === null) {
+    return "This rule did not emit a discrete observed value; use the evidence summary and selector/snippet when present.";
+  }
+  return null;
+}
+
+function expectedValueFor(result: RuleResult): string | null {
+  if (result.checkId === "META-007") {
+    return "A self-referencing canonical URL matching the preferred final page URL.";
+  }
+  if (typeof result.evidence.expectedValue === "boolean") return result.evidence.summary;
+  return stringifyExpected(result) ?? result.evidence.summary;
+}
+
+function remediationSummaryFor(result: RuleResult, snapshot: PageSnapshot): string {
+  if (result.checkId === "META-007" && result.state === "failed") {
+    return `Insert <link rel="canonical" href="${snapshot.finalUrl}" /> inside the document head.`;
+  }
+  return result.remediation.summary;
+}
+
 function firstMetadata(snapshot: PageSnapshot, name: string): string | null {
   const entry = snapshot.metadata.find((m) => m.name.toLowerCase() === name.toLowerCase());
   return entry?.normalizedValue?.trim() || entry?.rawValue?.trim() || null;
@@ -108,10 +175,19 @@ export function toPublicAuditData(input: {
             : r.evidence.summary,
         impact: r.impact,
         effort: r.effort,
-        remediationSummary: r.remediation.summary,
+        remediationSummary: remediationSummaryFor(r, snapshot),
         remediationSteps: r.remediation.steps,
         responsible: r.remediation.responsible,
         confidence: r.confidence,
+        page: pageContext(snapshot),
+        evidence: {
+          source: sourceForRule(r),
+          observedValue: observedValueFor(r),
+          expectedValue: expectedValueFor(r),
+          selector: r.evidence.selector ?? null,
+          elementSnippet: elementSnippetFor(r),
+          unavailableReason: unavailableReasonFor(r),
+        },
         applicabilityReason: r.applicabilityReason,
         unavailableReason: r.unavailableReason,
       });
@@ -155,6 +231,7 @@ export function toPublicAuditData(input: {
     confidence: scores.confidence,
     appliedCaps: scores.appliedCaps.map((c) => ({
       capId: c.capId,
+      triggerCheckIds: c.triggerCheckIds,
       reason: c.reason,
       maxScore: c.maxScore,
       applied: c.applied,

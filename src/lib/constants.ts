@@ -1,3 +1,7 @@
 export const HEADER_HEIGHT = 76;
 export const HEADER_MARGIN_TOP = 14;
 export const HEADER_OFFSET = HEADER_HEIGHT + HEADER_MARGIN_TOP;
+export const HEADER_SAFE_GAP = 32;
+export const PAGE_TOP_OFFSET = HEADER_OFFSET + HEADER_SAFE_GAP;
+export const REPORT_NAV_HEIGHT = 64;
+export const REPORT_NAV_GAP = 16;

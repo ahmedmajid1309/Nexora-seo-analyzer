@@ -1,9 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { StrictMode } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 const mockUrl = "https://example.com";
 let mockSearchParams = new URLSearchParams(`url=${encodeURIComponent(mockUrl)}`);
+
+const pageContext = {
+  requestedUrl: "https://example.com",
+  finalUrl: "https://example.com",
+  pathname: "/",
+  pageTitle: "Example page",
+};
+
+const staticEvidence = {
+  source: "static-html" as const,
+  observedValue: "missing",
+  expectedValue: "Present and descriptive metadata",
+  selector: "head > meta[name='description']",
+  elementSnippet: null,
+  unavailableReason: null,
+};
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
@@ -46,6 +62,8 @@ function createMockResponse(overrides: Record<string, unknown> = {}) {
           remediationSteps: ["Write a 150-160 character description", "Include target keyword"],
           responsible: "content",
           confidence: 100,
+          page: pageContext,
+          evidence: staticEvidence,
         },
         {
           checkId: "META-002",
@@ -60,6 +78,8 @@ function createMockResponse(overrides: Record<string, unknown> = {}) {
           remediationSteps: [],
           responsible: "developer",
           confidence: 100,
+          page: pageContext,
+          evidence: { ...staticEvidence, observedValue: "Title tag is present" },
         },
         {
           checkId: "A11Y-001",
@@ -74,6 +94,13 @@ function createMockResponse(overrides: Record<string, unknown> = {}) {
           remediationSteps: ["Add descriptive alt text to each image"],
           responsible: "developer",
           confidence: 90,
+          page: pageContext,
+          evidence: {
+            ...staticEvidence,
+            observedValue: "3 images without alt text",
+            selector: "img:not([alt])",
+            elementSnippet: '<img src="/hero.jpg">',
+          },
         },
       ],
       findingsTruncated: false,
@@ -330,6 +357,317 @@ describe("ResultPage", () => {
     });
   });
 
+  it("separates score-driving issue from quickest recommended action", async () => {
+    const base = createMockResponse();
+    const baseFindings = base.data.findings;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve(
+          createMockResponse({
+            appliedCaps: [
+              {
+                capId: "CAP-INDEXABILITY",
+                triggerCheckIds: ["ROBOTS-001"],
+                reason: "Robots directive blocks indexability",
+                maxScore: 35,
+                applied: true,
+              },
+              {
+                capId: "CAP-MINOR",
+                reason: "Minor metadata issue",
+                maxScore: 70,
+                applied: true,
+              },
+            ],
+            findings: [
+              {
+                ...baseFindings[0],
+                checkId: "ROBOTS-001",
+                severity: "high",
+                effort: "high",
+                summary: "Robots directive blocks indexability",
+                remediationSummary: "Remove the blocking robots directive",
+                evidence: {
+                  ...staticEvidence,
+                  observedValue: "noindex robots directive detected",
+                  expectedValue: "Indexable page",
+                },
+              },
+              {
+                ...baseFindings[2],
+                checkId: "IMG-001",
+                severity: "medium",
+                effort: "low",
+                summary: "Add missing image alt text",
+              },
+            ],
+          }),
+        ),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Score-driving issue")).toBeInTheDocument();
+    });
+    expect(screen.getAllByText("Robots directive blocks indexability").length).toBeGreaterThan(0);
+    expect(screen.getByText("Maximum overall score: 35")).toBeInTheDocument();
+    expect(screen.getByText("Quickest recommended action")).toBeInTheDocument();
+    expect(screen.getAllByText("Add missing image alt text").length).toBeGreaterThan(0);
+  });
+
+  it("renders CAP-NOINDEX metadata instead of an unrelated canonical finding", async () => {
+    const base = createMockResponse();
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve(
+          createMockResponse({
+            appliedCaps: [
+              {
+                capId: "CAP-NOINDEX",
+                triggerCheckIds: ["META-007"],
+                reason: "Page has noindex directive — search engines cannot index this page",
+                maxScore: 40,
+                applied: true,
+              },
+            ],
+            findings: [
+              {
+                ...base.data.findings[0],
+                checkId: "META-007",
+                summary: "No canonical tag found",
+                impact: "Search engines may split ranking signals.",
+              },
+              {
+                ...base.data.findings[2],
+                checkId: "IMAGE-001",
+                summary: "Missing alt text on images",
+                effort: "low",
+              },
+            ],
+          }),
+        ),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    const scoreCard = await screen.findByText("Score-driving issue");
+    const card = scoreCard.closest("div");
+    expect(card).not.toBeNull();
+    expect(within(card!).getByText("Page is marked noindex")).toBeInTheDocument();
+    expect(
+      within(card!).getByText("Search engines are instructed not to index this page."),
+    ).toBeInTheDocument();
+    expect(within(card!).getByText("Maximum overall score: 40")).toBeInTheDocument();
+    expect(within(card!).queryByText("No canonical tag found")).not.toBeInTheDocument();
+    expect(screen.getByText("Quickest recommended action")).toBeInTheDocument();
+    expect(screen.queryByText("Also the quickest fix")).not.toBeInTheDocument();
+    expect(screen.getAllByText("No canonical tag found").length).toBeGreaterThan(0);
+  });
+
+  it("does not duplicate the same finding across recommendation cards", async () => {
+    const base = createMockResponse();
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve(
+          createMockResponse({
+            appliedCaps: [
+              {
+                capId: "CAP-NO-DESCRIPTION",
+                triggerCheckIds: ["META-003"],
+                reason: "Page is missing a meta description",
+                maxScore: 80,
+                applied: true,
+              },
+            ],
+            findings: [
+              {
+                ...base.data.findings[0],
+                checkId: "META-003",
+                summary: "Missing meta description",
+                effort: "low",
+              },
+            ],
+          }),
+        ),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Also the quickest fix")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("Quickest recommended action")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Missing meta description").length).toBeGreaterThan(0);
+  });
+
+  it("summary actions scroll to stable finding and cap detail targets", async () => {
+    const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+    const base = createMockResponse();
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve(
+          createMockResponse({
+            appliedCaps: [
+              {
+                capId: "CAP-NOINDEX",
+                reason: "Page has noindex directive",
+                maxScore: 40,
+                applied: true,
+              },
+            ],
+            findings: [
+              {
+                ...base.data.findings[0],
+                checkId: "META-006",
+                summary: "No canonical tag found",
+                effort: "low",
+              },
+            ],
+          }),
+        ),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "View detailed issue" }));
+    expect(document.getElementById("score-cap-details")).toBeInTheDocument();
+    expect(scrollSpy).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "View quick win" }));
+    expect(document.getElementById("finding-META-006")).toBeInTheDocument();
+    expect(scrollSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("summary text has explicit spaces and score cards use whole-number precision", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve(
+          createMockResponse({
+            scoreFamilies: [
+              {
+                family: "seo-health",
+                name: "SEO Health",
+                rawScore: 40.2,
+                cappedScore: 40.2,
+                confidence: 100,
+              },
+              {
+                family: "accessibility",
+                name: "Accessibility",
+                rawScore: 77.5,
+                cappedScore: 77.5,
+                confidence: 90,
+              },
+              {
+                family: "security-trust",
+                name: "Security & Trust",
+                rawScore: 74.85,
+                cappedScore: 74.85,
+                confidence: 100,
+              },
+              {
+                family: "aeo-readiness",
+                name: "AEO Readiness",
+                rawScore: 96.35,
+                cappedScore: 96.35,
+                confidence: 100,
+              },
+              {
+                family: "geo-readiness",
+                name: "GEO Readiness",
+                rawScore: 90.91,
+                cappedScore: 90.91,
+                confidence: 100,
+              },
+            ],
+          }),
+        ),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 applicable checks/)).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(
+        /3 applicable checks · 0 not applicable or unavailable · 2 quick wins within 2 actionable issues/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("77.5")).not.toBeInTheDocument();
+    expect(screen.queryByText("74.85")).not.toBeInTheDocument();
+    expect(screen.getAllByText("78").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("75").length).toBeGreaterThan(0);
+  });
+
+  it("rescans the current final URL once and preserves keyword", async () => {
+    mockSearchParams = new URLSearchParams(
+      `url=${encodeURIComponent(mockUrl)}&keyword=${encodeURIComponent("technical seo")}`,
+    );
+    const second = deferredResponse();
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createJsonResponse(createMockResponse({ finalUrl: "https://example.com/final" })),
+      )
+      .mockReturnValueOnce(second.promise);
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    const rescan = await screen.findByRole("button", { name: "Rescan this URL" });
+    expect(screen.getAllByRole("button", { name: "Rescan this URL" })).toHaveLength(1);
+    fireEvent.click(rescan);
+    fireEvent.click(rescan);
+
+    await waitFor(() => {
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+    });
+    const secondBody = JSON.parse(String(vi.mocked(globalThis.fetch).mock.calls[1]?.[1]?.body));
+    expect(secondBody).toEqual({ url: "https://example.com/final", keyword: "technical seo" });
+    expect(screen.getByText(/Analyzing your website/i)).toBeInTheDocument();
+
+    second.resolve(
+      createJsonResponse(createMockResponse({ finalUrl: "https://example.com/rescanned" })),
+    );
+    await waitFor(() => {
+      expect(screen.getByText("https://example.com/rescanned")).toBeInTheDocument();
+    });
+  });
+
+  it("uses an opaque sticky report navigation mask", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(createMockResponse()),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    const nav = await screen.findByTestId("report-navigation");
+    expect(nav).toHaveClass("bg-bg-primary");
+    expect(nav.className).toContain("shadow-[0_-18px_0_18px_var(--color-bg-primary)");
+  });
+
+  it("shows stable check IDs in compact All Checks rows", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(createMockResponse()),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("META-001").length).toBeGreaterThan(0);
+    });
+    expect(screen.getAllByText("A11Y-001").length).toBeGreaterThan(0);
+  });
+
   it("shows error state when audit fails", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
       json: () =>
@@ -542,6 +880,91 @@ describe("ResultPage", () => {
     });
 
     expect(screen.getByRole("button", { name: "Search & Social" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Audit Summary" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Actionable Issues" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All Checks" })).toBeInTheDocument();
+  });
+
+  it("renders affected page and structured evidence for findings", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(createMockResponse()),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Missing meta description").length).toBeGreaterThan(0);
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: /Missing meta description/i })[0]);
+    expect(screen.getByText("Affected Page")).toBeInTheDocument();
+    expect(screen.getByText("Pathname: /")).toBeInTheDocument();
+    expect(screen.getByText("Observed")).toBeInTheDocument();
+    expect(screen.getByText("missing")).toBeInTheDocument();
+    expect(screen.getByText("Expected State")).toBeInTheDocument();
+    expect(screen.getByText("Present and descriptive metadata")).toBeInTheDocument();
+    expect(screen.getByText("Technical metadata")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Open Page" })).toHaveLength(1);
+  });
+
+  it("derives summary and group counts from displayed checks, not aggregate stateCounts", async () => {
+    const base = createMockResponse();
+    const baseFindings = base.data.findings;
+    const normalizedResponse = createMockResponse({
+      stateCounts: { passed: 80, warning: 10, failed: 5, "not-applicable": 20, unavailable: 5 },
+      findings: [
+        baseFindings[0],
+        baseFindings[1],
+        baseFindings[2],
+        {
+          ...baseFindings[1],
+          checkId: "FAQ-001",
+          state: "not-applicable",
+          summary: "FAQ schema not required",
+          scored: false,
+        },
+        {
+          ...baseFindings[1],
+          checkId: "PSI-001",
+          state: "unavailable",
+          summary: "PageSpeed diagnostics unavailable",
+          scored: false,
+        },
+      ],
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(normalizedResponse),
+    });
+
+    const { default: ResultPage } = await import("@/app/result/page");
+    render(<ResultPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Checks evaluated")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/3 applicable checks/)).toBeInTheDocument();
+    expect(screen.getByText(/2 not applicable or unavailable/)).toBeInTheDocument();
+    expect(screen.getAllByText(/2 quick wins within 2 actionable issues/).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByRole("heading", { name: /Actionable Issues/i })).toHaveTextContent("2");
+    expect(screen.getByText("2 quick wins within 2 actionable issues.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Report section"), { target: { value: "findings" } });
+    expect(screen.getByText("Showing 5 of 5 checks")).toBeInTheDocument();
+    expect(screen.getAllByText("Failed").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Warnings").length).toBeGreaterThan(0);
+    expect(screen.getByText("Passed checks")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Passed checks/i })).toHaveTextContent("1");
+    expect(screen.getByRole("button", { name: /Not applicable/i })).toHaveTextContent("1");
+    expect(screen.getByRole("button", { name: /Unavailable checks/i })).toHaveTextContent("1");
+    expect(screen.queryByRole("link", { name: /Title tag is present/i })).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Filter by state"), { target: { value: "failed" } });
+    expect(screen.getByText("Showing 1 of 5 checks")).toBeInTheDocument();
   });
 
   it("uses real response fields in Search/Social previews", async () => {

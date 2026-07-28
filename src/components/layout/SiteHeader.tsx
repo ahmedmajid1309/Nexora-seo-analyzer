@@ -5,7 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { HEADER_HEIGHT, HEADER_MARGIN_TOP } from "@/lib/constants";
+import {
+  HEADER_HEIGHT,
+  HEADER_MARGIN_TOP,
+  HEADER_OFFSET,
+  REPORT_NAV_GAP,
+  REPORT_NAV_HEIGHT,
+} from "@/lib/constants";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -15,6 +21,7 @@ export function SiteHeader() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const pathname = usePathname();
   const reduced = useReducedMotion();
+  const isResultPage = pathname === "/result";
 
   useEffect(() => {
     const onScroll = () => {
@@ -48,169 +55,170 @@ export function SiteHeader() {
 
   const pillClasses = scrolled
     ? "border border-zinc-700/50 bg-bg-primary/85 backdrop-blur-2xl shadow-2xl shadow-black/30"
-    : "border border-zinc-800/30 bg-bg-primary/50 backdrop-blur-lg";
+    : "border border-zinc-800/40 bg-bg-primary/95 shadow-2xl shadow-black/20";
+
+  const backdropHeight = scrolled
+    ? HEADER_OFFSET + REPORT_NAV_GAP + REPORT_NAV_HEIGHT + REPORT_NAV_GAP
+    : HEADER_OFFSET;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 no-print flex flex-col items-center pointer-events-none">
-      <motion.div
-        className="scroll-progress pointer-events-none"
-        style={{ scaleX: scrollProgress }}
+    <>
+      <div
+        data-testid="sticky-backdrop"
+        className="fixed left-0 right-0 top-0 z-20 bg-bg-primary no-print"
+        style={{ height: `${backdropHeight}px` }}
         aria-hidden="true"
       />
+      <header className="fixed top-0 left-0 right-0 z-50 no-print flex flex-col items-center pointer-events-none">
+        {!isResultPage ? (
+          <motion.div
+            className="scroll-progress pointer-events-none"
+            style={{ scaleX: scrollProgress }}
+            aria-hidden="true"
+          />
+        ) : null}
 
-      <nav
-        className={`pointer-events-auto flex items-center justify-between rounded-2xl px-5 sm:px-6 transition-all duration-[400ms] max-w-[1320px] w-[calc(100%-2rem)] mx-auto ${pillClasses}`}
-        style={{ height: `${HEADER_HEIGHT}px`, marginTop: `${HEADER_MARGIN_TOP}px` }}
-        aria-label="Main navigation"
-      >
-        <div className="relative h-[34px] w-[124px] shrink-0 sm:h-[38px] sm:w-[140px] md:h-[42px] md:w-[154px] lg:w-[168px]">
-          <Link href="/" className="relative block h-full w-full">
-            <Image
-              src="/brand/nexora-logo-main.svg"
-              alt="Nexora SEO Analyzer"
-              fill
-              priority
-              sizes="(max-width: 639px) 124px, (max-width: 767px) 140px, (max-width: 1023px) 154px, 168px"
-              className="object-contain object-left"
-            />
-          </Link>
-        </div>
+        <nav
+          className={`pointer-events-auto flex items-center justify-between rounded-2xl px-5 sm:px-6 transition-all duration-[400ms] max-w-[1320px] w-[calc(100%-2rem)] mx-auto ${pillClasses}`}
+          style={{ height: `${HEADER_HEIGHT}px`, marginTop: `${HEADER_MARGIN_TOP}px` }}
+          aria-label="Main navigation"
+        >
+          <div className="relative h-[34px] w-[124px] shrink-0 sm:h-[38px] sm:w-[140px] md:h-[42px] md:w-[154px] lg:w-[168px]">
+            <Link href="/" className="relative block h-full w-full">
+              <Image
+                src="/brand/nexora-logo-main.svg"
+                alt="Nexora SEO Analyzer"
+                fill
+                priority
+                sizes="(max-width: 639px) 124px, (max-width: 767px) 140px, (max-width: 1023px) 154px, 168px"
+                className="object-contain object-left"
+              />
+            </Link>
+          </div>
 
-        <div className="hidden md:flex items-center gap-1">
-          <Link
-            href="/methodology"
-            className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
-          >
-            Methodology
-          </Link>
-          <Link
-            href="/site-audit"
-            className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
-          >
-            Site Audit
-          </Link>
-          <Link
-            href="/privacy"
-            className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/"
-            className="ml-2 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-[15px] font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-lg shadow-brand/20"
+          <div className="hidden md:flex items-center gap-1">
+            <Link
+              href="/methodology"
+              className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
+            >
+              Methodology
+            </Link>
+            <Link
+              href="/privacy"
+              className="rounded-xl px-4 py-2.5 text-[15px] text-text-tertiary hover:text-text-primary hover:bg-white/[0.04] transition-all duration-200"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/"
+              className="ml-2 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-[15px] font-semibold text-black hover:bg-brand-hover transition-all duration-200 shadow-lg shadow-brand/20"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              Analyze
+            </Link>
+          </div>
+
+          <button
+            className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-controls="mobile-menu"
+            type="button"
+            style={{ minWidth: "44px", minHeight: "44px" }}
           >
             <svg
-              width="16"
-              height="16"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.5"
+              strokeWidth="2"
               aria-hidden="true"
             >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
+              {menuOpen ? (
+                <path d="M18 6L6 18M6 6l12 12" />
+              ) : (
+                <>
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                </>
+              )}
             </svg>
-            Analyze
-          </Link>
-        </div>
+          </button>
+        </nav>
 
-        <button
-          className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transition-colors"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-expanded={menuOpen}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-controls="mobile-menu"
-          type="button"
-          style={{ minWidth: "44px", minHeight: "44px" }}
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
-          >
-            {menuOpen ? (
-              <path d="M18 6L6 18M6 6l12 12" />
-            ) : (
-              <>
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </>
-            )}
-          </svg>
-        </button>
-      </nav>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            id="mobile-menu"
-            className="md:hidden pointer-events-auto mt-3 mx-4 w-[calc(100%-2rem)] max-w-[500px] rounded-2xl border border-zinc-700/50 bg-bg-primary/95 backdrop-blur-2xl shadow-2xl overflow-hidden"
-            onKeyDown={handleKeyDown}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-            initial={reduced ? false : { opacity: 0, y: -12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduced ? undefined : { opacity: 0, y: -12, scale: 0.97 }}
-            transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
-          >
-            <div className="flex flex-col gap-1.5 p-4">
-              <Link
-                href="/methodology"
-                className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
-                tabIndex={0}
-              >
-                Methodology
-              </Link>
-              <Link
-                href="/privacy"
-                className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
-                tabIndex={0}
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/site-audit"
-                className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
-                tabIndex={0}
-              >
-                Site Audit
-              </Link>
-              <Link
-                href="/terms"
-                className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
-                tabIndex={0}
-              >
-                Terms
-              </Link>
-              <hr className="my-2 border-zinc-800" />
-              <Link
-                href="/"
-                className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-4 text-base font-semibold text-black hover:bg-brand-hover transition-colors"
-                tabIndex={0}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  aria-hidden="true"
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              id="mobile-menu"
+              className="md:hidden pointer-events-auto mt-3 mx-4 w-[calc(100%-2rem)] max-w-[500px] rounded-2xl border border-zinc-700/50 bg-bg-primary/95 backdrop-blur-2xl shadow-2xl overflow-hidden"
+              onKeyDown={handleKeyDown}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile navigation"
+              initial={reduced ? false : { opacity: 0, y: -12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={reduced ? undefined : { opacity: 0, y: -12, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
+            >
+              <div className="flex flex-col gap-1.5 p-4">
+                <Link
+                  href="/methodology"
+                  className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
+                  tabIndex={0}
                 >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-                Analyze Website
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+                  Methodology
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
+                  tabIndex={0}
+                >
+                  Privacy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="block rounded-xl px-4 py-4 text-base text-text-secondary hover:text-text-primary hover:bg-white/[0.04] transition-colors"
+                  tabIndex={0}
+                >
+                  Terms
+                </Link>
+                <hr className="my-2 border-zinc-800" />
+                <Link
+                  href="/"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-4 text-base font-semibold text-black hover:bg-brand-hover transition-colors"
+                  tabIndex={0}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                  Analyze Website
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Card } from "@/components/ui/Card";
+import { PAGE_TOP_OFFSET } from "@/lib/constants";
 import { createMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createMetadata({
@@ -13,7 +14,7 @@ export const metadata: Metadata = createMetadata({
 
 export default function MethodologyPage() {
   return (
-    <Container className="py-16 sm:py-20">
+    <Container className="pb-16 sm:pb-20" style={{ paddingTop: `${PAGE_TOP_OFFSET}px` }}>
       <article className="mx-auto max-w-3xl">
         <SectionHeading>Methodology</SectionHeading>
 
@@ -72,10 +73,53 @@ export default function MethodologyPage() {
           <div>
             <h3 className="text-lg font-semibold text-text-primary">AI Is Not in Control</h3>
             <p className="mt-2 text-text-secondary">
-              Artificial intelligence (Gemini or Groq) may optionally be used in a future phase to
-              generate natural-language executive summaries. AI will never invent findings, change
-              scores, or fabricate evidence. The deterministic engine is the single source of truth
-              for all findings and scores.
+              Optional AI executive summaries can be enabled with server-side Gemini or Groq
+              credentials. Deterministic checks and scoring remain authoritative. AI cannot create
+              findings, change severity, modify evidence, or adjust scores. When provider keys are
+              absent or summaries are disabled, a deterministic fallback summary is used.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary">
+              Exact Affected-Page Attribution
+            </h3>
+            <p className="mt-2 text-text-secondary">
+              Every failed or warning finding includes the requested URL, final URL, pathname, and
+              page title when available. The report shows the affected page before impact or fix
+              copy so remediation can be tied to a specific document.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary">
+              Observed Evidence and Expected State
+            </h3>
+            <p className="mt-2 text-text-secondary">
+              Findings separate what was observed from what was expected. Observed evidence comes
+              from URL analysis, response headers, static HTML, rendered DOM, or optional PageSpeed
+              data. Expected state describes the rule target without fabricating values that were
+              not collected.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary">
+              Optional Performance Diagnostics
+            </h3>
+            <p className="mt-2 text-text-secondary">
+              Performance diagnostics use PageSpeed only when configured and available. If PageSpeed
+              is disabled, rate-limited, or cannot return usable data, the core audit still
+              completes from deterministic page evidence.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary">Unavailable Is Not Zero</h3>
+            <p className="mt-2 text-text-secondary">
+              Unavailable means the audit could not observe a signal or optional provider result. It
+              is displayed explicitly and may lower confidence, but it is never converted into a
+              fake zero score.
             </p>
           </div>
         </Card>

@@ -18,7 +18,7 @@ export function Reveal({ children, className, delay = 0 }: RevealProps) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 1, y: 0 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.55, delay, ease: EASE_OUT_EXPO }}
@@ -59,7 +59,7 @@ export function StaggerItem({ children, className }: { children: ReactNode; clas
     <motion.div
       className={className}
       variants={{
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 1, y: 0 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT_EXPO } },
       }}
     >
@@ -80,7 +80,7 @@ export function LineReveal({ children, className, delay = 0 }: LineRevealProps) 
   return (
     <div className={`relative overflow-hidden ${className ?? ""}`}>
       <motion.div
-        initial={{ y: "100%" }}
+        initial={{ y: 0 }}
         whileInView={{ y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.6, delay, ease: EASE_OUT_EXPO }}
@@ -99,7 +99,7 @@ type AnimatedNumberProps = {
 
 export function AnimatedNumber({ value, className, suffix = "" }: AnimatedNumberProps) {
   const reduced = useReducedMotion();
-  const [display, setDisplay] = useState(0);
+  const [display, setDisplay] = useState(value);
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export function ScaleIn({ children, className, delay = 0 }: ScaleInProps) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, scale: 0.92 }}
+      initial={{ opacity: 1, scale: 1 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay, ease: EASE_OUT_BACK }}

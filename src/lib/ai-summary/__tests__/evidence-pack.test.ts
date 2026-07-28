@@ -2,6 +2,22 @@ import { describe, expect, it } from "vitest";
 import type { AuditResponseData } from "@/lib/audit/types";
 import { buildQuickEvidencePack } from "../evidence-pack";
 
+const page = {
+  requestedUrl: "https://example.com/?token=secret#frag",
+  finalUrl: "https://example.com/page?token=secret#frag",
+  pathname: "/page",
+  pageTitle: null,
+};
+
+const evidence = {
+  source: "static-html" as const,
+  observedValue: "missing",
+  expectedValue: "A unique title element",
+  selector: "title",
+  elementSnippet: null,
+  unavailableReason: null,
+};
+
 function auditData(): AuditResponseData {
   return {
     requestId: "req-1",
@@ -27,6 +43,8 @@ function auditData(): AuditResponseData {
         remediationSteps: ["Add title"],
         responsible: "seo",
         confidence: 0.95,
+        page,
+        evidence,
       },
       {
         checkId: "CONTENT-001",
@@ -41,6 +59,8 @@ function auditData(): AuditResponseData {
         remediationSteps: [],
         responsible: "content-editor",
         confidence: 1,
+        page,
+        evidence: { ...evidence, observedValue: "content found" },
       },
     ],
     findingsTruncated: false,

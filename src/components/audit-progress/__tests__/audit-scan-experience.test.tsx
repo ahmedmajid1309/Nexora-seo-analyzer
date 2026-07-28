@@ -10,6 +10,8 @@ describe("AuditScanExperience", () => {
     expect(screen.getByText("/path")).toBeInTheDocument();
     expect(screen.queryByText(/%/)).not.toBeInTheDocument();
     expect(screen.getByText(/No client-side fake stage completion/i)).toBeInTheDocument();
+    expect(screen.getByText(/Auditing only the submitted page/i)).toBeInTheDocument();
+    expect(screen.queryByText("Discovered")).not.toBeInTheDocument();
   });
 
   it("renders site counters without horizontal-only assumptions", () => {

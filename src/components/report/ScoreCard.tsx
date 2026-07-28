@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -40,55 +39,7 @@ function getGaugeColor(score: number | null): string {
 }
 
 export function ScoreCard({ label, score, confidence, source, info, className }: ScoreCardProps) {
-  const [animatedScore, setAnimatedScore] = useState<number | null>(score !== null ? 0 : null);
-  const [revealed, setRevealed] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
-
-  useEffect(() => {
-    if (score === null) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !revealed) {
-          setRevealed(true);
-        }
-      },
-      { threshold: 0.3 },
-    );
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [score, revealed]);
-
-  useEffect(() => {
-    if (!revealed || score === null) return;
-
-    if (reduced) {
-      const id = setTimeout(() => setAnimatedScore(score), 0);
-      return () => clearTimeout(id);
-    }
-
-    const duration = 600;
-    const start = performance.now();
-    let frameId: number;
-
-    function animate(now: number) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimatedScore(Math.round(eased * score!));
-
-      if (progress < 1) {
-        frameId = requestAnimationFrame(animate);
-      }
-    }
-
-    frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
-  }, [revealed, score, reduced]);
-
-  const displayScore = animatedScore !== null ? animatedScore : score;
+  const displayScore = score === null ? null : Math.round(score);
   const colorClass = getScoreColor(score);
   const labelText = getScoreLabel(score);
   const gaugeColor = getGaugeColor(score);
@@ -97,7 +48,6 @@ export function ScoreCard({ label, score, confidence, source, info, className }:
 
   return (
     <div
-      ref={ref}
       className={`rounded-xl border border-zinc-800 bg-bg-card overflow-hidden p-4 transition-all duration-[250ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-zinc-700 hover:shadow-lg hover:shadow-black/20 sm:p-5 ${className ?? ""}`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -143,14 +93,14 @@ export function ScoreCard({ label, score, confidence, source, info, className }:
               strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray={circumference}
-              initial={reduced ? false : { strokeDashoffset: circumference }}
+              initial={{ strokeDashoffset: circumference }}
               animate={{ strokeDashoffset: circumference * (1 - progress) }}
               transition={{ duration: 0.8, delay: 0.2, ease: EASE_OUT_EXPO }}
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <span className={`text-lg font-bold tabular-nums ${colorClass}`}>
-              {score !== null ? (displayScore ?? 0) : "\u2014"}
+              {displayScore !== null ? displayScore : "\u2014"}
             </span>
           </div>
         </div>

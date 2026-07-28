@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
+import { PAGE_TOP_OFFSET } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "FAQ — Nexora SEO Analyzer",
@@ -33,7 +34,7 @@ const faqs = [
 
 export default function FaqPage() {
   return (
-    <main className="py-28 sm:py-32">
+    <main className="pb-28 sm:pb-32" style={{ paddingTop: `${PAGE_TOP_OFFSET}px` }}>
       <Container>
         <div className="mx-auto max-w-4xl space-y-8">
           <div className="space-y-4 text-center">

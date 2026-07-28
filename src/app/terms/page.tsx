@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { PAGE_TOP_OFFSET } from "@/lib/constants";
 import { createMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createMetadata({
@@ -13,7 +14,7 @@ export const metadata: Metadata = createMetadata({
 
 export default function TermsPage() {
   return (
-    <Container className="py-16 sm:py-20">
+    <Container className="pb-16 sm:pb-20" style={{ paddingTop: `${PAGE_TOP_OFFSET}px` }}>
       <article className="mx-auto max-w-3xl">
         <div className="mb-4">
           <Badge variant="warning">Draft &mdash; Requires professional legal review</Badge>
